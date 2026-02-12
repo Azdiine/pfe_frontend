@@ -11,10 +11,12 @@ import '../features/home/presentation/screens/home_page.dart';
 import '../features/recipes/presentation/screens/recettes_page.dart';
 import '../features/tracking/presentation/screens/suivi_page.dart';
 import '../features/fridge/presentation/screens/frigo_page.dart';
+import 'navigation/shell_navigation.dart';
 
 final goRouter = GoRouter(
   initialLocation: '/',
   routes: [
+    // Routes sans navigation bar (auth, onboarding, etc.)
     GoRoute(
       path: '/',
       name: 'welcome',
@@ -49,34 +51,73 @@ final goRouter = GoRouter(
       builder: (context, state) => const OnboardingScreen(),
     ),
     GoRoute(
-      path: '/home',
-      name: 'home',
-      builder: (context, state) => const HomePage(),
-    ),
-    GoRoute(
       path: '/subscriptions',
       name: 'subscriptions',
       builder: (context, state) => const SubscriptionsScreen(),
     ),
-    GoRoute(
-      path: '/profile',
-      name: 'profile',
-      builder: (context, state) => const ProfileScreen(),
-    ),
-    GoRoute(
-      path: '/recettes',
-      name: 'recettes',
-      builder: (context, state) => const RecettesPage(),
-    ),
-    GoRoute(
-      path: '/suivi',
-      name: 'suivi',
-      builder: (context, state) => const SuiviPage(),
-    ),
-    GoRoute(
-      path: '/frigo',
-      name: 'frigo',
-      builder: (context, state) => const FrigoPage(),
+
+    // 🎯 StatefulShellRoute - Navigation avec préservation d'état
+    // Chaque branche garde son état et sa navigation stack (comme App Store)
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, navigationShell) {
+        return ScaffoldWithNavBar(navigationShell: navigationShell);
+      },
+      branches: [
+        // Branche 0: Home
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/home',
+              name: 'home',
+              builder: (context, state) => const HomePage(),
+            ),
+          ],
+        ),
+
+        // Branche 1: Recettes
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/recettes',
+              name: 'recettes',
+              builder: (context, state) => const RecettesPage(),
+            ),
+          ],
+        ),
+
+        // Branche 2: Frigo
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/frigo',
+              name: 'frigo',
+              builder: (context, state) => const FrigoPage(),
+            ),
+          ],
+        ),
+
+        // Branche 3: Suivi
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/suivi',
+              name: 'suivi',
+              builder: (context, state) => const SuiviPage(),
+            ),
+          ],
+        ),
+
+        // Branche 4: Profile
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/profile',
+              name: 'profile',
+              builder: (context, state) => const ProfileScreen(),
+            ),
+          ],
+        ),
+      ],
     ),
   ],
 );

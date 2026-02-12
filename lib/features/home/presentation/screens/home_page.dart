@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
-import '../../../../shared/widgets/base_page.dart';
+import 'package:flutter/cupertino.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/apple_theme.dart';
+import '../../../../shared/widgets/apple_widgets.dart';
+import 'package:go_router/go_router.dart';
+import '../../../fridge/presentation/screens/barcode_scanner_page.dart';
+import '../../../../shared/widgets/chatbot_popup.dart';
+import '../../../../shared/widgets/notifications_popup.dart';
 
-class HomePage extends BasePage {
-  const HomePage({super.key}) : super(currentNavIndex: 0);
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends BasePageState<HomePage> {
+class _HomePageState extends State<HomePage> {
   String _getTodayDate() {
     final now = DateTime.now();
     final days = [
@@ -38,669 +45,740 @@ class _HomePageState extends BasePageState<HomePage> {
   }
 
   @override
-  Widget buildPageContent(BuildContext context) {
-    return SafeArea(
-      child: Column(
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.lightBackground,
+      body: Stack(
         children: [
-          // Header
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+          SafeArea(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Top Bar
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Row(
-                          children: [
-                            Text(
-                              '👋 Bonjour ',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF111827),
-                              ),
-                            ),
-                            Text(
-                              'Ezedine',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xFFFF6B35),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          _getTodayDate(),
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xFF6B7280),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.04),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: const Icon(
-                            Icons.notifications_outlined,
-                            size: 20,
-                            color: Color(0xFF111827),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        GestureDetector(
-                          onTap: () {
-                            // Ouvrir le chatbot
-                          },
-                          child: Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF10A37F), Color(0xFF1A7F64)],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(8),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color(
-                                    0xFF10A37F,
-                                  ).withOpacity(0.3),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: const Icon(
-                              Icons.chat_bubble_outline,
-                              size: 20,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-
-                // Smart info pill
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
+                // Header iOS 18 Style - Plus généreux
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppleTheme.spacing24, // iOS 18: 24pt
+                    AppleTheme.spacing20, // iOS 18: 20pt
+                    AppleTheme.spacing24,
+                    AppleTheme.spacing20,
                   ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFF4ED),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: const Color(0xFFFF6B35).withOpacity(0.2),
-                      width: 1,
-                    ),
-                  ),
-                  child: const Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(
-                        Icons.local_fire_department,
-                        color: Color(0xFFFF6B35),
-                        size: 18,
-                      ),
-                      SizedBox(width: 8),
-                      Text(
-                        'Il te reste 650 kcal aujourd\'hui',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFFFF6B35),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Scrollable Content
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 20),
-
-                  // 2. Résumé nutrition (Card principale)
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFFFF6B35), Color(0xFFF77F00)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFFFF6B35).withOpacity(0.3),
-                          blurRadius: 20,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Nutrition du jour',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
-                            Icon(
-                              Icons.local_fire_department,
-                              color: Colors.white,
-                              size: 24,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        const Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              '1450',
-                              style: TextStyle(
-                                fontSize: 36,
-                                fontWeight: FontWeight.w800,
-                                color: Colors.white,
-                                height: 1,
-                              ),
-                            ),
-                            Text(
-                              ' / 2000 kcal',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.white70,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: LinearProgressIndicator(
-                            value: 0.725,
-                            backgroundColor: Colors.white.withOpacity(0.3),
-                            valueColor: const AlwaysStoppedAnimation(
-                              Colors.white,
-                            ),
-                            minHeight: 8,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            _buildMacroItem('🥩 Protéines', '80g', '120g'),
-                            Container(
-                              width: 1,
-                              height: 40,
-                              color: Colors.white.withOpacity(0.3),
-                            ),
-                            _buildMacroItem('🍞 Glucides', '150g', '200g'),
-                            Container(
-                              width: 1,
-                              height: 40,
-                              color: Colors.white.withOpacity(0.3),
-                            ),
-                            _buildMacroItem('🥑 Lipides', '60g', '80g'),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-
-                  // 3. Actions rapides
-                  const Text(
-                    'Actions rapides',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF111827),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildQuickAction(
-                          '📷',
-                          'Scanner',
-                          'aliment',
-                          const Color(0xFF10B981),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildQuickAction(
-                          '➕',
-                          'Ajouter',
-                          'repas',
-                          const Color(0xFF3B82F6),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildQuickAction(
-                          '🤖',
-                          'Chat IA',
-                          'conseils',
-                          const Color(0xFF8B5CF6),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildQuickAction(
-                          '🧊',
-                          'Mon frigo',
-                          'ingrédients',
-                          const Color(0xFFF59E0B),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 28),
-
-                  // 4. Recette recommandée IA
-                  Row(
-                    children: [
-                      const Expanded(
-                        child: Text(
-                          'Recette recommandée pour toi',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF111827),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF8B5CF6),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: const Text(
-                          '⭐ IA',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.06),
-                          blurRadius: 16,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          height: 160,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFFFFE4E4),
-                            borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(20),
-                            ),
-                          ),
-                          child: Stack(
-                            children: [
-                              Center(
-                                child: Icon(
-                                  Icons.restaurant,
-                                  size: 80,
-                                  color: Colors.white.withOpacity(0.7),
-                                ),
-                              ),
-                              Positioned(
-                                top: 12,
-                                right: 12,
-                                child: Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    shape: BoxShape.circle,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.1),
-                                        blurRadius: 8,
-                                      ),
-                                    ],
-                                  ),
-                                  child: const Icon(
-                                    Icons.favorite_border,
-                                    size: 20,
-                                    color: Color(0xFF111827),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
+                      // Top Bar iOS
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                '🍝 Poulet curry healthy',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w700,
-                                  color: Color(0xFF111827),
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              const Row(
+                              Row(
                                 children: [
-                                  Icon(
-                                    Icons.access_time,
-                                    size: 16,
-                                    color: Color(0xFF6B7280),
-                                  ),
-                                  SizedBox(width: 4),
                                   Text(
-                                    '20 min',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w500,
-                                      color: Color(0xFF6B7280),
+                                    '👋 Bonjour ',
+                                    style: AppleTheme.title2.copyWith(
+                                      color: AppleTheme.label,
+                                      fontWeight: FontWeight.w600, // iOS 18
                                     ),
                                   ),
-                                  SizedBox(width: 16),
-                                  Icon(
-                                    Icons.local_fire_department,
-                                    size: 16,
-                                    color: Color(0xFFFF6B35),
-                                  ),
-                                  SizedBox(width: 4),
                                   Text(
-                                    '480 kcal',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFFFF6B35),
+                                    'Ezedine',
+                                    style: AppleTheme.title2.copyWith(
+                                      color: AppColors.lightSecondary,
+                                      fontWeight:
+                                          FontWeight.w800, // iOS 18: Plus bold
                                     ),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 12),
-                              SizedBox(
-                                width: double.infinity,
-                                height: 44,
-                                child: ElevatedButton(
-                                  onPressed: () {},
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFFFF6B35),
-                                    foregroundColor: Colors.white,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
+                              const SizedBox(
+                                height: 6,
+                              ), // iOS 18: Plus d'espace
+                              Text(
+                                _getTodayDate(),
+                                style: AppleTheme.subhead.copyWith(
+                                  color: AppleTheme.secondaryLabel,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              CupertinoButton(
+                                padding: EdgeInsets.zero,
+                                onPressed: () =>
+                                    showNotificationsPopup(context),
+                                child: Stack(
+                                  clipBehavior: Clip.none,
+                                  children: [
+                                    Container(
+                                      width: 44,
+                                      height: 44,
+                                      decoration: BoxDecoration(
+                                        color: AppleTheme.backgroundLight,
+                                        borderRadius: BorderRadius.circular(
+                                          AppleTheme
+                                              .radiusLarge, // iOS 18: 14pt
+                                        ),
+                                        border: Border.all(
+                                          color: AppleTheme.separator
+                                              .withOpacity(
+                                                0.2,
+                                              ), // iOS 18: Plus subtil
+                                          width: 0.5,
+                                        ),
+                                        boxShadow: AppleTheme
+                                            .cardShadow, // iOS 18: Shadow
+                                      ),
+                                      child: const Icon(
+                                        CupertinoIcons.bell,
+                                        size: 20,
+                                        color: AppleTheme.label,
+                                      ),
                                     ),
-                                    elevation: 0,
+                                    Positioned(
+                                      right: 2,
+                                      top: 2,
+                                      child: Container(
+                                        width: 8,
+                                        height: 8,
+                                        decoration: BoxDecoration(
+                                          color: Colors.red,
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: AppColors.lightBackground,
+                                            width: 1.5,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: AppleTheme.spacing8),
+                              CupertinoButton(
+                                padding: EdgeInsets.zero,
+                                onPressed: () => showChatbotPopup(context),
+                                child: Container(
+                                  width: 44,
+                                  height: 44,
+                                  decoration: BoxDecoration(
+                                    gradient: AppColors.lightAIGradient,
+                                    borderRadius: BorderRadius.circular(
+                                      AppleTheme.radiusLarge, // iOS 18: 14pt
+                                    ),
+                                    boxShadow: AppleTheme
+                                        .floatingShadow, // iOS 18: Shadow
                                   ),
-                                  child: const Text(
-                                    'Cuisiner',
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                                  child: const Icon(
+                                    CupertinoIcons.chat_bubble_text,
+                                    size: 20,
+                                    color: Colors.white,
                                   ),
                                 ),
                               ),
                             ],
                           ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: AppleTheme.spacing20,
+                      ), // iOS 18: 20pt
+                      // Smart info pill iOS 18
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppleTheme.spacing20, // iOS 18: 20pt
+                          vertical: AppleTheme.spacing16, // iOS 18: 16pt
                         ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 28),
-
-                  // 5. Basé sur ton frigo
-                  const Text(
-                    'À cuisiner avec tes ingrédients',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF111827),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    height: 200,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: [
-                        _buildRecipeCard('Salade César', '15 min', '320 kcal'),
-                        const SizedBox(width: 12),
-                        _buildRecipeCard(
-                          'Omelette légumes',
-                          '10 min',
-                          '280 kcal',
+                        decoration: BoxDecoration(
+                          color: AppColors.lightSecondary.withOpacity(0.12),
+                          borderRadius: BorderRadius.circular(
+                            AppleTheme.radiusLarge, // iOS 18: 14pt
+                          ),
+                          border: Border.all(
+                            color: AppColors.lightSecondary.withOpacity(
+                              0.2,
+                            ), // iOS 18: Plus subtil
+                            width: 0.5,
+                          ),
                         ),
-                        const SizedBox(width: 12),
-                        _buildRecipeCard(
-                          'Pâtes carbonara',
-                          '25 min',
-                          '550 kcal',
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 28),
-
-                  // 6. Suivi rapide du jour
-                  const Text(
-                    'Suivi du jour',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF111827),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.04),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        child: Row(
                           children: [
-                            _buildStatItem('🍽️', 'Repas', '3/3'),
-                            Container(
-                              width: 1,
-                              height: 40,
-                              color: const Color(0xFFE5E7EB),
+                            const Icon(
+                              CupertinoIcons.flame,
+                              color: AppColors.lightSecondary,
+                              size: 18,
                             ),
-                            _buildStatItem('💧', 'Eau', '1.5L'),
-                            Container(
-                              width: 1,
-                              height: 40,
-                              color: const Color(0xFFE5E7EB),
+                            const SizedBox(width: AppleTheme.spacing8),
+                            Expanded(
+                              child: Text(
+                                'Il te reste 650 kcal aujourd\'hui',
+                                style: AppleTheme.calloutEmphasized.copyWith(
+                                  // iOS 18: CalloutEmphasized
+                                  color: AppColors.lightSecondary,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
-                            _buildStatItem('⭐', 'Score', '8.5/10'),
                           ],
                         ),
-                        const SizedBox(height: 16),
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFFFF4ED),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.local_fire_department,
-                                color: Color(0xFFFF6B35),
-                                size: 20,
-                              ),
-                              SizedBox(width: 8),
-                              Flexible(
-                                child: Text(
-                                  '🔥 5 jours healthy d\'affilée',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: Color(0xFFFF6B35),
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 28),
-
-                  // 7. Chatbot teaser
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF8B5CF6), Color(0xFF7C3AED)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
                       ),
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF8B5CF6).withOpacity(0.3),
-                          blurRadius: 16,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Row(
+                    ],
+                  ),
+                ),
+
+                // Scrollable Content
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppleTheme.spacing24,
+                    ), // iOS 18: 24pt
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Expanded(
+                        const SizedBox(
+                          height: AppleTheme.spacing8,
+                        ), // iOS 18: Réduit
+                        // Résumé nutrition iOS 18 Style - Plus arrondi
+                        Container(
+                          padding: const EdgeInsets.all(
+                            AppleTheme.spacing24,
+                          ), // iOS 18: 24pt
+                          decoration: BoxDecoration(
+                            gradient: AppColors.lightFreshGradient,
+                            borderRadius: BorderRadius.circular(
+                              AppleTheme
+                                  .radiusXLarge, // iOS 18: 16pt pour cards prominentes
+                            ),
+                            boxShadow: AppleTheme
+                                .floatingShadow, // iOS 18: Shadow plus prononcée
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('🤖', style: TextStyle(fontSize: 32)),
-                              SizedBox(height: 8),
-                              Text(
-                                'Besoin d\'idées ?',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.white,
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Nutrition du jour',
+                                    style: AppleTheme.headline.copyWith(
+                                      color: Colors.white,
+                                      fontWeight:
+                                          FontWeight.w700, // iOS 18: Bold
+                                    ),
+                                  ),
+                                  const Icon(
+                                    CupertinoIcons.flame_fill,
+                                    color: Colors.white,
+                                    size: 26, // iOS 18: Icônes plus grandes
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: AppleTheme.spacing20,
+                              ), // iOS 18
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    '1450',
+                                    style: AppleTheme.largeTitle.copyWith(
+                                      fontSize: 44, // iOS 18: Encore plus grand
+                                      fontWeight: FontWeight.w800,
+                                      color: Colors.white,
+                                      height: 1,
+                                    ),
+                                  ),
+                                  Text(
+                                    ' / 2000 kcal',
+                                    style: AppleTheme.bodyEmphasized.copyWith(
+                                      // iOS 18
+                                      color: Colors.white.withOpacity(
+                                        0.8,
+                                      ), // iOS 18: Meilleur contraste
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: AppleTheme.spacing16,
+                              ), // iOS 18: 16pt
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(
+                                  AppleTheme.radiusSmall, // iOS 18: 10pt
+                                ),
+                                child: LinearProgressIndicator(
+                                  value: 0.725,
+                                  backgroundColor: Colors.white.withOpacity(
+                                    0.2,
+                                  ), // iOS 18: Plus subtil
+                                  valueColor: const AlwaysStoppedAnimation(
+                                    Colors.white,
+                                  ),
+                                  minHeight: 8, // iOS 18: Plus épais
                                 ),
                               ),
-                              SizedBox(height: 4),
-                              Text(
-                                'Demande-moi une recette',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white70,
+                              const SizedBox(height: AppleTheme.spacing20),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: _buildMacroItem(
+                                      '🥩 Protéines',
+                                      '80g',
+                                      '120g',
+                                    ),
+                                  ),
+                                  Container(
+                                    width: 0.5,
+                                    height: 40,
+                                    color: Colors.white.withOpacity(0.3),
+                                  ),
+                                  Expanded(
+                                    child: _buildMacroItem(
+                                      '🍞 Glucides',
+                                      '150g',
+                                      '200g',
+                                    ),
+                                  ),
+                                  Container(
+                                    width: 0.5,
+                                    height: 40,
+                                    color: Colors.white.withOpacity(0.3),
+                                  ),
+                                  Expanded(
+                                    child: _buildMacroItem(
+                                      '🥑 Lipides',
+                                      '60g',
+                                      '80g',
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: AppleTheme.spacing28,
+                        ), // iOS 18: 28pt entre sections
+                        // Actions rapides iOS 18 Style
+                        Text(
+                          'Actions rapides',
+                          style: AppleTheme.title3.copyWith(
+                            color: AppleTheme.label,
+                            fontWeight: FontWeight.w800, // iOS 18: Plus bold
+                          ),
+                        ),
+                        const SizedBox(
+                          height: AppleTheme.spacing20,
+                        ), // iOS 18: 20pt
+                        Row(
+                          children: [
+                            Expanded(
+                              child: AppleQuickActionCard(
+                                emoji: '📷',
+                                title: 'Scanner',
+                                subtitle: 'aliment',
+                                accentColor: AppColors.lightPrimary,
+                                onTap: () async {
+                                  final result = await Navigator.of(context)
+                                      .push(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const BarcodeScannerPage(),
+                                        ),
+                                      );
+                                  if (result != null) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          'Produit scanné: $result',
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: AppleTheme.spacing12),
+                            Expanded(
+                              child: AppleQuickActionCard(
+                                emoji: '➕',
+                                title: 'Ajouter',
+                                subtitle: 'repas',
+                                accentColor: AppleTheme.systemBlue,
+                                onTap: () => context.go('/recettes'),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: AppleTheme.spacing12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: AppleQuickActionCard(
+                                emoji: '🤖',
+                                title: 'Chat IA',
+                                subtitle: 'conseils',
+                                accentColor: AppleTheme.systemPurple,
+                              ),
+                            ),
+                            const SizedBox(width: AppleTheme.spacing12),
+                            Expanded(
+                              child: AppleQuickActionCard(
+                                emoji: '🧊',
+                                title: 'Mon frigo',
+                                subtitle: 'ingrédients',
+                                accentColor: AppleTheme.systemOrange,
+                                onTap: () => context.go('/frigo'),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: AppleTheme.spacing24),
+
+                        // Recette recommandée IA iOS Style
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Recette recommandée pour toi',
+                                style: AppleTheme.title3.copyWith(
+                                  color: AppleTheme.label,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            const SizedBox(width: AppleTheme.spacing8),
+                            AppleBadge(
+                              text: '⭐ IA',
+                              backgroundColor: AppleTheme.systemPurple,
+                              textColor: Colors.white,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: AppleTheme.spacing16),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: AppleTheme.backgroundLight,
+                            borderRadius: BorderRadius.circular(
+                              AppleTheme.radiusCard,
+                            ),
+                            border: Border.all(
+                              color: AppleTheme.separator.withOpacity(0.3),
+                              width: 0.5,
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                height: 160,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      AppColors.lightSecondary.withOpacity(0.3),
+                                      AppColors.lightSecondary.withOpacity(0.1),
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  borderRadius: const BorderRadius.vertical(
+                                    top: Radius.circular(AppleTheme.radiusCard),
+                                  ),
+                                ),
+                                child: Stack(
+                                  children: [
+                                    Center(
+                                      child: Icon(
+                                        CupertinoIcons
+                                            .square_fill_on_square_fill,
+                                        size: 80,
+                                        color: Colors.white.withOpacity(0.5),
+                                      ),
+                                    ),
+                                    Positioned(
+                                      top: AppleTheme.spacing12,
+                                      right: AppleTheme.spacing12,
+                                      child: CupertinoButton(
+                                        padding: EdgeInsets.zero,
+                                        onPressed: () {},
+                                        child: Container(
+                                          width: 36,
+                                          height: 36,
+                                          decoration: BoxDecoration(
+                                            color: AppleTheme.backgroundLight,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(
+                                            CupertinoIcons.heart,
+                                            size: 18,
+                                            color: AppleTheme.label,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(
+                                  AppleTheme.spacing16,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '🍝 Poulet curry healthy',
+                                      style: AppleTheme.headline.copyWith(
+                                        color: AppleTheme.label,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    const SizedBox(height: AppleTheme.spacing8),
+                                    Row(
+                                      children: [
+                                        const Icon(
+                                          CupertinoIcons.clock,
+                                          size: 16,
+                                          color: AppleTheme.secondaryLabel,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          '20 min',
+                                          style: AppleTheme.subhead.copyWith(
+                                            color: AppleTheme.secondaryLabel,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          width: AppleTheme.spacing16,
+                                        ),
+                                        const Icon(
+                                          CupertinoIcons.flame_fill,
+                                          size: 16,
+                                          color: AppColors.lightSecondary,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          '480 kcal',
+                                          style: AppleTheme.subhead.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                            color: AppColors.lightSecondary,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: AppleTheme.spacing12,
+                                    ),
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: AppleButton(
+                                        text: 'Cuisiner',
+                                        backgroundColor:
+                                            AppColors.lightSecondary,
+                                        onPressed: () {},
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        const SizedBox(width: 12),
-                        ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: const Color(0xFF8B5CF6),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 12,
-                            ),
-                            elevation: 0,
-                          ),
-                          child: const Text(
-                            'Ouvrir chat',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
+                        const SizedBox(height: AppleTheme.spacing24),
+
+                        // À cuisiner avec tes ingrédients iOS Style
+                        Text(
+                          'À cuisiner avec tes ingrédients',
+                          style: AppleTheme.title3.copyWith(
+                            color: AppleTheme.label,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
+                        const SizedBox(height: AppleTheme.spacing16),
+                        SizedBox(
+                          height: 200,
+                          child: ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: [
+                              _buildRecipeCard(
+                                'Salade César',
+                                '15 min',
+                                '320 kcal',
+                              ),
+                              const SizedBox(width: AppleTheme.spacing12),
+                              _buildRecipeCard(
+                                'Omelette légumes',
+                                '10 min',
+                                '280 kcal',
+                              ),
+                              const SizedBox(width: AppleTheme.spacing12),
+                              _buildRecipeCard(
+                                'Pâtes carbonara',
+                                '25 min',
+                                '550 kcal',
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: AppleTheme.spacing24),
+
+                        // Suivi du jour iOS Style
+                        Text(
+                          'Suivi du jour',
+                          style: AppleTheme.title3.copyWith(
+                            color: AppleTheme.label,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: AppleTheme.spacing16),
+                        AppleCard(
+                          padding: const EdgeInsets.all(AppleTheme.spacing16),
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  _buildStatItem('🍽️', 'Repas', '3/3'),
+                                  Container(
+                                    width: 0.5,
+                                    height: 40,
+                                    color: AppleTheme.separator,
+                                  ),
+                                  _buildStatItem('💧', 'Eau', '1.5L'),
+                                  Container(
+                                    width: 0.5,
+                                    height: 40,
+                                    color: AppleTheme.separator,
+                                  ),
+                                  _buildStatItem('⭐', 'Score', '8.5/10'),
+                                ],
+                              ),
+                              const SizedBox(height: AppleTheme.spacing16),
+                              Container(
+                                padding: const EdgeInsets.all(
+                                  AppleTheme.spacing12,
+                                ),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      AppColors.lightSecondary.withOpacity(
+                                        0.15,
+                                      ),
+                                      AppColors.lightSecondary.withOpacity(
+                                        0.05,
+                                      ),
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(
+                                    AppleTheme.radiusLarge,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      CupertinoIcons.flame_fill,
+                                      color: AppColors.lightSecondary,
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: AppleTheme.spacing8),
+                                    Flexible(
+                                      child: Text(
+                                        '🔥 5 jours healthy d\'affilée',
+                                        style: AppleTheme.callout.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.lightSecondary,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: AppleTheme.spacing24),
+
+                        // Chatbot teaser iOS Style
+                        Container(
+                          padding: const EdgeInsets.all(AppleTheme.spacing20),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                AppleTheme.systemPurple,
+                                AppleTheme.systemPurple.withOpacity(0.8),
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(
+                              AppleTheme.radiusCard,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      '🤖',
+                                      style: TextStyle(fontSize: 32),
+                                    ),
+                                    const SizedBox(height: AppleTheme.spacing8),
+                                    Text(
+                                      'Besoin d\'idées ?',
+                                      style: AppleTheme.headline.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Demande-moi une recette',
+                                      style: AppleTheme.subhead.copyWith(
+                                        color: Colors.white.withOpacity(0.8),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: AppleTheme.spacing12),
+                              CupertinoButton(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: AppleTheme.spacing20,
+                                  vertical: AppleTheme.spacing12,
+                                ),
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(
+                                  AppleTheme.radiusButton,
+                                ),
+                                onPressed: () {},
+                                child: Text(
+                                  'Ouvrir chat',
+                                  style: AppleTheme.callout.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: AppleTheme.systemPurple,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 100),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 100),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
@@ -713,86 +791,34 @@ class _HomePageState extends BasePageState<HomePage> {
       children: [
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: Colors.white70,
+          style: AppleTheme.caption1.copyWith(
+            color: Colors.white.withOpacity(0.75),
           ),
+          textAlign: TextAlign.center,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
         const SizedBox(height: 4),
         Text(
           value,
-          style: const TextStyle(
-            fontSize: 18,
+          style: AppleTheme.headline.copyWith(
             fontWeight: FontWeight.w700,
             color: Colors.white,
           ),
+          textAlign: TextAlign.center,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
         Text(
           'sur $total',
-          style: const TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w500,
-            color: Colors.white60,
+          style: AppleTheme.caption2.copyWith(
+            color: Colors.white.withOpacity(0.6),
           ),
+          textAlign: TextAlign.center,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
       ],
-    );
-  }
-
-  Widget _buildQuickAction(
-    String emoji,
-    String title,
-    String subtitle,
-    Color color,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.2), width: 2),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Center(
-              child: Text(emoji, style: const TextStyle(fontSize: 24)),
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF111827),
-            ),
-          ),
-          Text(
-            subtitle,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: Color(0xFF6B7280),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -800,58 +826,66 @@ class _HomePageState extends BasePageState<HomePage> {
     return Container(
       width: 160,
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        color: AppleTheme.backgroundLight,
+        borderRadius: BorderRadius.circular(AppleTheme.radiusCard),
+        border: Border.all(
+          color: AppleTheme.separator.withOpacity(0.3),
+          width: 0.5,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             height: 100,
-            decoration: const BoxDecoration(
-              color: Color(0xFFE0F2FE),
-              borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.lightPrimary.withOpacity(0.2),
+                  AppColors.lightPrimary.withOpacity(0.05),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(AppleTheme.radiusCard),
+              ),
             ),
-            child: const Center(
-              child: Icon(Icons.restaurant, size: 40, color: Color(0xFF3B82F6)),
+            child: Center(
+              child: Icon(
+                CupertinoIcons.square_fill_on_square_fill,
+                size: 40,
+                color: AppColors.lightPrimary.withOpacity(0.6),
+              ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(AppleTheme.spacing12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 14,
+                  style: AppleTheme.callout.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF111827),
+                    color: AppleTheme.label,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: AppleTheme.spacing8),
                 Row(
                   children: [
                     const Icon(
-                      Icons.access_time,
+                      CupertinoIcons.clock,
                       size: 12,
-                      color: Color(0xFF6B7280),
+                      color: AppleTheme.secondaryLabel,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       time,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        color: Color(0xFF6B7280),
+                      style: AppleTheme.caption1.copyWith(
+                        color: AppleTheme.secondaryLabel,
                       ),
                     ),
                   ],
@@ -860,17 +894,16 @@ class _HomePageState extends BasePageState<HomePage> {
                 Row(
                   children: [
                     const Icon(
-                      Icons.local_fire_department,
+                      CupertinoIcons.flame_fill,
                       size: 12,
-                      color: Color(0xFFFF6B35),
+                      color: AppColors.lightSecondary,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       calories,
-                      style: const TextStyle(
-                        fontSize: 11,
+                      style: AppleTheme.caption1.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFFFF6B35),
+                        color: AppColors.lightSecondary,
                       ),
                     ),
                   ],
@@ -890,19 +923,14 @@ class _HomePageState extends BasePageState<HomePage> {
         const SizedBox(height: 4),
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: Color(0xFF6B7280),
-          ),
+          style: AppleTheme.footnote.copyWith(color: AppleTheme.secondaryLabel),
         ),
         const SizedBox(height: 2),
         Text(
           value,
-          style: const TextStyle(
-            fontSize: 16,
+          style: AppleTheme.headline.copyWith(
             fontWeight: FontWeight.w700,
-            color: Color(0xFF111827),
+            color: AppleTheme.label,
           ),
         ),
       ],

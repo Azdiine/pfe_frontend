@@ -1,286 +1,278 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import '../../../../shared/widgets/base_page.dart';
+import 'package:flutter/cupertino.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/apple_theme.dart';
+import '../../../../shared/widgets/apple_widgets.dart';
 
-class SuiviPage extends BasePage {
-  const SuiviPage({super.key}) : super(currentNavIndex: 2);
+class SuiviPage extends StatefulWidget {
+  const SuiviPage({super.key});
 
   @override
   State<SuiviPage> createState() => _SuiviPageState();
 }
 
-class _SuiviPageState extends BasePageState<SuiviPage> {
-  String _selectedPeriod = 'Semaine';
+class _SuiviPageState extends State<SuiviPage> {
+  int _selectedPeriod = 1; // 0=Jour, 1=Semaine, 2=Mois, 3=Année
 
-  final List<String> _periods = ['Jour', 'Semaine', 'Mois', 'Année'];
-
-  @override
-  PreferredSizeWidget? buildAppBar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Colors.white,
-      elevation: 0,
-      title: const Text(
-        'Suivi',
-        style: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w700,
-          color: Color(0xFF111827),
-        ),
-      ),
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back, color: Color(0xFF111827)),
-        onPressed: () => context.pop(),
-      ),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.calendar_today, color: Color(0xFF111827)),
-          onPressed: () {},
-        ),
-      ],
-    );
-  }
+  final Map<int, Widget> _periods = const {
+    0: Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      child: Text('Jour'),
+    ),
+    1: Padding(
+      padding: EdgeInsets.symmetric(horizontal: 12),
+      child: Text('Semaine'),
+    ),
+    2: Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      child: Text('Mois'),
+    ),
+    3: Padding(
+      padding: EdgeInsets.symmetric(horizontal: 14),
+      child: Text('Année'),
+    ),
+  };
 
   @override
-  Widget buildPageContent(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Period selector
-          Container(
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8),
-              ],
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppleTheme.secondaryBackgroundLight,
+      body: CustomScrollView(
+        slivers: [
+          // iOS 18 Navigation Bar
+          CupertinoSliverNavigationBar(
+            backgroundColor: AppleTheme.backgroundLight.withOpacity(
+              0.92,
+            ), // iOS 18
+            border: Border(
+              bottom: BorderSide(
+                color: AppleTheme.separator.withOpacity(0.2), // iOS 18
+                width: 0.33, // iOS 18
+              ),
             ),
-            child: Row(
-              children: _periods.map((period) {
-                final isSelected = period == _selectedPeriod;
-                return Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedPeriod = period;
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? const Color(0xFFFF6B35)
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(10),
+            largeTitle: Text(
+              'Suivi',
+              style: AppleTheme.largeTitleEmphasized.copyWith(
+                // iOS 18
+                color: AppleTheme.label,
+              ),
+            ),
+            trailing: CupertinoButton(
+              padding: EdgeInsets.zero,
+              minSize: 0,
+              onPressed: () {},
+              child: const Icon(
+                CupertinoIcons.calendar,
+                color: AppColors.lightPrimary,
+                size: 22,
+              ),
+            ),
+          ),
+
+          // Period selector iOS 18
+          SliverToBoxAdapter(
+            child: Container(
+              color: AppleTheme.backgroundLight,
+              padding: const EdgeInsets.fromLTRB(
+                AppleTheme.spacing20, // iOS 18: 20pt
+                AppleTheme.spacing12,
+                AppleTheme.spacing20,
+                AppleTheme.spacing20, // iOS 18: 20pt
+              ),
+              child: CupertinoSlidingSegmentedControl<int>(
+                groupValue: _selectedPeriod,
+                children: _periods,
+                onValueChanged: (value) {
+                  setState(() {
+                    _selectedPeriod = value ?? 1;
+                  });
+                },
+                backgroundColor: AppleTheme.secondaryBackgroundLight,
+                thumbColor: AppleTheme.backgroundLight,
+                padding: const EdgeInsets.all(4),
+              ),
+            ),
+          ),
+
+          // Content iOS 18
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(
+                AppleTheme.spacing24,
+              ), // iOS 18: 24pt
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Calories card iOS 18
+                  Container(
+                    padding: const EdgeInsets.all(
+                      AppleTheme.spacing24,
+                    ), // iOS 18: 24pt
+                    decoration: BoxDecoration(
+                      gradient: AppColors.lightFreshGradient,
+                      borderRadius: BorderRadius.circular(
+                        AppleTheme.radiusCard,
                       ),
-                      child: Text(
-                        period,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: isSelected
-                              ? Colors.white
-                              : const Color(0xFF6B7280),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Calories cette semaine',
+                              style: AppleTheme.callout.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const Icon(
+                              CupertinoIcons.flame_fill,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: AppleTheme.spacing16),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              '10,250',
+                              style: AppleTheme.largeTitle.copyWith(
+                                fontSize: 40,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.white,
+                                height: 1,
+                              ),
+                            ),
+                            Text(
+                              ' kcal',
+                              style: AppleTheme.body.copyWith(
+                                color: Colors.white.withOpacity(0.75),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: AppleTheme.spacing8),
+                        Text(
+                          'Objectif: 14,000 kcal',
+                          style: AppleTheme.subhead.copyWith(
+                            color: Colors.white.withOpacity(0.8),
+                          ),
+                        ),
+                        const SizedBox(height: AppleTheme.spacing16),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(
+                            AppleTheme.radiusSmall,
+                          ),
+                          child: LinearProgressIndicator(
+                            value: 0.73,
+                            backgroundColor: Colors.white.withOpacity(0.25),
+                            valueColor: const AlwaysStoppedAnimation(
+                              Colors.white,
+                            ),
+                            minHeight: 6,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: AppleTheme.spacing24),
+
+                  // Stats grid iOS
+                  Text(
+                    'Statistiques',
+                    style: AppleTheme.title3.copyWith(
+                      color: AppleTheme.label,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: AppleTheme.spacing16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildStatCard(
+                          '💧',
+                          'Eau',
+                          '10.5 L',
+                          'cette semaine',
+                          AppleTheme.systemBlue,
                         ),
                       ),
+                      const SizedBox(width: AppleTheme.spacing12),
+                      Expanded(
+                        child: _buildStatCard(
+                          '🏃',
+                          'Activité',
+                          '3.2 h',
+                          'cette semaine',
+                          AppColors.lightPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppleTheme.spacing12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildStatCard(
+                          '⚖️',
+                          'Poids',
+                          '72.5 kg',
+                          '-1.5 kg',
+                          AppleTheme.systemPurple,
+                        ),
+                      ),
+                      const SizedBox(width: AppleTheme.spacing12),
+                      Expanded(
+                        child: _buildStatCard(
+                          '⭐',
+                          'Score moyen',
+                          '8.7/10',
+                          'très bien',
+                          AppleTheme.systemOrange,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppleTheme.spacing24),
+
+                  // Weekly summary iOS
+                  Text(
+                    'Résumé hebdomadaire',
+                    style: AppleTheme.title3.copyWith(
+                      color: AppleTheme.label,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                );
-              }).toList(),
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          // Calories card
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFFFF6B35), Color(0xFFF77F00)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFFFF6B35).withOpacity(0.3),
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Calories cette semaine',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
+                  const SizedBox(height: AppleTheme.spacing16),
+                  AppleCard(
+                    padding: const EdgeInsets.all(AppleTheme.spacing16),
+                    child: Column(
+                      children: [
+                        _buildDayRow('Lun', 1850, 2000, 0.92),
+                        const SizedBox(height: AppleTheme.spacing12),
+                        _buildDayRow('Mar', 1920, 2000, 0.96),
+                        const SizedBox(height: AppleTheme.spacing12),
+                        _buildDayRow('Mer', 1780, 2000, 0.89),
+                        const SizedBox(height: AppleTheme.spacing12),
+                        _buildDayRow('Jeu', 2050, 2000, 1.0),
+                        const SizedBox(height: AppleTheme.spacing12),
+                        _buildDayRow('Ven', 1900, 2000, 0.95),
+                        const SizedBox(height: AppleTheme.spacing12),
+                        _buildDayRow('Sam', 1950, 2000, 0.97),
+                        const SizedBox(height: AppleTheme.spacing12),
+                        _buildDayRow('Dim', 1800, 2000, 0.90),
+                      ],
                     ),
-                    Icon(
-                      Icons.local_fire_department,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                const Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      '10,250',
-                      style: TextStyle(
-                        fontSize: 36,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
-                        height: 1,
-                      ),
-                    ),
-                    Text(
-                      ' kcal',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white70,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Objectif: 14,000 kcal',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white.withOpacity(0.8),
                   ),
-                ),
-                const SizedBox(height: 16),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: LinearProgressIndicator(
-                    value: 0.73,
-                    backgroundColor: Colors.white.withOpacity(0.3),
-                    valueColor: const AlwaysStoppedAnimation(Colors.white),
-                    minHeight: 8,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          // Stats grid
-          const Text(
-            'Statistiques',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF111827),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: _buildStatCard(
-                  '💧',
-                  'Eau',
-                  '10.5 L',
-                  'cette semaine',
-                  const Color(0xFF3B82F6),
-                ),
+                  const SizedBox(height: 100),
+                ],
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildStatCard(
-                  '🏃',
-                  'Activité',
-                  '3.2 h',
-                  'cette semaine',
-                  const Color(0xFF10B981),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: _buildStatCard(
-                  '⚖️',
-                  'Poids',
-                  '72.5 kg',
-                  '-1.5 kg',
-                  const Color(0xFF8B5CF6),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildStatCard(
-                  '⭐',
-                  'Score moyen',
-                  '8.7/10',
-                  'très bien',
-                  const Color(0xFFF59E0B),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-
-          // Weekly summary
-          const Text(
-            'Résumé hebdomadaire',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF111827),
             ),
           ),
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                _buildDayRow('Lun', 1850, 2000, 0.92),
-                const SizedBox(height: 12),
-                _buildDayRow('Mar', 1920, 2000, 0.96),
-                const SizedBox(height: 12),
-                _buildDayRow('Mer', 1780, 2000, 0.89),
-                const SizedBox(height: 12),
-                _buildDayRow('Jeu', 2050, 2000, 1.0),
-                const SizedBox(height: 12),
-                _buildDayRow('Ven', 1900, 2000, 0.95),
-                const SizedBox(height: 12),
-                _buildDayRow('Sam', 1950, 2000, 0.97),
-                const SizedBox(height: 12),
-                _buildDayRow('Dim', 1800, 2000, 0.90),
-              ],
-            ),
-          ),
-          const SizedBox(height: 100),
         ],
       ),
     );
@@ -294,49 +286,44 @@ class _SuiviPageState extends BasePageState<SuiviPage> {
     Color color,
   ) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppleTheme.spacing16),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.2), width: 2),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        color: AppleTheme.backgroundLight,
+        borderRadius: BorderRadius.circular(AppleTheme.radiusCard),
+        border: Border.all(color: color.withOpacity(0.2), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(emoji, style: const TextStyle(fontSize: 32)),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppleTheme.spacing12),
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF6B7280),
+            style: AppleTheme.subhead.copyWith(
+              color: AppleTheme.secondaryLabel,
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 4),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 20,
+            style: AppleTheme.title2.copyWith(
               fontWeight: FontWeight.w800,
-              color: Color(0xFF111827),
+              color: AppleTheme.label,
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 4),
           Text(
             subtitle,
-            style: TextStyle(
-              fontSize: 11,
+            style: AppleTheme.caption1.copyWith(
               fontWeight: FontWeight.w500,
               color: color,
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
@@ -350,10 +337,9 @@ class _SuiviPageState extends BasePageState<SuiviPage> {
           width: 40,
           child: Text(
             day,
-            style: const TextStyle(
-              fontSize: 13,
+            style: AppleTheme.subhead.copyWith(
               fontWeight: FontWeight.w600,
-              color: Color(0xFF6B7280),
+              color: AppleTheme.secondaryLabel,
             ),
           ),
         ),
@@ -364,36 +350,37 @@ class _SuiviPageState extends BasePageState<SuiviPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    '$consumed kcal',
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF111827),
+                  Expanded(
+                    child: Text(
+                      '$consumed kcal',
+                      style: AppleTheme.subhead.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppleTheme.label,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   Text(
                     '$target kcal',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFF9CA3AF),
+                    style: AppleTheme.footnote.copyWith(
+                      color: AppleTheme.tertiaryLabel,
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 4),
               ClipRRect(
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(AppleTheme.radiusSmall),
                 child: LinearProgressIndicator(
                   value: progress > 1 ? 1 : progress,
-                  backgroundColor: const Color(0xFFE5E7EB),
+                  backgroundColor: AppleTheme.secondaryBackgroundLight,
                   valueColor: AlwaysStoppedAnimation(
                     progress > 1
-                        ? const Color(0xFFEF4444)
-                        : const Color(0xFFFF6B35),
+                        ? AppleTheme.systemRed
+                        : AppColors.lightSecondary,
                   ),
-                  minHeight: 6,
+                  minHeight: 4,
                 ),
               ),
             ],
