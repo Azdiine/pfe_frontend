@@ -47,5 +47,7 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Cette application nécessite l'accès à la caméra pour scanner les codes-barres des produits alimentaires.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Cette application nécessite l'accès à vos photos pour importer et scanner des codes-barres depuis la galerie.</string>
 </dict>
 </plist>

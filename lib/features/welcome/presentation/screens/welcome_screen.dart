@@ -1,442 +1,244 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../l10n/generated/app_localizations.dart';
+import '../../../../shared/widgets/language_switcher.dart';
+import '../../../../shared/widgets/theme_switcher.dart';
 
-class WelcomeScreen extends StatelessWidget {
+class WelcomeScreen extends ConsumerWidget {
   const WelcomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFFFF),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Welcome Text at Top
-              Column(
-                children: [
-                  const SizedBox(height: 60),
-                  Text(
-                    'Welcome to MEATAY',
-                    style: GoogleFonts.inter(
-                      fontSize: 32,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFF111111),
-                      letterSpacing: -0.5,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Premium nutrition delivered\nto your doorstep',
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: const Color(0xFF7A7A7A),
-                      height: 1.5,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-
-              // Logo in Center
-              Container(
-                width: 160,
-                height: 160,
-                child: ClipOval(
-                  child: Image.asset(
-                    'uploads/images/MEATAY LOGO.png',
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-
-              // CTA Buttons at Bottom
-              Column(
-                children: [
-                  _buildPrimaryButton(
-                    context: context,
-                    text: 'Get Started',
-                    onPressed: () => _showSignupOptions(context),
-                  ),
-                  const SizedBox(height: 16),
-                  _buildSecondaryButton(
-                    context: context,
-                    text: 'I already have an account',
-                    onPressed: () => _showLoginOptions(context),
-                  ),
-                  const SizedBox(height: 60),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPrimaryButton({
-    required BuildContext context,
-    required String text,
-    required VoidCallback onPressed,
-  }) {
-    return Container(
-      width: double.infinity,
-      height: 56,
-      decoration: BoxDecoration(
-        color: const Color(0xFF000000),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onPressed,
-          borderRadius: BorderRadius.circular(16),
-          child: Center(
-            child: Text(
-              text,
-              style: GoogleFonts.inter(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-                letterSpacing: -0.2,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSecondaryButton({
-    required BuildContext context,
-    required String text,
-    required VoidCallback onPressed,
-  }) {
-    return Container(
-      width: double.infinity,
-      height: 56,
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFEAEAEA), width: 1.5),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onPressed,
-          borderRadius: BorderRadius.circular(16),
-          child: Center(
-            child: Text(
-              text,
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: const Color(0xFF111111),
-                letterSpacing: -0.2,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showSignupOptions(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (context) => Container(
-        decoration: const BoxDecoration(
-          color: Color(0xFFFFFFFF),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(24),
-            topRight: Radius.circular(24),
-          ),
-        ),
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+        child: Stack(
           children: [
-            // Close button
-            Align(
-              alignment: Alignment.topRight,
-              child: IconButton(
-                icon: const Icon(Icons.close, color: Color(0xFF7A7A7A)),
-                onPressed: () => Navigator.pop(context),
+            // Main content
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Welcome Text at Top
+                  Column(
+                    children: [
+                      const SizedBox(height: 60),
+                      Text(
+                        l10n.welcomeTitle,
+                        style: GoogleFonts.inter(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w700,
+                          color: Theme.of(
+                            context,
+                          ).textTheme.displayLarge?.color,
+                          letterSpacing: -0.5,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        l10n.welcomeSubtitle,
+                        style: GoogleFonts.inter(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                          color: Theme.of(context).textTheme.bodySmall?.color,
+                          height: 1.5,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+
+                  // Logo in Center
+                  SizedBox(
+                    width: 160,
+                    height: 160,
+                    child: ClipOval(
+                      child: Image.asset(
+                        'uploads/images/MEATAY LOGO.png',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+
+                  // CTA Buttons at Bottom
+                  Column(
+                    children: [
+                      _PrimaryButton(
+                        text: l10n.getStarted,
+                        onPressed: () => _showSignupOptions(context, l10n),
+                      ),
+                      const SizedBox(height: 16),
+                      _SecondaryButton(
+                        text: l10n.alreadyHaveAccount,
+                        onPressed: () => _showLoginOptions(context, l10n),
+                      ),
+                      const SizedBox(height: 60),
+                    ],
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 8),
 
-            // Title
-            Text(
-              'Commencez Maintenant',
-              style: GoogleFonts.inter(
-                fontSize: 28,
-                fontWeight: FontWeight.w700,
-                color: const Color(0xFF111111),
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            // Subtitle
-            Text(
-              'Créez votre compte en quelques secondes',
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                color: const Color(0xFF7A7A7A),
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 40),
-
-            // Google and Apple icons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildSocialIconButton(
-                  context: context,
-                  icon: FontAwesomeIcons.google,
-                  onPressed: () {
-                    Navigator.pop(context);
-                    context.push('/onboarding');
-                  },
+            // Theme Switcher - Top Left
+            Positioned(
+              top: 16,
+              left: 16,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: isDark
+                        ? const Color(0xFF2A2A2A)
+                        : const Color(0xFFE0E0E0),
+                    width: 1.5,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 20),
-                _buildSocialIconButton(
-                  context: context,
-                  icon: FontAwesomeIcons.apple,
-                  onPressed: () {
-                    Navigator.pop(context);
-                    context.push('/onboarding');
-                  },
+                child: const ThemeSwitcher(
+                  style: ThemeSwitcherStyle.iconButton,
                 ),
-              ],
-            ),
-            const SizedBox(height: 32),
-
-            // Email button
-            _buildLoginOptionButton(
-              context: context,
-              icon: Icons.email_outlined,
-              text: 'Continuer avec Email',
-              onPressed: () {
-                Navigator.pop(context);
-                context.push('/register');
-              },
-            ),
-            const SizedBox(height: 24),
-
-            // Terms text
-            Text(
-              'En continuant, vous acceptez nos Conditions de Service\net Politique de Confidentialité',
-              style: GoogleFonts.inter(
-                fontSize: 11,
-                fontWeight: FontWeight.w400,
-                color: const Color(0xFF7A7A7A),
-                height: 1.5,
               ),
-              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 20),
+
+            // Language Switcher - Top Right
+            Positioned(
+              top: 16,
+              right: 16,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: isDark
+                        ? const Color(0xFF2A2A2A)
+                        : const Color(0xFFE0E0E0),
+                    width: 1.5,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: const LanguageSwitcher(
+                  style: LanguageSwitcherStyle.iconButton,
+                ),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  void _showLoginOptions(BuildContext context) {
+  void _showSignupOptions(BuildContext context, AppLocalizations l10n) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) => Container(
-        decoration: const BoxDecoration(
-          color: Color(0xFFFFFFFF),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(24),
-            topRight: Radius.circular(24),
-          ),
-        ),
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Close button
-            Align(
-              alignment: Alignment.topRight,
-              child: IconButton(
-                icon: const Icon(Icons.close, color: Color(0xFF7A7A7A)),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ),
-            const SizedBox(height: 8),
-
-            // Title
-            Text(
-              'Bon Retour',
-              style: GoogleFonts.inter(
-                fontSize: 28,
-                fontWeight: FontWeight.w700,
-                color: const Color(0xFF111111),
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            // Subtitle
-            Text(
-              'Connectez-vous pour continuer votre voyage',
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                color: const Color(0xFF7A7A7A),
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 40),
-
-            // Google and Apple icons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildSocialIconButton(
-                  context: context,
-                  icon: FontAwesomeIcons.google,
-                  onPressed: () {
-                    Navigator.pop(context);
-                    context.push('/onboarding');
-                  },
-                ),
-                const SizedBox(width: 20),
-                _buildSocialIconButton(
-                  context: context,
-                  icon: FontAwesomeIcons.apple,
-                  onPressed: () {
-                    Navigator.pop(context);
-                    context.push('/onboarding');
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
-
-            // Email button
-            _buildLoginOptionButton(
-              context: context,
-              icon: Icons.email_outlined,
-              text: 'Continuer avec Email',
-              onPressed: () {
-                Navigator.pop(context);
-                context.push('/login');
-              },
-            ),
-            const SizedBox(height: 24),
-
-            // Terms text
-            Text(
-              'En continuant, vous acceptez nos Conditions de Service\net Politique de Confidentialité',
-              style: GoogleFonts.inter(
-                fontSize: 11,
-                fontWeight: FontWeight.w400,
-                color: const Color(0xFF7A7A7A),
-                height: 1.5,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 20),
-          ],
-        ),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => _AuthOptionsSheet(
+        title: l10n.signUpNow,
+        subtitle: l10n.createAccountSeconds,
+        onEmailPressed: () {
+          Navigator.pop(context);
+          context.push('/register');
+        },
+        onGooglePressed: () {
+          Navigator.pop(context);
+          context.push('/onboarding');
+        },
+        onApplePressed: () {
+          Navigator.pop(context);
+          context.push('/onboarding');
+        },
+        termsText: l10n.termsAndPrivacy,
+        emailText: l10n.continueWithEmail,
       ),
     );
   }
 
-  Widget _buildSocialIconButton({
-    required BuildContext context,
-    required IconData icon,
-    required VoidCallback onPressed,
-  }) {
-    return Container(
-      width: 64,
-      height: 64,
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFFFFF),
-        shape: BoxShape.circle,
-        border: Border.all(color: const Color(0xFFEAEAEA), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
+  void _showLoginOptions(BuildContext context, AppLocalizations l10n) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onPressed,
-          borderRadius: BorderRadius.circular(32),
-          child: Center(
-            child: FaIcon(icon, color: const Color(0xFF111111), size: 28),
-          ),
-        ),
+      builder: (context) => _AuthOptionsSheet(
+        title: l10n.welcomeBack,
+        subtitle: l10n.signInToAccount,
+        onEmailPressed: () {
+          Navigator.pop(context);
+          context.push('/login');
+        },
+        onGooglePressed: () {
+          Navigator.pop(context);
+          context.push('/onboarding');
+        },
+        onApplePressed: () {
+          Navigator.pop(context);
+          context.push('/onboarding');
+        },
+        termsText: l10n.termsAndPrivacy,
+        emailText: l10n.continueWithEmail,
       ),
     );
   }
+}
 
-  Widget _buildLoginOptionButton({
-    required BuildContext context,
-    required IconData icon,
-    required String text,
-    required VoidCallback onPressed,
-  }) {
-    return Container(
+// Primary Button Widget
+class _PrimaryButton extends StatelessWidget {
+  final String text;
+  final VoidCallback onPressed;
+
+  const _PrimaryButton({required this.text, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return SizedBox(
       width: double.infinity,
       height: 56,
-      decoration: BoxDecoration(
-        color: const Color(0xFF000000),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: isDark ? Colors.white : const Color(0xFF000000),
+          foregroundColor: isDark ? Colors.black : Colors.white,
+          elevation: 0,
+          shadowColor: Colors.black.withOpacity(0.1),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
           ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onPressed,
-          borderRadius: BorderRadius.circular(16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: Colors.white, size: 24),
-              const SizedBox(width: 12),
-              Text(
-                text,
-                style: GoogleFonts.inter(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-              ),
-            ],
+        ),
+        child: Text(
+          text,
+          style: GoogleFonts.inter(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            letterSpacing: -0.2,
           ),
         ),
       ),
@@ -444,4 +246,230 @@ class WelcomeScreen extends StatelessWidget {
   }
 }
 
+// Secondary Button Widget
+class _SecondaryButton extends StatelessWidget {
+  final String text;
+  final VoidCallback onPressed;
 
+  const _SecondaryButton({required this.text, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return SizedBox(
+      width: double.infinity,
+      height: 56,
+      child: OutlinedButton(
+        onPressed: onPressed,
+        style: OutlinedButton.styleFrom(
+          foregroundColor: isDark
+              ? const Color(0xFFE5E5E5)
+              : const Color(0xFF111111),
+          side: BorderSide(
+            color: isDark ? const Color(0xFF2A2A2A) : const Color(0xFFEAEAEA),
+            width: 1.5,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+        child: Text(
+          text,
+          style: GoogleFonts.inter(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            letterSpacing: -0.2,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// Auth Options Bottom Sheet
+class _AuthOptionsSheet extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final VoidCallback onEmailPressed;
+  final VoidCallback onGooglePressed;
+  final VoidCallback onApplePressed;
+  final String termsText;
+  final String emailText;
+
+  const _AuthOptionsSheet({
+    required this.title,
+    required this.subtitle,
+    required this.onEmailPressed,
+    required this.onGooglePressed,
+    required this.onApplePressed,
+    required this.termsText,
+    required this.emailText,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      padding: const EdgeInsets.all(32),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Close button
+          Align(
+            alignment: Alignment.topRight,
+            child: IconButton(
+              icon: Icon(
+                Icons.close,
+                color: isDark
+                    ? const Color(0xFF9A9A9A)
+                    : const Color(0xFF7A7A7A),
+              ),
+              onPressed: () => Navigator.pop(context),
+              padding: EdgeInsets.zero,
+            ),
+          ),
+          const SizedBox(height: 8),
+
+          // Title
+          Text(
+            title,
+            style: GoogleFonts.inter(
+              fontSize: 28,
+              fontWeight: FontWeight.w700,
+              color: Theme.of(context).textTheme.displayLarge?.color,
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Subtitle
+          Text(
+            subtitle,
+            style: GoogleFonts.inter(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              color: Theme.of(context).textTheme.bodySmall?.color,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 40),
+
+          // Social Login Icons
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _SocialIconButton(
+                icon: FontAwesomeIcons.google,
+                onPressed: onGooglePressed,
+              ),
+              const SizedBox(width: 20),
+              _SocialIconButton(
+                icon: FontAwesomeIcons.apple,
+                onPressed: onApplePressed,
+              ),
+            ],
+          ),
+          const SizedBox(height: 32),
+
+          // Email Login Button
+          _EmailLoginButton(text: emailText, onPressed: onEmailPressed),
+          const SizedBox(height: 24),
+
+          // Terms and Privacy
+          Text(
+            termsText,
+            style: GoogleFonts.inter(
+              fontSize: 11,
+              fontWeight: FontWeight.w400,
+              color: Theme.of(context).textTheme.bodySmall?.color,
+              height: 1.5,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
+}
+
+// Social Icon Button Widget
+class _SocialIconButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  const _SocialIconButton({required this.icon, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Container(
+      width: 64,
+      height: 64,
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: isDark ? const Color(0xFF2A2A2A) : const Color(0xFFEAEAEA),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(isDark ? 0.3 : 0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: IconButton(
+        onPressed: onPressed,
+        icon: FaIcon(
+          icon,
+          color: Theme.of(context).textTheme.displayLarge?.color,
+          size: 28,
+        ),
+        padding: EdgeInsets.zero,
+      ),
+    );
+  }
+}
+
+class _EmailLoginButton extends StatelessWidget {
+  final String text;
+  final VoidCallback onPressed;
+
+  const _EmailLoginButton({required this.text, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return SizedBox(
+      width: double.infinity,
+      height: 56,
+      child: ElevatedButton.icon(
+        onPressed: onPressed,
+        icon: const Icon(Icons.email_outlined, size: 24),
+        label: Text(
+          text,
+          style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: isDark ? Colors.white : const Color(0xFF000000),
+          foregroundColor: isDark ? Colors.black : Colors.white,
+          elevation: 0,
+          shadowColor: Colors.black.withOpacity(0.1),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+      ),
+    );
+  }
+}

@@ -12,12 +12,17 @@ class SubscriptionCard extends StatelessWidget {
     this.onTap,
   });
 
-  Color _getStatusColor() {
-    return subscription.isActive ? Colors.green : Colors.grey;
+  Color _getStatusColor(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return subscription.isActive
+        ? (isDark ? const Color(0xFF22C55E) : Colors.green)
+        : (isDark ? const Color(0xFF737373) : Colors.grey);
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return CustomCard(
       onTap: onTap,
       child: Column(
@@ -42,13 +47,13 @@ class SubscriptionCard extends StatelessWidget {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: _getStatusColor().withOpacity(0.1),
+                  color: _getStatusColor(context).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   subscription.isActive ? 'Actif' : 'Inactif',
                   style: TextStyle(
-                    color: _getStatusColor(),
+                    color: _getStatusColor(context),
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
@@ -62,7 +67,7 @@ class SubscriptionCard extends StatelessWidget {
           Text(
             subscription.description,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey[600],
+                  color: Theme.of(context).textTheme.bodySmall?.color,
                 ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
@@ -82,7 +87,7 @@ class SubscriptionCard extends StatelessWidget {
               Text(
                 ' / ${subscription.period}',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey[600],
+                      color: Theme.of(context).textTheme.bodySmall?.color,
                     ),
               ),
             ],
@@ -96,13 +101,13 @@ class SubscriptionCard extends StatelessWidget {
                 Icon(
                   Icons.calendar_today,
                   size: 16,
-                  color: Colors.grey[600],
+                  color: Theme.of(context).textTheme.bodySmall?.color,
                 ),
                 const SizedBox(width: 4),
                 Text(
                   'Expire le: ${_formatDate(subscription.expiresAt!)}',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[600],
+                        color: Theme.of(context).textTheme.bodySmall?.color,
                       ),
                 ),
               ],
@@ -121,7 +126,9 @@ class SubscriptionCard extends StatelessWidget {
                     feature,
                     style: const TextStyle(fontSize: 11),
                   ),
-                  backgroundColor: Colors.grey[200],
+                  backgroundColor: isDark
+                      ? const Color(0xFF2A2A2A)
+                      : const Color(0xFFE5E5E5),
                   padding: EdgeInsets.zero,
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 );

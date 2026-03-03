@@ -11,21 +11,31 @@ class RegisterScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topRight,
             end: Alignment.bottomLeft,
-            colors: [
-              Color(0xFFFFE4CC),
-              Color(0xFFFFB88C),
-              Color(0xFFFF9A56),
-              Color(0xFFFF6B35),
-              Color(0xFFF77F00),
-              Color(0xFFDC6803),
-            ],
+            colors: isDark
+                ? [
+                    const Color(0xFF4D2A1A),
+                    const Color(0xFF6B3820),
+                    const Color(0xFF8B4726),
+                    const Color(0xFFB05A2E),
+                    const Color(0xFFD96F38),
+                    const Color(0xFFFF8544),
+                  ]
+                : [
+                    const Color(0xFFFFE4CC),
+                    const Color(0xFFFFB88C),
+                    const Color(0xFFFF9A56),
+                    const Color(0xFFFF6B35),
+                    const Color(0xFFF77F00),
+                    const Color(0xFFDC6803),
+                  ],
             stops: [0.0, 0.2, 0.4, 0.6, 0.8, 1.0],
           ),
         ),
@@ -145,7 +155,9 @@ class RegisterScreen extends ConsumerWidget {
                         onPressed: () => context.push('/login'),
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.white,
-                          backgroundColor: Colors.white.withOpacity(0.2),
+                          backgroundColor: isDark
+                              ? Colors.white.withOpacity(0.15)
+                              : Colors.white.withOpacity(0.2),
                           padding: const EdgeInsets.symmetric(
                             horizontal: 18,
                             vertical: 10,

@@ -8,7 +8,8 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
@@ -16,28 +17,20 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   @override
   void initState() {
     super.initState();
-    
+
     // Setup animations
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 1500),
       vsync: this,
     );
 
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeIn,
-    ));
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
+    );
 
-    _scaleAnimation = Tween<double>(
-      begin: 0.5,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOutBack,
-    ));
+    _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOutBack),
+    );
 
     // Start animation
     _animationController.forward();
@@ -58,8 +51,12 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: const Color(0xFF5B4C6B), // Purple background like the image
+      backgroundColor: isDark
+          ? const Color(0xFF0A0A0A)
+          : const Color(0xFF5B4C6B), // Purple background like the image
       body: Center(
         child: AnimatedBuilder(
           animation: _animationController,
@@ -77,7 +74,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                       style: TextStyle(
                         fontSize: 120,
                         fontWeight: FontWeight.bold,
-                        color: const Color(0xFFF5EFE0), // Cream/beige color
+                        color: isDark
+                            ? const Color(0xFFE5E5E5)
+                            : const Color(0xFFF5EFE0), // Cream/beige color
                         letterSpacing: -8,
                         shadows: [
                           Shadow(
@@ -95,7 +94,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.w300,
-                        color: const Color(0xFFF5EFE0).withOpacity(0.8),
+                        color: isDark
+                            ? const Color(0xFFE5E5E5).withOpacity(0.8)
+                            : const Color(0xFFF5EFE0).withOpacity(0.8),
                         letterSpacing: 4,
                       ),
                     ),

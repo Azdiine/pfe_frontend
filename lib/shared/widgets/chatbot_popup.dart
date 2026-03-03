@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/apple_theme.dart';
 
@@ -28,7 +29,8 @@ class _ChatbotPopupState extends State<ChatbotPopup> {
       _messages.add({
         'text': _messageController.text,
         'isBot': false,
-        'time': '${DateTime.now().hour}:${DateTime.now().minute}',
+        'time':
+            '${DateTime.now().hour}:${DateTime.now().minute.toString().padLeft(2, '0')}',
       });
     });
 
@@ -41,7 +43,8 @@ class _ChatbotPopupState extends State<ChatbotPopup> {
           'text':
               'Merci pour votre message! Je cherche des recettes pour vous...',
           'isBot': true,
-          'time': '${DateTime.now().hour}:${DateTime.now().minute}',
+          'time':
+              '${DateTime.now().hour}:${DateTime.now().minute.toString().padLeft(2, '0')}',
         });
       });
     });
@@ -50,10 +53,12 @@ class _ChatbotPopupState extends State<ChatbotPopup> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.7,
-      decoration: const BoxDecoration(
-        color: AppleTheme.backgroundLight,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.7,
+      ),
+      decoration: BoxDecoration(
+        color: AppleTheme.adaptiveBackground(context),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
         children: [
@@ -61,10 +66,10 @@ class _ChatbotPopupState extends State<ChatbotPopup> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppleTheme.backgroundLight,
+              color: AppleTheme.adaptiveBackground(context),
               border: Border(
                 bottom: BorderSide(
-                  color: AppleTheme.separator.withOpacity(0.3),
+                  color: AppleTheme.adaptiveSeparator(context).withOpacity(0.3),
                   width: 0.5,
                 ),
               ),
@@ -75,7 +80,7 @@ class _ChatbotPopupState extends State<ChatbotPopup> {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    gradient: AppColors.lightFreshGradient,
+                    gradient: AppColors.primaryGradient(context),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -107,9 +112,9 @@ class _ChatbotPopupState extends State<ChatbotPopup> {
                 CupertinoButton(
                   padding: EdgeInsets.zero,
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Icon(
+                  child: Icon(
                     CupertinoIcons.xmark_circle_fill,
-                    color: AppleTheme.tertiaryLabel,
+                    color: AppleTheme.adaptiveTertiaryLabel(context),
                     size: 28,
                   ),
                 ),
@@ -137,10 +142,10 @@ class _ChatbotPopupState extends State<ChatbotPopup> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppleTheme.backgroundLight,
+              color: AppleTheme.adaptiveBackground(context),
               border: Border(
                 top: BorderSide(
-                  color: AppleTheme.separator.withOpacity(0.3),
+                  color: AppleTheme.adaptiveSeparator(context).withOpacity(0.3),
                   width: 0.5,
                 ),
               ),
@@ -153,7 +158,7 @@ class _ChatbotPopupState extends State<ChatbotPopup> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       decoration: BoxDecoration(
-                        color: AppleTheme.secondaryBackgroundLight,
+                        color: AppleTheme.adaptiveSecondaryBackground(context),
                         borderRadius: BorderRadius.circular(24),
                       ),
                       child: TextField(
@@ -161,7 +166,7 @@ class _ChatbotPopupState extends State<ChatbotPopup> {
                         decoration: InputDecoration(
                           hintText: 'Votre message...',
                           hintStyle: AppleTheme.body.copyWith(
-                            color: AppleTheme.tertiaryLabel,
+                            color: AppleTheme.adaptiveTertiaryLabel(context),
                           ),
                           border: InputBorder.none,
                         ),
@@ -173,19 +178,27 @@ class _ChatbotPopupState extends State<ChatbotPopup> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  GestureDetector(
-                    onTap: _sendMessage,
-                    child: Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        gradient: AppColors.lightFreshGradient,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        CupertinoIcons.arrow_up,
-                        color: Colors.white,
-                        size: 24,
+                  Semantics(
+                    label: 'Send message',
+                    button: true,
+                    child: CupertinoButton(
+                      padding: EdgeInsets.zero,
+                      onPressed: () {
+                        HapticFeedback.lightImpact();
+                        _sendMessage();
+                      },
+                      child: Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          gradient: AppColors.primaryGradient(context),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          CupertinoIcons.arrow_up,
+                          color: Colors.white,
+                          size: 24,
+                        ),
                       ),
                     ),
                   ),
@@ -213,7 +226,7 @@ class _ChatbotPopupState extends State<ChatbotPopup> {
               height: 32,
               margin: const EdgeInsets.only(right: 8),
               decoration: BoxDecoration(
-                gradient: AppColors.lightFreshGradient,
+                gradient: AppColors.primaryGradient(context),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -235,14 +248,16 @@ class _ChatbotPopupState extends State<ChatbotPopup> {
                   ),
                   decoration: BoxDecoration(
                     color: isBot
-                        ? AppleTheme.secondaryBackgroundLight
-                        : AppColors.lightPrimary,
+                        ? AppleTheme.adaptiveSecondaryBackground(context)
+                        : AppColors.primary(context),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     text,
                     style: AppleTheme.body.copyWith(
-                      color: isBot ? AppleTheme.label : Colors.white,
+                      color: isBot
+                          ? AppleTheme.adaptiveLabel(context)
+                          : Colors.white,
                     ),
                   ),
                 ),
@@ -250,7 +265,7 @@ class _ChatbotPopupState extends State<ChatbotPopup> {
                 Text(
                   time,
                   style: AppleTheme.caption2.copyWith(
-                    color: AppleTheme.tertiaryLabel,
+                    color: AppleTheme.adaptiveTertiaryLabel(context),
                   ),
                 ),
               ],
@@ -273,6 +288,11 @@ void showChatbotPopup(BuildContext context) {
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
-    builder: (context) => const ChatbotPopup(),
+    builder: (context) => Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: const ChatbotPopup(),
+    ),
   );
 }

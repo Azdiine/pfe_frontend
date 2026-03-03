@@ -1,0 +1,575 @@
+{
+  "@@locale": "fr",
+  "@@context": "Chaînes de localisation à l'échelle de l'application",
+  
+  "appTitle": "SmartNutri",
+
+  "welcomeTitle": "Bienvenue sur MEATAY",
+
+  "welcomeSubtitle": "Votre compagnon culinaire intelligent alimenté par l''IA",
+
+  "welcomeMessage": "Votre compagnon nutritionnel alimenté par l''IA",
+
+  "getStarted": "Commencer",
+
+  "skip": "Passer",
+
+  "next": "Suivant",
+
+  "previous": "Précédent",
+
+  "finish": "Terminer",
+
+  "alreadyHaveAccount": "Déjà un compte ?",
+
+  "signUpNow": "Créer un compte",
+
+  "createAccountSeconds": "Créez votre compte en quelques secondes",
+
+  "continueWithEmail": "Continuer avec Email",
+
+  "termsAndPrivacy": "En continuant, vous acceptez nos Conditions d''utilisation et notre Politique de confidentialité",
+
+  "welcomeBack": "Content de vous revoir !",
+
+  "signInToAccount": "Connectez-vous à votre compte",
+
+  "onboardingTitle1": "Suivez Votre Nutrition",
+
+  "onboardingDesc1": "Surveillez vos calories quotidiennes, vos macros et atteignez vos objectifs de santé",
+
+  "onboardingTitle2": "Gestion Intelligente du Frigo",
+
+  "onboardingDesc2": "Scannez les ingrédients, suivez les dates de péremption et réduisez le gaspillage alimentaire",
+
+  "onboardingTitle3": "Suggestions de Recettes IA",
+
+  "onboardingDesc3": "Obtenez des recettes personnalisées basées sur vos ingrédients et préférences",
+
+  "onboardingQuestion1": "Quel est votre principal objectif de santé ?",
+
+  "goalLoseWeight": "Perdre du Poids",
+  "goalGainMuscle": "Gagner du Muscle",
+  "goalMaintain": "Maintenir la Santé",
+  "goalImproveEnergy": "Améliorer l''Énergie",
+
+  "onboardingQuestion2": "Quel est votre niveau d''activité ?",
+
+  "activitySedentary": "Sédentaire",
+  "activityLight": "Légèrement Actif",
+  "activityModerate": "Modérément Actif",
+  "activityVery": "Très Actif",
+  "activityExtreme": "Extrêmement Actif",
+
+  "onboardingQuestion3": "Avez-vous des restrictions alimentaires ?",
+
+  "dietNone": "Aucune",
+  "dietVegetarian": "Végétarien",
+  "dietVegan": "Végétalien",
+  "dietGlutenFree": "Sans Gluten",
+  "dietDairyFree": "Sans Produits Laitiers",
+  "dietKeto": "Keto",
+  "dietPaleo": "Paléo",
+
+  "home": "Accueil",
+
+  "recipes": "Recettes",
+
+  "fridge": "Frigo",
+
+  "tracking": "Suivi",
+
+  "profile": "Profil",
+
+  "settings": "Paramètres",
+
+  "language": "Langue",
+
+  "selectLanguage": "Sélectionner la Langue",
+
+  "english": "Anglais",
+
+  "french": "Français",
+
+  "languageChanged": "Langue modifiée avec succès",
+
+  "accountSettings": "Paramètres du Compte",
+  "notifications": "Notifications",
+  "privacy": "Confidentialité",
+  "terms": "Conditions d''Utilisation",
+  "about": "À Propos",
+  "logout": "Déconnexion",
+  "editProfile": "Modifier le Profil",
+  "changePassword": "Changer le Mot de Passe",
+  "deleteAccount": "Supprimer le Compte",
+
+  "myProfile": "Mon Profil",
+  "personalInfo": "Informations Personnelles",
+  "nutritionGoals": "Objectifs Nutritionnels",
+  "healthStats": "Statistiques de Santé",
+
+  "name": "Nom",
+  "email": "Email",
+  "age": "Âge",
+  "height": "Taille",
+  "weight": "Poids",
+  "gender": "Sexe",
+  "male": "Homme",
+  "female": "Femme",
+  "other": "Autre",
+
+  "dailyCalorieGoal": "Objectif Calorique Quotidien",
+  "proteinGoal": "Objectif Protéines",
+  "carbsGoal": "Objectif Glucides",
+  "fatsGoal": "Objectif Lipides",
+
+  "save": "Enregistrer",
+  "cancel": "Annuler",
+  "edit": "Modifier",
+  "delete": "Supprimer",
+  "confirm": "Confirmer",
+  "close": "Fermer",
+  "apply": "Appliquer",
+  "reset": "Réinitialiser",
+  "clear": "Effacer",
+  "search": "Rechercher",
+  "filter": "Filtrer",
+  "sort": "Trier",
+
+  "monday": "Lundi",
+  "tuesday": "Mardi",
+  "wednesday": "Mercredi",
+  "thursday": "Jeudi",
+  "friday": "Vendredi",
+  "saturday": "Samedi",
+  "sunday": "Dimanche",
+
+  "mondayShort": "Lun",
+  "tuesdayShort": "Mar",
+  "wednesdayShort": "Mer",
+  "thursdayShort": "Jeu",
+  "fridayShort": "Ven",
+  "saturdayShort": "Sam",
+  "sundayShort": "Dim",
+
+  "january": "Janvier",
+  "february": "Février",
+  "march": "Mars",
+  "april": "Avril",
+  "may": "Mai",
+  "june": "Juin",
+  "july": "Juillet",
+  "august": "Août",
+  "september": "Septembre",
+  "october": "Octobre",
+  "november": "Novembre",
+  "december": "Décembre",
+
+  "today": "Aujourd''hui",
+  "yesterday": "Hier",
+  "tomorrow": "Demain",
+  "thisWeek": "Cette Semaine",
+  "thisMonth": "Ce Mois",
+  "thisYear": "Cette Année",
+
+  "greeting": "Bonjour",
+
+  "goodMorning": "Bonjour",
+  "goodAfternoon": "Bon Après-midi",
+  "goodEvening": "Bonsoir",
+
+  "caloriesRemaining": "Calories Restantes",
+  "caloriesConsumed": "Calories Consommées",
+  "caloriesBurned": "Calories Brûlées",
+
+  "dailyNutrition": "Nutrition Quotidienne",
+  "nutritionSummary": "Résumé Nutritionnel",
+  "macroBreakdown": "Répartition des Macros",
+
+  "proteins": "Protéines",
+  "proteinShort": "Protéine",
+  "carbs": "Glucides",
+  "carbsShort": "Glucides",
+  "fats": "Lipides",
+  "fatsShort": "Lipide",
+  "fiber": "Fibres",
+  "sugar": "Sucre",
+  "sodium": "Sodium",
+
+  "gramsUnit": "g",
+
+  "kcalUnit": "kcal",
+
+  "mlUnit": "ml",
+
+  "quickActions": "Actions Rapides",
+  "scanFood": "Scanner Aliment",
+  "addMeal": "Ajouter Repas",
+  "logWater": "Enregistrer Eau",
+  "addExercise": "Ajouter Exercice",
+
+  "scanBarcode": "Scanner Code-Barres",
+  "scanProduct": "Scanner Produit",
+  "scanningProduct": "Scan du produit...",
+  "productFound": "Produit trouvé",
+  "productNotFound": "Produit non trouvé",
+
+  "addItem": "Ajouter Article",
+  "addIngredient": "Ajouter Ingrédient",
+  "addNewIngredient": "Ajouter Nouvel Ingrédient",
+  "addManually": "Ajouter Manuellement",
+  "addIngredientManually": "Ajouter Ingrédient Manuellement",
+
+  "recommendedForYou": "Recommandé pour Vous",
+  "popularRecipes": "Recettes Populaires",
+  "trendingNow": "Tendances Actuelles",
+  "recentlyViewed": "Récemment Consultées",
+
+  "recipe": "Recette",
+  "ingredients": "Ingrédients",
+  "instructions": "Instructions",
+  "prepTime": "Temps de Préparation",
+  "cookTime": "Temps de Cuisson",
+  "totalTime": "Temps Total",
+  "servings": "Portions",
+  "difficulty": "Difficulté",
+  "easy": "Facile",
+  "medium": "Moyen",
+  "hard": "Difficile",
+
+  "minutes": "min",
+
+  "hours": "heures",
+  "hour": "heure",
+
+  "cook": "Cuisiner",
+  "view": "Voir",
+  "viewRecipe": "Voir la Recette",
+  "viewAll": "Voir Tout",
+  "showMore": "Voir Plus",
+  "showLess": "Voir Moins",
+
+  "cookWithYourIngredients": "Cuisiner avec Vos Ingrédients",
+  "myFridge": "Mon Frigo",
+  "ingredientsAvailable": "ingrédients disponibles",
+
+  "all": "Tous",
+  "breakfast": "Petit-déjeuner",
+  "lunch": "Déjeuner",
+  "dinner": "Dîner",
+  "snacks": "Collations",
+  "desserts": "Desserts",
+  "drinks": "Boissons",
+
+  "categories": "Catégories",
+  "category": "Catégorie",
+
+  "aiRecipeSuggestions": "Suggestions de Recettes IA",
+  "basedOnYourIngredients": "Basées sur vos ingrédients",
+  "pastaCarbonara": "Pâtes Carbonara",
+  "caesarSalad": "Salade César",
+
+  "mySmartFridge": "Mon Frigo Intelligent",
+  "fridgeInventory": "Inventaire du Frigo",
+  "itemsExpiringSoon": "{count, plural, =0{Aucun article expirant bientôt} =1{1 article expirant bientôt} other{{count} articles expirant bientôt}}",
+
+  "itemsCount": "{count, plural, =0{Aucun article} =1{1 article} other{{count} articles}}",
+
+  "expiringDays": "{days, plural, =0{Expire aujourd''hui} =1{Expire dans 1 jour} other{Expire dans {days} jours}}",
+
+  "dropItemsHere": "Déposez les articles ici",
+  "dragToRearrange": "Glissez pour réorganiser",
+
+  "topShelf": "Étagère du Haut",
+  "middleShelf": "Étagère du Milieu",
+  "bottomShelf": "Étagère du Bas",
+  "door": "Porte",
+  "freezer": "Congélateur",
+
+  "fridgeLocation": "Emplacement Frigo",
+  "location": "Emplacement",
+  "shelfLocation": "Emplacement Étagère",
+
+  "quantity": "Quantité",
+  "quantityHint": "ex: 500g, 2 pièces",
+
+  "expiresIn": "Expire Dans",
+  "expirationDate": "Date d''Expiration",
+  "numberOfDays": "Nombre de Jours",
+  "daysRemaining": "jours restants",
+
+  "productName": "Nom du Produit",
+  "productNameHint": "ex: Lait, Poulet",
+
+  "chooseIcon": "Choisir Icône",
+  "selectIcon": "Sélectionner Icône",
+
+  "fruits": "Fruits",
+  "vegetables": "Légumes",
+  "dairy": "Produits Laitiers",
+  "meat": "Viande",
+  "fish": "Poisson",
+  "grains": "Céréales",
+  "beverages": "Boissons",
+  "condiments": "Condiments",
+  "snacksCategory": "Collations",
+  "otherCategory": "Autre",
+
+  "unknownProduct": "Produit Inconnu",
+
+  "enterProductName": "Veuillez entrer le nom du produit",
+  "enterQuantity": "Veuillez entrer la quantité",
+  "selectCategory": "Veuillez sélectionner une catégorie",
+  "selectLocation": "Veuillez sélectionner un emplacement",
+
+  "addedToFridge": "ajouté au frigo !",
+  "addToFridge": "Ajouter au Frigo",
+  "removeFromFridge": "Retirer du Frigo",
+  "remove": "Retirer",
+
+  "editIngredient": "Modifier Ingrédient",
+  "deleteIngredient": "Supprimer Ingrédient",
+
+  "confirmDelete": "Êtes-vous sûr de vouloir supprimer cet article ?",
+  "deleteConfirmation": "Confirmation de Suppression",
+
+  "day": "Jour",
+  "week": "Semaine",
+  "month": "Mois",
+  "year": "Année",
+
+  "caloriesThisWeek": "Calories Cette Semaine",
+  "caloriesThisMonth": "Calories Ce Mois",
+
+  "statistics": "Statistiques",
+  "stats": "Stats",
+  "analytics": "Analytique",
+
+  "water": "Eau",
+  "waterIntake": "Consommation d''Eau",
+  "glassesOfWater": "verres d''eau",
+  "dailyWaterGoal": "Objectif d''Eau Quotidien",
+
+  "activity": "Activité",
+  "activeMinutes": "Minutes Actives",
+  "steps": "Pas",
+  "stepsToday": "Pas Aujourd''hui",
+
+  "weightTracking": "Suivi du Poids",
+  "currentWeight": "Poids Actuel",
+  "goalWeight": "Poids Objectif",
+  "weightProgress": "Progression du Poids",
+
+  "averageScore": "Score Moyen",
+  "healthScore": "Score de Santé",
+  "nutritionScore": "Score Nutritionnel",
+
+  "weeklySummary": "Résumé Hebdomadaire",
+  "monthlySummary": "Résumé Mensuel",
+  "progress": "Progression",
+  "progressTracking": "Suivi de Progression",
+
+  "meals": "Repas",
+  "mealsLogged": "Repas Enregistrés",
+  "totalMeals": "Total Repas",
+
+  "healthyDaysStreak": "Série de Jours Sains",
+  "currentStreak": "Série Actuelle",
+  "longestStreak": "Plus Longue Série",
+
+  "chatbot": "Chatbot",
+  "aiAssistant": "Assistant IA",
+  "nutritionAssistant": "Assistant Nutritionnel",
+  "askMeAnything": "Demandez-moi n''importe quoi...",
+  "needIdeas": "Besoin d''Idées ?",
+  "askMeRecipe": "Demandez-moi une recette !",
+  "openChat": "Ouvrir Chat",
+  "startChat": "Démarrer Chat",
+
+  "chatPlaceholder": "Tapez votre message...",
+  "chatSend": "Envoyer",
+  "chatHistory": "Historique Chat",
+  "clearChat": "Effacer Chat",
+
+  "chatAIAdvice": "Conseils Nutritionnels IA",
+  "getAdvice": "Obtenir Conseils",
+
+  "dailyTracking": "Suivi Quotidien",
+  "weeklyTracking": "Suivi Hebdomadaire",
+  "monthlyTracking": "Suivi Mensuel",
+
+  "goal": "Objectif",
+  "goals": "Objectifs",
+  "myGoals": "Mes Objectifs",
+  "achievedGoals": "Objectifs Atteints",
+
+  "error": "Erreur",
+  "errorOccurred": "Une erreur s''est produite",
+  "tryAgain": "Réessayer",
+  "retry": "Réessayer",
+  "errorLoading": "Erreur de chargement des données",
+  "noConnection": "Pas de connexion Internet",
+  "timeout": "Délai d''attente dépassé",
+
+  "success": "Succès",
+  "successMessage": "Opération terminée avec succès",
+  "saved": "Enregistré",
+  "updated": "Mis à Jour",
+  "deleted": "Supprimé",
+  "added": "Ajouté",
+
+  "loading": "Chargement...",
+  "pleaseWait": "Veuillez patienter...",
+  "processing": "Traitement...",
+
+  "noData": "Aucune donnée disponible",
+  "noResults": "Aucun résultat trouvé",
+  "noRecipes": "Aucune recette trouvée",
+  "noIngredients": "Aucun ingrédient disponible",
+
+  "emptyFridge": "Votre frigo est vide",
+  "emptyFridgeMessage": "Commencez à ajouter des ingrédients pour les voir ici",
+
+  "notificationTitle": "Notification",
+  "notificationSettings": "Paramètres de Notification",
+  "enableNotifications": "Activer les Notifications",
+  "pushNotifications": "Notifications Push",
+  "emailNotifications": "Notifications Email",
+  "reminderNotifications": "Notifications de Rappel",
+
+  "expirationReminder": "Rappel d''Expiration",
+  "mealReminder": "Rappel de Repas",
+  "waterReminder": "Rappel d''Eau",
+
+  "yes": "Oui",
+  "no": "Non",
+  "ok": "OK",
+  "done": "Terminé",
+
+  "optional": "Optionnel",
+  "required": "Requis",
+
+  "version": "Version",
+  "buildNumber": "Numéro de Build",
+
+  "darkMode": "Mode Sombre",
+  "lightMode": "Mode Clair",
+  "theme": "Thème",
+  "appearance": "Apparence",
+
+  "units": "Unités",
+  "metric": "Métrique",
+  "imperial": "Impérial",
+
+  "help": "Aide",
+  "support": "Support",
+  "contactUs": "Nous Contacter",
+  "faq": "FAQ",
+  "feedback": "Retour d''Information",
+  "reportBug": "Signaler un Bug",
+  "rateApp": "Noter l''App",
+  "shareApp": "Partager l''App",
+
+  "continueButton": "Continuer",
+  "question": "Question",
+  "questionOf": "Question {current} sur {total}",
+  "pleaseSelectOption": "Veuillez sélectionner au moins une option",
+  "specifyHere": "Précisez ici...",
+
+  "onbQ1": "Pour combien de personnes tu cuisines ?",
+  "onbQ1Sub": "Très important pour les quantités.",
+  "onbQ1Opt1": "Juste moi",
+  "onbQ1Opt2": "2 personnes",
+  "onbQ1Opt3": "3–4",
+  "onbQ1Opt4": "5+",
+  "onbQ1Ben1": "ajuster portions",
+  "onbQ1Ben2": "liste de courses auto",
+
+  "onbQ2": "Tu cuisines combien de fois par semaine ?",
+  "onbQ2Opt1": "Jamais",
+  "onbQ2Opt2": "1–2 fois",
+  "onbQ2Opt3": "3–5 fois",
+  "onbQ2Opt4": "Tous les jours",
+  "onbQ2Ben1": "fréquence recommandations",
+  "onbQ2Ben2": "meal plan ou pas",
+
+  "onbQ3": "Combien de temps max pour un repas ?",
+  "onbQ3Sub": "Ultra important pour UX.",
+  "onbQ3Opt1": "10 min (rapide)",
+  "onbQ3Opt2": "20 min",
+  "onbQ3Opt3": "30 min",
+  "onbQ3Opt4": "Peu importe",
+  "onbQ3Ben1": "filtre recettes longues",
+  "onbQ3Ben2": "recettes express",
+
+  "onbQ4": "Ton niveau en cuisine ?",
+  "onbQ4Opt1": "Débutant",
+  "onbQ4Opt2": "Intermédiaire",
+  "onbQ4Opt3": "Avancé",
+  "onbQ4Ben1": "difficulté recette",
+  "onbQ4Ben2": "étapes simplifiées",
+  "onbQ4Ben3": "tutoriels ou non",
+
+  "onbQ5": "Tes préférences alimentaires ?",
+  "onbQ5Opt1": "Omnivore",
+  "onbQ5Opt2": "Végétarien",
+  "onbQ5Opt3": "Vegan",
+  "onbQ5Opt4": "Halal",
+  "onbQ5Opt5": "Sans porc",
+  "onbQ5Opt6": "Sans lactose",
+  "onbQ5Opt7": "Sans gluten",
+  "onbQ5Opt8": "Keto",
+  "onbQ5Ben1": "filtre automatique recettes",
+
+  "onbQ6": "Allergies ou aliments interdits ?",
+  "onbQ6Opt1": "Arachides",
+  "onbQ6Opt2": "Fruits de mer",
+  "onbQ6Opt3": "Lait",
+  "onbQ6Opt4": "Œufs",
+  "onbQ6Opt5": "Autre",
+  "onbQ6Opt6": "Aucune",
+  "onbQ6Ben1": "sécurité + crédibilité médicale",
+
+  "onbQ7": "Tu préfères quel type de plats ?",
+  "onbQ7Sub": "Fun + utile pour personnalisation",
+  "onbQ7Opt1": "Rapide / simple",
+  "onbQ7Opt2": "Healthy",
+  "onbQ7Opt3": "Protéiné (sport)",
+  "onbQ7Opt4": "Pas cher",
+  "onbQ7Opt5": "Gourmand / comfort food",
+  "onbQ7Opt6": "Cuisine du monde",
+  "onbQ7Opt7": "Traditionnel",
+  "onbQ7Ben1": "personnalisation recommandations",
+
+  "onbQ8": "Budget nourriture ?",
+  "onbQ8Opt1": "Petit budget",
+  "onbQ8Opt2": "Normal",
+  "onbQ8Opt3": "Premium",
+  "onbQ8Ben1": "choix ingrédients (riz/poulet vs saumon/avocat)",
+
+  "onbQ9": "Quels équipements tu as ?",
+  "onbQ9Sub": "Spécifique et très intelligent",
+  "onbQ9Opt1": "Four",
+  "onbQ9Opt2": "Micro-ondes",
+  "onbQ9Opt3": "Air fryer",
+  "onbQ9Opt4": "Mixeur",
+  "onbQ9Opt5": "Robot cuisine",
+  "onbQ9Opt6": "BBQ",
+  "onbQ9Opt7": "Plaques seulement",
+  "onbQ9Ben1": "évite proposer des recettes impossibles",
+
+  "onbQ10": "Tu fais les courses combien de fois ?",
+  "onbQ10Opt1": "Tous les jours",
+  "onbQ10Opt2": "2–3 fois/semaine",
+  "onbQ10Opt3": "1 fois/semaine",
+  "onbQ10Opt4": "Rarement",
+  "onbQ10Ben1": "meal plan semaine",
+  "onbQ10Ben2": "gestion stock",
+
+  "onbQ11": "Veux-tu scanner ton frigo maintenant ?",
+  "onbQ11Sub": "Démarre direct la magie IA 🔥",
+  "onbQ11Opt1": "Scanner avec caméra",
+  "onbQ11Opt2": "Ajouter ingrédients",
+  "onbQ11Opt3": "Plus tard",
+  "onbQ11Ben1": "démarre direct la magie IA"
+}

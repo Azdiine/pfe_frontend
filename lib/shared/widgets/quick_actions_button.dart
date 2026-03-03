@@ -18,38 +18,27 @@ class _QuickActionsButtonState extends State<QuickActionsButton>
   late Animation<double> _rotationAnimation;
   bool _isExpanded = false;
 
-  final List<Map<String, dynamic>> _actions = [
+  List<Map<String, dynamic>> _getActions(BuildContext context) => [
     {
       'icon': CupertinoIcons.add,
-      'label': 'Ajouter recette',
-      'color': AppColors.lightPrimary,
-      'gradient': AppColors.lightFreshGradient,
+      'label': 'Recette',
+      'color': AppColors.primary(context),
+      'gradient': AppColors.primaryGradient(context),
+      'isPrimary': true, // Action principale
     },
     {
       'icon': CupertinoIcons.camera_fill,
-      'label': 'Scanner ingrédient',
-      'color': AppColors.lightSecondary,
-      'gradient': AppColors.lightFoodGradient,
+      'label': 'Scanner',
+      'color': AppColors.primary(context),
+      'gradient': AppColors.primaryGradient(context),
+      'isPrimary': false,
     },
     {
-      'icon': CupertinoIcons.list_bullet,
-      'label': 'Liste de courses',
-      'color': AppColors.success,
-      'gradient': LinearGradient(
-        colors: [AppColors.success, AppColors.success.withOpacity(0.7)],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      ),
-    },
-    {
-      'icon': CupertinoIcons.star_fill,
-      'label': 'Favoris',
-      'color': Colors.amber,
-      'gradient': LinearGradient(
-        colors: [Colors.amber, Colors.orange],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      ),
+      'icon': CupertinoIcons.cart_fill,
+      'label': 'Courses',
+      'color': AppColors.primary(context),
+      'gradient': AppColors.primaryGradient(context),
+      'isPrimary': false,
     },
   ];
 
@@ -57,7 +46,7 @@ class _QuickActionsButtonState extends State<QuickActionsButton>
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 300), // Plus rapide = plus réactif
       vsync: this,
     );
 
@@ -108,13 +97,13 @@ class _QuickActionsButtonState extends State<QuickActionsButton>
               child: AnimatedOpacity(
                 duration: const Duration(milliseconds: 300),
                 opacity: _isExpanded ? 1.0 : 0.0,
-                child: Container(color: Colors.black.withOpacity(0.3)),
+                child: Container(color: Colors.black.withOpacity(0.2)), // Overlay plus léger
               ),
             ),
           ),
 
         // Action buttons
-        ..._buildActionButtons(),
+        ..._buildActionButtons(context),
 
         // Main FAB
         Positioned(
@@ -125,14 +114,14 @@ class _QuickActionsButtonState extends State<QuickActionsButton>
               return GestureDetector(
                 onTap: _toggleMenu,
                 child: Container(
-                  width: 70,
-                  height: 70,
+                  width: 56, // Taille iOS standard
+                  height: 56,
                   decoration: BoxDecoration(
-                    gradient: AppColors.lightFreshGradient,
+                    gradient: AppColors.primaryGradient(context),
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.lightPrimary.withOpacity(0.4),
+                        color: AppColors.primary(context).withOpacity(0.4),
                         blurRadius: 20,
                         offset: const Offset(0, 8),
                       ),
@@ -155,15 +144,16 @@ class _QuickActionsButtonState extends State<QuickActionsButton>
     );
   }
 
-  List<Widget> _buildActionButtons() {
+  List<Widget> _buildActionButtons(BuildContext context) {
     final List<Widget> buttons = [];
-    const double radius = 120; // Rayon du cercle
+    final actions = _getActions(context);
+    const double radius = 100; // Rayon réduit pour meilleure ergonomie
     const double startAngle = math.pi; // Commence à gauche
     final double angleStep =
-        math.pi / (_actions.length + 1); // Répartition en arc
+        math.pi / (actions.length + 1); // Répartition en arc
 
-    for (int i = 0; i < _actions.length; i++) {
-      final action = _actions[i];
+    for (int i = 0; i < actions.length; i++) {
+      final action = actions[i];
       final angle = startAngle + (angleStep * (i + 1));
 
       buttons.add(
@@ -186,8 +176,8 @@ class _QuickActionsButtonState extends State<QuickActionsButton>
                         _handleAction(action['label']);
                       },
                       child: Container(
-                        width: 60,
-                        height: 60,
+                        width: action['isPrimary'] == true ? 64 : 52, // Hiérarchie visuelle
+                        height: action['isPrimary'] == true ? 64 : 52,
                         decoration: BoxDecoration(
                           gradient: action['gradient'],
                           shape: BoxShape.circle,
@@ -204,7 +194,7 @@ class _QuickActionsButtonState extends State<QuickActionsButton>
                         child: Icon(
                           action['icon'],
                           color: Colors.white,
-                          size: 26,
+                          size: action['isPrimary'] == true ? 28 : 24, // Icons plus grandes pour primaire
                         ),
                       ),
                     ),
@@ -215,7 +205,7 @@ class _QuickActionsButtonState extends State<QuickActionsButton>
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: AppleTheme.backgroundLight,
+                        color: AppleTheme.adaptiveBackground(context),
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
@@ -229,7 +219,7 @@ class _QuickActionsButtonState extends State<QuickActionsButton>
                         action['label'],
                         style: AppleTheme.caption1.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: AppleTheme.label,
+                          color: AppleTheme.adaptiveLabel(context),
                         ),
                       ),
                     ),

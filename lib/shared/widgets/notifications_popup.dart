@@ -19,7 +19,7 @@ class NotificationsPopup extends StatelessWidget {
       },
       {
         'icon': CupertinoIcons.star_fill,
-        'color': AppColors.lightSecondary,
+        'color': AppColors.secondary(context),
         'title': 'Nouvelle recette tendance',
         'message': 'Découvrez la recette du jour: Pad Thai aux crevettes',
         'time': 'Il y a 1h',
@@ -27,7 +27,7 @@ class NotificationsPopup extends StatelessWidget {
       },
       {
         'icon': CupertinoIcons.bell_fill,
-        'color': AppColors.lightPrimary,
+        'color': AppColors.primary(context),
         'title': 'Rappel de courses',
         'message': 'N\'oubliez pas d\'acheter les ingrédients pour ce soir',
         'time': 'Il y a 3h',
@@ -54,9 +54,9 @@ class NotificationsPopup extends StatelessWidget {
 
     return Container(
       height: MediaQuery.of(context).size.height * 0.7,
-      decoration: const BoxDecoration(
-        color: AppleTheme.backgroundLight,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      decoration: BoxDecoration(
+        color: AppleTheme.adaptiveBackground(context),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
         children: [
@@ -64,10 +64,10 @@ class NotificationsPopup extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppleTheme.backgroundLight,
+              color: AppleTheme.adaptiveBackground(context),
               border: Border(
                 bottom: BorderSide(
-                  color: AppleTheme.separator.withOpacity(0.3),
+                  color: AppleTheme.adaptiveSeparator(context).withOpacity(0.3),
                   width: 0.5,
                 ),
               ),
@@ -90,7 +90,7 @@ class NotificationsPopup extends StatelessWidget {
                   child: Text(
                     'Tout lire',
                     style: AppleTheme.body.copyWith(
-                      color: AppColors.lightPrimary,
+                      color: AppColors.primary(context),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -99,9 +99,9 @@ class NotificationsPopup extends StatelessWidget {
                 CupertinoButton(
                   padding: EdgeInsets.zero,
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Icon(
+                  child: Icon(
                     CupertinoIcons.xmark_circle_fill,
-                    color: AppleTheme.tertiaryLabel,
+                    color: AppleTheme.adaptiveTertiaryLabel(context),
                     size: 28,
                   ),
                 ),
@@ -112,13 +112,14 @@ class NotificationsPopup extends StatelessWidget {
           // Notifications List
           Expanded(
             child: notifications.isEmpty
-                ? _buildEmptyState()
+                ? _buildEmptyState(context)
                 : ListView.builder(
                     padding: const EdgeInsets.only(top: 8),
                     itemCount: notifications.length,
                     itemBuilder: (context, index) {
                       final notif = notifications[index];
                       return _buildNotificationItem(
+                        context,
                         notif['icon'] as IconData,
                         notif['color'] as Color,
                         notif['title'] as String,
@@ -135,6 +136,7 @@ class NotificationsPopup extends StatelessWidget {
   }
 
   Widget _buildNotificationItem(
+    BuildContext context,
     IconData icon,
     Color color,
     String title,
@@ -146,11 +148,11 @@ class NotificationsPopup extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       decoration: BoxDecoration(
         color: isNew
-            ? AppColors.lightPrimary.withOpacity(0.05)
-            : AppleTheme.backgroundLight,
+            ? AppColors.primary(context).withOpacity(0.05)
+            : AppleTheme.adaptiveBackground(context),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppleTheme.separator.withOpacity(0.3),
+          color: AppleTheme.adaptiveSeparator(context).withOpacity(0.3),
           width: 0.5,
         ),
       ),
@@ -183,7 +185,7 @@ class NotificationsPopup extends StatelessWidget {
                           title,
                           style: AppleTheme.subhead.copyWith(
                             fontWeight: FontWeight.w700,
-                            color: AppleTheme.label,
+                            color: AppleTheme.adaptiveLabel(context),
                           ),
                         ),
                       ),
@@ -191,8 +193,8 @@ class NotificationsPopup extends StatelessWidget {
                         Container(
                           width: 8,
                           height: 8,
-                          decoration: const BoxDecoration(
-                            color: AppColors.lightPrimary,
+                          decoration: BoxDecoration(
+                            color: AppColors.primary(context),
                             shape: BoxShape.circle,
                           ),
                         ),
@@ -202,7 +204,7 @@ class NotificationsPopup extends StatelessWidget {
                   Text(
                     message,
                     style: AppleTheme.callout.copyWith(
-                      color: AppleTheme.secondaryLabel,
+                      color: AppleTheme.adaptiveSecondaryLabel(context),
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -211,7 +213,7 @@ class NotificationsPopup extends StatelessWidget {
                   Text(
                     time,
                     style: AppleTheme.caption1.copyWith(
-                      color: AppleTheme.tertiaryLabel,
+                      color: AppleTheme.adaptiveTertiaryLabel(context),
                     ),
                   ),
                 ],
@@ -223,7 +225,7 @@ class NotificationsPopup extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -232,13 +234,13 @@ class NotificationsPopup extends StatelessWidget {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: AppleTheme.secondaryBackgroundLight,
+              color: AppleTheme.adaptiveSecondaryBackground(context),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               CupertinoIcons.bell,
               size: 40,
-              color: AppleTheme.tertiaryLabel,
+              color: AppleTheme.adaptiveTertiaryLabel(context),
             ),
           ),
           const SizedBox(height: 16),
@@ -246,13 +248,15 @@ class NotificationsPopup extends StatelessWidget {
             'Aucune notification',
             style: AppleTheme.title2.copyWith(
               fontWeight: FontWeight.w700,
-              color: AppleTheme.label,
+              color: AppleTheme.adaptiveLabel(context),
             ),
           ),
           const SizedBox(height: 8),
           Text(
             'Vous êtes à jour!',
-            style: AppleTheme.body.copyWith(color: AppleTheme.secondaryLabel),
+            style: AppleTheme.body.copyWith(
+              color: AppleTheme.adaptiveSecondaryLabel(context),
+            ),
           ),
         ],
       ),

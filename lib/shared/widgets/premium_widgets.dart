@@ -22,7 +22,7 @@ class PremiumButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final gradient = _getGradient();
+    final gradient = _getGradient(context);
 
     return Container(
       decoration: BoxDecoration(
@@ -71,16 +71,16 @@ class PremiumButton extends StatelessWidget {
     );
   }
 
-  LinearGradient _getGradient() {
+  LinearGradient _getGradient(BuildContext context) {
     switch (style) {
       case ButtonStyle.primary:
-        return AppColors.lightFreshGradient;
+        return AppColors.primaryGradient(context);
       case ButtonStyle.secondary:
-        return AppColors.lightFoodGradient;
+        return AppColors.primaryGradient(context);
       case ButtonStyle.ai:
-        return AppColors.lightAIGradient;
+        return AppColors.aiGradient(context);
       case ButtonStyle.premium:
-        return AppColors.lightPremiumGradient;
+        return AppColors.lightPrimaryGradient;
     }
   }
 }
@@ -141,7 +141,7 @@ class StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveColor = color ?? AppColors.lightPrimary;
+    final effectiveColor = color ?? AppColors.primary(context);
     final effectiveBg = backgroundColor ?? effectiveColor.withOpacity(0.1);
 
     return Container(
@@ -169,7 +169,7 @@ class StatCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w800,
-              color: AppColors.lightTextPrimary,
+              color: AppColors.textPrimary(context),
             ),
           ),
           const SizedBox(height: 4),
@@ -178,7 +178,7 @@ class StatCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: AppColors.lightTextSecondary,
+              color: AppColors.textSecondary(context),
             ),
           ),
         ],
@@ -200,7 +200,7 @@ class PremiumBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final config = _getConfig();
+    final config = _getConfig(context);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -227,7 +227,7 @@ class PremiumBadge extends StatelessWidget {
     );
   }
 
-  _BadgeConfig _getConfig() {
+  _BadgeConfig _getConfig(BuildContext context) {
     switch (style) {
       case BadgeStyle.success:
         return _BadgeConfig(color: AppColors.success);
@@ -236,9 +236,9 @@ class PremiumBadge extends StatelessWidget {
       case BadgeStyle.error:
         return _BadgeConfig(color: AppColors.error);
       case BadgeStyle.premium:
-        return _BadgeConfig(gradient: AppColors.lightPremiumGradient);
+        return _BadgeConfig(gradient: AppColors.aiGradient(context));
       case BadgeStyle.ai:
-        return _BadgeConfig(gradient: AppColors.lightAIGradient);
+        return _BadgeConfig(gradient: AppColors.aiGradient(context));
     }
   }
 }
@@ -277,7 +277,7 @@ class RecipeCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          gradient: AppColors.lightFoodGradient,
+          gradient: AppColors.primaryGradient(context),
           borderRadius: BorderRadius.circular(20),
           boxShadow: AppColors.elevation2(false),
         ),
@@ -377,7 +377,7 @@ class AIChatBubble extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          gradient: isUser ? null : AppColors.lightAIGradient,
+          gradient: isUser ? null : AppColors.aiGradient(context),
           color: isUser ? AppColors.lightSurface : null,
           borderRadius: BorderRadius.circular(20),
           boxShadow: AppColors.elevation1(false),
@@ -387,7 +387,7 @@ class AIChatBubble extends StatelessWidget {
           style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w500,
-            color: isUser ? AppColors.lightTextPrimary : Colors.white,
+            color: isUser ? AppColors.textPrimary(context) : Colors.white,
           ),
         ),
       ),
@@ -419,7 +419,7 @@ class PremiumProgressBar extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: AppColors.lightTextSecondary,
+              color: AppColors.textSecondary(context),
             ),
           ),
           const SizedBox(height: 8),
@@ -435,11 +435,11 @@ class PremiumProgressBar extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: Container(
               decoration: BoxDecoration(
-                gradient: gradient ?? AppColors.lightFreshGradient,
+                gradient: gradient ?? AppColors.primaryGradient(context),
                 borderRadius: BorderRadius.circular(4),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.lightPrimary.withOpacity(0.4),
+                    color: AppColors.primary(context).withOpacity(0.4),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),

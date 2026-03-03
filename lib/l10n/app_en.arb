@@ -1,0 +1,735 @@
+{
+  "@@locale": "en",
+  "@@context": "App-wide localization strings",
+  
+  "appTitle": "SmartNutri",
+  "@appTitle": {
+    "description": "Application title"
+  },
+
+  "welcomeTitle": "Welcome to MEATAY",
+  "@welcomeTitle": {
+    "description": "Welcome screen title"
+  },
+
+  "welcomeSubtitle": "Your smart cooking companion powered by AI",
+  "@welcomeSubtitle": {
+    "description": "Welcome screen subtitle"
+  },
+
+  "welcomeMessage": "Your AI-powered nutrition companion",
+  "@welcomeMessage": {
+    "description": "Welcome screen message"
+  },
+
+  "getStarted": "Get Started",
+  "@getStarted": {
+    "description": "Button to start using the app"
+  },
+
+  "skip": "Skip",
+  "@skip": {
+    "description": "Skip button"
+  },
+
+  "next": "Next",
+  "@next": {
+    "description": "Next button"
+  },
+
+  "previous": "Previous",
+  "@previous": {
+    "description": "Previous button"
+  },
+
+  "finish": "Finish",
+  "@finish": {
+    "description": "Finish button"
+  },
+
+  "alreadyHaveAccount": "Already have an account?",
+  "@alreadyHaveAccount": {
+    "description": "Login prompt text"
+  },
+
+  "signUpNow": "Sign Up Now",
+  "@signUpNow": {
+    "description": "Sign up modal title"
+  },
+
+  "createAccountSeconds": "Create your account in seconds",
+  "@createAccountSeconds": {
+    "description": "Sign up modal subtitle"
+  },
+
+  "continueWithEmail": "Continue with Email",
+  "@continueWithEmail": {
+    "description": "Email login/signup button"
+  },
+
+  "termsAndPrivacy": "By continuing, you agree to our Terms of Service and Privacy Policy",
+  "@termsAndPrivacy": {
+    "description": "Terms and privacy notice"
+  },
+
+  "welcomeBack": "Welcome Back!",
+  "@welcomeBack": {
+    "description": "Login modal title"
+  },
+
+  "signInToAccount": "Sign in to your account",
+  "@signInToAccount": {
+    "description": "Login modal subtitle"
+  },
+
+  "onboardingTitle1": "Track Your Nutrition",
+  "@onboardingTitle1": {
+    "description": "First onboarding screen title"
+  },
+
+  "onboardingDesc1": "Monitor your daily calories, macros, and reach your health goals",
+  "@onboardingDesc1": {
+    "description": "First onboarding screen description"
+  },
+
+  "onboardingTitle2": "Smart Fridge Management",
+  "@onboardingTitle2": {
+    "description": "Second onboarding screen title"
+  },
+
+  "onboardingDesc2": "Scan ingredients, track expiration dates, and reduce food waste",
+  "@onboardingDesc2": {
+    "description": "Second onboarding screen description"
+  },
+
+  "onboardingTitle3": "AI Recipe Suggestions",
+  "@onboardingTitle3": {
+    "description": "Third onboarding screen title"
+  },
+
+  "onboardingDesc3": "Get personalized recipes based on your ingredients and preferences",
+  "@onboardingDesc3": {
+    "description": "Third onboarding screen description"
+  },
+
+  "onboardingQuestion1": "What''s your main health goal?",
+  "@onboardingQuestion1": {
+    "description": "First onboarding question"
+  },
+
+  "goalLoseWeight": "Lose Weight",
+  "goalGainMuscle": "Gain Muscle",
+  "goalMaintain": "Maintain Health",
+  "goalImproveEnergy": "Improve Energy",
+
+  "onboardingQuestion2": "How active are you?",
+  "@onboardingQuestion2": {
+    "description": "Second onboarding question"
+  },
+
+  "activitySedentary": "Sedentary",
+  "activityLight": "Lightly Active",
+  "activityModerate": "Moderately Active",
+  "activityVery": "Very Active",
+  "activityExtreme": "Extremely Active",
+
+  "onboardingQuestion3": "Do you have dietary restrictions?",
+  "@onboardingQuestion3": {
+    "description": "Third onboarding question"
+  },
+
+  "dietNone": "None",
+  "dietVegetarian": "Vegetarian",
+  "dietVegan": "Vegan",
+  "dietGlutenFree": "Gluten-Free",
+  "dietDairyFree": "Dairy-Free",
+  "dietKeto": "Keto",
+  "dietPaleo": "Paleo",
+
+  "home": "Home",
+  "@home": {
+    "description": "Home navigation label"
+  },
+
+  "recipes": "Recipes",
+  "@recipes": {
+    "description": "Recipes navigation label"
+  },
+
+  "fridge": "Fridge",
+  "@fridge": {
+    "description": "Fridge navigation label"
+  },
+
+  "tracking": "Tracking",
+  "@tracking": {
+    "description": "Tracking navigation label"
+  },
+
+  "profile": "Profile",
+  "@profile": {
+    "description": "Profile navigation label"
+  },
+
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings page title"
+  },
+
+  "language": "Language",
+  "@language": {
+    "description": "Language setting label"
+  },
+
+  "selectLanguage": "Select Language",
+  "@selectLanguage": {
+    "description": "Language selection dialog title"
+  },
+
+  "english": "English",
+  "@english": {
+    "description": "English language name"
+  },
+
+  "french": "French",
+  "@french": {
+    "description": "French language name"
+  },
+
+  "languageChanged": "Language changed successfully",
+  "@languageChanged": {
+    "description": "Language change confirmation message"
+  },
+
+  "accountSettings": "Account Settings",
+  "notifications": "Notifications",
+  "privacy": "Privacy",
+  "terms": "Terms of Service",
+  "about": "About",
+  "logout": "Logout",
+  "editProfile": "Edit Profile",
+  "changePassword": "Change Password",
+  "deleteAccount": "Delete Account",
+
+  "myProfile": "My Profile",
+  "personalInfo": "Personal Information",
+  "nutritionGoals": "Nutrition Goals",
+  "healthStats": "Health Statistics",
+
+  "name": "Name",
+  "email": "Email",
+  "age": "Age",
+  "height": "Height",
+  "weight": "Weight",
+  "gender": "Gender",
+  "male": "Male",
+  "female": "Female",
+  "other": "Other",
+
+  "dailyCalorieGoal": "Daily Calorie Goal",
+  "proteinGoal": "Protein Goal",
+  "carbsGoal": "Carbs Goal",
+  "fatsGoal": "Fats Goal",
+
+  "save": "Save",
+  "cancel": "Cancel",
+  "edit": "Edit",
+  "delete": "Delete",
+  "confirm": "Confirm",
+  "close": "Close",
+  "apply": "Apply",
+  "reset": "Reset",
+  "clear": "Clear",
+  "search": "Search",
+  "filter": "Filter",
+  "sort": "Sort",
+
+  "monday": "Monday",
+  "tuesday": "Tuesday",
+  "wednesday": "Wednesday",
+  "thursday": "Thursday",
+  "friday": "Friday",
+  "saturday": "Saturday",
+  "sunday": "Sunday",
+
+  "mondayShort": "Mon",
+  "tuesdayShort": "Tue",
+  "wednesdayShort": "Wed",
+  "thursdayShort": "Thu",
+  "fridayShort": "Fri",
+  "saturdayShort": "Sat",
+  "sundayShort": "Sun",
+
+  "january": "January",
+  "february": "February",
+  "march": "March",
+  "april": "April",
+  "may": "May",
+  "june": "June",
+  "july": "July",
+  "august": "August",
+  "september": "September",
+  "october": "October",
+  "november": "November",
+  "december": "December",
+
+  "today": "Today",
+  "yesterday": "Yesterday",
+  "tomorrow": "Tomorrow",
+  "thisWeek": "This Week",
+  "thisMonth": "This Month",
+  "thisYear": "This Year",
+
+  "greeting": "Hello",
+  "@greeting": {
+    "description": "Greeting message"
+  },
+
+  "goodMorning": "Good Morning",
+  "goodAfternoon": "Good Afternoon",
+  "goodEvening": "Good Evening",
+
+  "caloriesRemaining": "Calories Remaining",
+  "caloriesConsumed": "Calories Consumed",
+  "caloriesBurned": "Calories Burned",
+
+  "dailyNutrition": "Daily Nutrition",
+  "nutritionSummary": "Nutrition Summary",
+  "macroBreakdown": "Macro Breakdown",
+
+  "proteins": "Proteins",
+  "proteinShort": "Protein",
+  "carbs": "Carbs",
+  "carbsShort": "Carbs",
+  "fats": "Fats",
+  "fatsShort": "Fat",
+  "fiber": "Fiber",
+  "sugar": "Sugar",
+  "sodium": "Sodium",
+
+  "gramsUnit": "g",
+  "@gramsUnit": {
+    "description": "Grams unit abbreviation"
+  },
+
+  "kcalUnit": "kcal",
+  "@kcalUnit": {
+    "description": "Kilocalories unit abbreviation"
+  },
+
+  "mlUnit": "ml",
+  "@mlUnit": {
+    "description": "Milliliters unit abbreviation"
+  },
+
+  "quickActions": "Quick Actions",
+  "scanFood": "Scan Food",
+  "addMeal": "Add Meal",
+  "logWater": "Log Water",
+  "addExercise": "Add Exercise",
+
+  "scanBarcode": "Scan Barcode",
+  "scanProduct": "Scan Product",
+  "scanningProduct": "Scanning product...",
+  "productFound": "Product found",
+  "productNotFound": "Product not found",
+
+  "addItem": "Add Item",
+  "addIngredient": "Add Ingredient",
+  "addNewIngredient": "Add New Ingredient",
+  "addManually": "Add Manually",
+  "addIngredientManually": "Add Ingredient Manually",
+
+  "recommendedForYou": "Recommended for You",
+  "popularRecipes": "Popular Recipes",
+  "trendingNow": "Trending Now",
+  "recentlyViewed": "Recently Viewed",
+
+  "recipe": "Recipe",
+  "ingredients": "Ingredients",
+  "instructions": "Instructions",
+  "prepTime": "Prep Time",
+  "cookTime": "Cook Time",
+  "totalTime": "Total Time",
+  "servings": "Servings",
+  "difficulty": "Difficulty",
+  "easy": "Easy",
+  "medium": "Medium",
+  "hard": "Hard",
+
+  "minutes": "min",
+  "@minutes": {
+    "description": "Minutes abbreviation"
+  },
+
+  "hours": "hours",
+  "hour": "hour",
+
+  "cook": "Cook",
+  "view": "View",
+  "viewRecipe": "View Recipe",
+  "viewAll": "View All",
+  "showMore": "Show More",
+  "showLess": "Show Less",
+
+  "cookWithYourIngredients": "Cook with Your Ingredients",
+  "myFridge": "My Fridge",
+  "ingredientsAvailable": "ingredients available",
+
+  "all": "All",
+  "breakfast": "Breakfast",
+  "lunch": "Lunch",
+  "dinner": "Dinner",
+  "snacks": "Snacks",
+  "desserts": "Desserts",
+  "drinks": "Drinks",
+
+  "categories": "Categories",
+  "category": "Category",
+
+  "aiRecipeSuggestions": "AI Recipe Suggestions",
+  "basedOnYourIngredients": "Based on your ingredients",
+  "pastaCarbonara": "Pasta Carbonara",
+  "caesarSalad": "Caesar Salad",
+
+  "mySmartFridge": "My Smart Fridge",
+  "fridgeInventory": "Fridge Inventory",
+  "itemsExpiringSoon": "{count, plural, =0{No items expiring soon} =1{1 item expiring soon} other{{count} items expiring soon}}",
+  "@itemsExpiringSoon": {
+    "description": "Message showing how many items are expiring soon",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+
+  "itemsCount": "{count, plural, =0{No items} =1{1 item} other{{count} items}}",
+  "@itemsCount": {
+    "description": "Count of items in fridge",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+
+  "expiringDays": "{days, plural, =0{Expires today} =1{Expires in 1 day} other{Expires in {days} days}}",
+  "@expiringDays": {
+    "description": "Days until expiration",
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+
+  "dropItemsHere": "Drop items here",
+  "dragToRearrange": "Drag to rearrange",
+
+  "topShelf": "Top Shelf",
+  "middleShelf": "Middle Shelf",
+  "bottomShelf": "Bottom Shelf",
+  "door": "Door",
+  "freezer": "Freezer",
+
+  "fridgeLocation": "Fridge Location",
+  "location": "Location",
+  "shelfLocation": "Shelf Location",
+
+  "quantity": "Quantity",
+  "quantityHint": "e.g., 500g, 2 pieces",
+
+  "expiresIn": "Expires In",
+  "expirationDate": "Expiration Date",
+  "numberOfDays": "Number of Days",
+  "daysRemaining": "days remaining",
+
+  "productName": "Product Name",
+  "productNameHint": "e.g., Milk, Chicken",
+
+  "chooseIcon": "Choose Icon",
+  "selectIcon": "Select Icon",
+
+  "fruits": "Fruits",
+  "vegetables": "Vegetables",
+  "dairy": "Dairy",
+  "meat": "Meat",
+  "fish": "Fish",
+  "grains": "Grains",
+  "beverages": "Beverages",
+  "condiments": "Condiments",
+  "snacksCategory": "Snacks",
+  "otherCategory": "Other",
+
+  "unknownProduct": "Unknown Product",
+
+  "enterProductName": "Please enter product name",
+  "enterQuantity": "Please enter quantity",
+  "selectCategory": "Please select a category",
+  "selectLocation": "Please select a location",
+
+  "addedToFridge": "added to fridge!",
+  "addToFridge": "Add to Fridge",
+  "removeFromFridge": "Remove from Fridge",
+  "remove": "Remove",
+
+  "editIngredient": "Edit Ingredient",
+  "deleteIngredient": "Delete Ingredient",
+
+  "confirmDelete": "Are you sure you want to delete this item?",
+  "deleteConfirmation": "Delete Confirmation",
+
+  "day": "Day",
+  "week": "Week",
+  "month": "Month",
+  "year": "Year",
+
+  "caloriesThisWeek": "Calories This Week",
+  "caloriesThisMonth": "Calories This Month",
+
+  "statistics": "Statistics",
+  "stats": "Stats",
+  "analytics": "Analytics",
+
+  "water": "Water",
+  "waterIntake": "Water Intake",
+  "glassesOfWater": "glasses of water",
+  "dailyWaterGoal": "Daily Water Goal",
+
+  "activity": "Activity",
+  "activeMinutes": "Active Minutes",
+  "steps": "Steps",
+  "stepsToday": "Steps Today",
+
+  "weightTracking": "Weight Tracking",
+  "currentWeight": "Current Weight",
+  "goalWeight": "Goal Weight",
+  "weightProgress": "Weight Progress",
+
+  "averageScore": "Average Score",
+  "healthScore": "Health Score",
+  "nutritionScore": "Nutrition Score",
+
+  "weeklySummary": "Weekly Summary",
+  "monthlySummary": "Monthly Summary",
+  "progress": "Progress",
+  "progressTracking": "Progress Tracking",
+
+  "meals": "Meals",
+  "mealsLogged": "Meals Logged",
+  "totalMeals": "Total Meals",
+
+  "healthyDaysStreak": "Healthy Days Streak",
+  "currentStreak": "Current Streak",
+  "longestStreak": "Longest Streak",
+
+  "chatbot": "Chatbot",
+  "aiAssistant": "AI Assistant",
+  "nutritionAssistant": "Nutrition Assistant",
+  "askMeAnything": "Ask me anything...",
+  "needIdeas": "Need Ideas?",
+  "askMeRecipe": "Ask me for a recipe!",
+  "openChat": "Open Chat",
+  "startChat": "Start Chat",
+
+  "chatPlaceholder": "Type your message...",
+  "chatSend": "Send",
+  "chatHistory": "Chat History",
+  "clearChat": "Clear Chat",
+
+  "chatAIAdvice": "AI Nutrition Advice",
+  "getAdvice": "Get Advice",
+
+  "dailyTracking": "Daily Tracking",
+  "weeklyTracking": "Weekly Tracking",
+  "monthlyTracking": "Monthly Tracking",
+
+  "goal": "Goal",
+  "goals": "Goals",
+  "myGoals": "My Goals",
+  "achievedGoals": "Achieved Goals",
+
+  "error": "Error",
+  "errorOccurred": "An error occurred",
+  "tryAgain": "Try Again",
+  "retry": "Retry",
+  "errorLoading": "Error loading data",
+  "noConnection": "No internet connection",
+  "timeout": "Request timeout",
+
+  "success": "Success",
+  "successMessage": "Operation completed successfully",
+  "saved": "Saved",
+  "updated": "Updated",
+  "deleted": "Deleted",
+  "added": "Added",
+
+  "loading": "Loading...",
+  "pleaseWait": "Please wait...",
+  "processing": "Processing...",
+
+  "noData": "No data available",
+  "noResults": "No results found",
+  "noRecipes": "No recipes found",
+  "noIngredients": "No ingredients available",
+
+  "emptyFridge": "Your fridge is empty",
+  "emptyFridgeMessage": "Start adding ingredients to see them here",
+
+  "notificationTitle": "Notification",
+  "notificationSettings": "Notification Settings",
+  "enableNotifications": "Enable Notifications",
+  "pushNotifications": "Push Notifications",
+  "emailNotifications": "Email Notifications",
+  "reminderNotifications": "Reminder Notifications",
+
+  "expirationReminder": "Expiration Reminder",
+  "mealReminder": "Meal Reminder",
+  "waterReminder": "Water Reminder",
+
+  "yes": "Yes",
+  "no": "No",
+  "ok": "OK",
+  "done": "Done",
+
+  "optional": "Optional",
+  "required": "Required",
+
+  "version": "Version",
+  "buildNumber": "Build Number",
+
+  "darkMode": "Dark Mode",
+  "lightMode": "Light Mode",
+  "theme": "Theme",
+  "appearance": "Appearance",
+
+  "units": "Units",
+  "metric": "Metric",
+  "imperial": "Imperial",
+
+  "help": "Help",
+  "support": "Support",
+  "contactUs": "Contact Us",
+  "faq": "FAQ",
+  "feedback": "Feedback",
+  "reportBug": "Report Bug",
+  "rateApp": "Rate App",
+  "shareApp": "Share App",
+
+  "continueButton": "Continue",
+  "question": "Question",
+  "@question": {
+    "description": "Label for question"
+  },
+  "questionOf": "Question {current} of {total}",
+  "@questionOf": {
+    "description": "Question progress indicator",
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "pleaseSelectOption": "Please select at least one option",
+  "specifyHere": "Specify here...",
+
+  "onbQ1": "How many people do you cook for?",
+  "onbQ1Sub": "Very important for portions.",
+  "onbQ1Opt1": "Just me",
+  "onbQ1Opt2": "2 people",
+  "onbQ1Opt3": "3–4",
+  "onbQ1Opt4": "5+",
+  "onbQ1Ben1": "adjust portions",
+  "onbQ1Ben2": "auto shopping list",
+
+  "onbQ2": "How often do you cook per week?",
+  "onbQ2Opt1": "Never",
+  "onbQ2Opt2": "1–2 times",
+  "onbQ2Opt3": "3–5 times",
+  "onbQ2Opt4": "Every day",
+  "onbQ2Ben1": "recommendation frequency",
+  "onbQ2Ben2": "meal plan or not",
+
+  "onbQ3": "Max time for a meal?",
+  "onbQ3Sub": "Super important for UX.",
+  "onbQ3Opt1": "10 min (quick)",
+  "onbQ3Opt2": "20 min",
+  "onbQ3Opt3": "30 min",
+  "onbQ3Opt4": "Doesn''t matter",
+  "onbQ3Ben1": "filter long recipes",
+  "onbQ3Ben2": "express recipes",
+
+  "onbQ4": "Your cooking level?",
+  "onbQ4Opt1": "Beginner",
+  "onbQ4Opt2": "Intermediate",
+  "onbQ4Opt3": "Advanced",
+  "onbQ4Ben1": "recipe difficulty",
+  "onbQ4Ben2": "simplified steps",
+  "onbQ4Ben3": "tutorials or not",
+
+  "onbQ5": "Your dietary preferences?",
+  "onbQ5Opt1": "Omnivore",
+  "onbQ5Opt2": "Vegetarian",
+  "onbQ5Opt3": "Vegan",
+  "onbQ5Opt4": "Halal",
+  "onbQ5Opt5": "No pork",
+  "onbQ5Opt6": "Lactose-free",
+  "onbQ5Opt7": "Gluten-free",
+  "onbQ5Opt8": "Keto",
+  "onbQ5Ben1": "automatic recipe filter",
+
+  "onbQ6": "Allergies or forbidden foods?",
+  "onbQ6Opt1": "Peanuts",
+  "onbQ6Opt2": "Seafood",
+  "onbQ6Opt3": "Milk",
+  "onbQ6Opt4": "Eggs",
+  "onbQ6Opt5": "Other",
+  "onbQ6Opt6": "None",
+  "onbQ6Ben1": "safety + medical credibility",
+
+  "onbQ7": "What type of dishes do you prefer?",
+  "onbQ7Sub": "Fun + useful for personalization",
+  "onbQ7Opt1": "Quick / simple",
+  "onbQ7Opt2": "Healthy",
+  "onbQ7Opt3": "High protein (sport)",
+  "onbQ7Opt4": "Budget-friendly",
+  "onbQ7Opt5": "Gourmet / comfort food",
+  "onbQ7Opt6": "World cuisine",
+  "onbQ7Opt7": "Traditional",
+  "onbQ7Ben1": "personalized recommendations",
+
+  "onbQ8": "Food budget?",
+  "onbQ8Opt1": "Low budget",
+  "onbQ8Opt2": "Normal",
+  "onbQ8Opt3": "Premium",
+  "onbQ8Ben1": "ingredient choices (rice/chicken vs salmon/avocado)",
+
+  "onbQ9": "What equipment do you have?",
+  "onbQ9Sub": "Specific and very smart",
+  "onbQ9Opt1": "Oven",
+  "onbQ9Opt2": "Microwave",
+  "onbQ9Opt3": "Air fryer",
+  "onbQ9Opt4": "Blender",
+  "onbQ9Opt5": "Food processor",
+  "onbQ9Opt6": "BBQ",
+  "onbQ9Opt7": "Stovetop only",
+  "onbQ9Ben1": "avoid suggesting impossible recipes",
+
+  "onbQ10": "How often do you shop?",
+  "onbQ10Opt1": "Every day",
+  "onbQ10Opt2": "2–3 times/week",
+  "onbQ10Opt3": "Once a week",
+  "onbQ10Opt4": "Rarely",
+  "onbQ10Ben1": "weekly meal plan",
+  "onbQ10Ben2": "stock management",
+
+  "onbQ11": "Want to scan your fridge now?",
+  "onbQ11Sub": "Start the AI magic right away 🔥",
+  "onbQ11Opt1": "Scan with camera",
+  "onbQ11Opt2": "Add ingredients",
+  "onbQ11Opt3": "Later",
+  "onbQ11Ben1": "start the AI magic right away"
+}

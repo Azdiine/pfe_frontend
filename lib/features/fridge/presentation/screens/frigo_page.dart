@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/apple_theme.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../domain/models/ingredient_model.dart';
 import 'barcode_scanner_page.dart';
+import '../../../../core/localization/locale_provider.dart';
+import '../../../../core/localization/app_localizations.dart';
 
-class FrigoPage extends StatefulWidget {
+class FrigoPage extends ConsumerStatefulWidget {
   const FrigoPage({super.key});
 
   @override
-  State<FrigoPage> createState() => _FrigoPageState();
+  ConsumerState<FrigoPage> createState() => _FrigoPageState();
 }
 
-class _FrigoPageState extends State<FrigoPage> {
+class _FrigoPageState extends ConsumerState<FrigoPage> {
   late List<Ingredient> _topShelfItems;
   late List<Ingredient> _middleShelfItems;
   late List<Ingredient> _bottomShelfItems;
@@ -191,6 +195,7 @@ class _FrigoPageState extends State<FrigoPage> {
   void _showRecipeSuggestions() {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => _buildRecipeSuggestionsSheet(),
     );
@@ -236,7 +241,7 @@ class _FrigoPageState extends State<FrigoPage> {
             ),
           ],
         ),
-        backgroundColor: const Color(0xFF10B981),
+        backgroundColor: AppColors.success,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
@@ -245,24 +250,33 @@ class _FrigoPageState extends State<FrigoPage> {
 
   @override
   Widget build(BuildContext context) {
+    final locale = ref.watch(localeProvider);
+    final l10n = AppLocalizations.of(locale);
+
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1F2E),
+      backgroundColor: AppColors.background(context),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1A1F2E),
+        backgroundColor: AppColors.background(context),
         elevation: 0,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '🧊 My Smart Fridge',
+              l10n.mySmartFridge,
               style: AppleTheme.title2.copyWith(
                 fontWeight: FontWeight.w800,
-                color: Colors.white,
+                color: AppColors.textPrimary(context),
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
             Text(
-              '${allIngredients.length} items • $expiringCount expiring soon',
-              style: AppleTheme.caption1.copyWith(color: Colors.white60),
+              '${l10n.itemsCount(allIngredients.length)} • ${l10n.itemsExpiringSoon(expiringCount)}',
+              style: AppleTheme.caption1.copyWith(
+                color: AppColors.textSecondary(context),
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
@@ -272,22 +286,22 @@ class _FrigoPageState extends State<FrigoPage> {
               margin: const EdgeInsets.only(right: 16),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: const Color(0xFFFF6B35).withOpacity(0.2),
+                color: AppColors.warning.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: const Color(0xFFFF6B35), width: 1),
+                border: Border.all(color: AppColors.warning, width: 1),
               ),
               child: Row(
                 children: [
-                  const Icon(
+                  Icon(
                     CupertinoIcons.exclamationmark_triangle,
-                    color: Color(0xFFFF6B35),
+                    color: AppColors.warning,
                     size: 16,
                   ),
                   const SizedBox(width: 4),
                   Text(
                     '$expiringCount',
                     style: AppleTheme.caption1.copyWith(
-                      color: const Color(0xFFFF6B35),
+                      color: AppColors.warning,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -297,13 +311,7 @@ class _FrigoPageState extends State<FrigoPage> {
         ],
       ),
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF1A1F2E), Color(0xFF0F1419)],
-          ),
-        ),
+        decoration: BoxDecoration(gradient: AppColors.depthGradient(context)),
         child: SingleChildScrollView(
           padding: const EdgeInsets.only(bottom: 120),
           child: Column(
@@ -318,78 +326,93 @@ class _FrigoPageState extends State<FrigoPage> {
           ),
         ),
       ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          // AI Recipe Suggestion Button - iOS style
-          CupertinoButton(
-            padding: EdgeInsets.zero,
-            onPressed: _showRecipeSuggestions,
-            child: Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                color: const Color(0xFF8B5CF6),
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF8B5CF6).withOpacity(0.4),
-                    blurRadius: 16,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: const Icon(
-                CupertinoIcons.sparkles,
-                color: Colors.white,
-                size: 24,
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          // Add Ingredient Button - iOS style
-          CupertinoButton(
-            padding: EdgeInsets.zero,
-            onPressed: _showAddIngredientModal,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-              decoration: BoxDecoration(
-                color: const Color(0xFFFF6B35),
-                borderRadius: BorderRadius.circular(28),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFFFF6B35).withOpacity(0.4),
-                    blurRadius: 16,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(CupertinoIcons.add, color: Colors.white, size: 20),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Add Item',
-                    style: AppleTheme.callout.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).padding.bottom + 60,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            // AI Recipe Suggestion Button
+            Semantics(
+              label: 'Recipe suggestions',
+              button: true,
+              child: CupertinoButton(
+                padding: EdgeInsets.zero,
+                onPressed: _showRecipeSuggestions,
+                child: Container(
+                  width: 52,
+                  height: 52,
+                  decoration: BoxDecoration(
+                    color: AppColors.surface(context),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: AppColors.divider(context).withOpacity(0.3),
+                      width: 0.5,
                     ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.08),
+                        blurRadius: 20,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
-                ],
+                  child: Icon(
+                    CupertinoIcons.sparkles,
+                    color: AppColors.secondary(context),
+                    size: 22,
+                  ),
+                ),
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: 12),
+            // Add Ingredient Button - Round
+            Semantics(
+              label: 'Add ingredient',
+              button: true,
+              child: CupertinoButton(
+                padding: EdgeInsets.zero,
+                onPressed: _showAddIngredientModal,
+                child: Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.primary(context),
+                        AppColors.primary(context).withOpacity(0.85),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary(context).withOpacity(0.35),
+                        blurRadius: 20,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    CupertinoIcons.add,
+                    color: Colors.white,
+                    size: 28,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  // ============================================
-  // 3D FRIDGE UI METHODS
-  // ============================================
-
   Widget _build3DFridge() {
+    final locale = ref.watch(localeProvider);
+    final l10n = AppLocalizations.of(locale);
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -403,8 +426,11 @@ class _FrigoPageState extends State<FrigoPage> {
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(30),
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF2D3748), Color(0xFF1A202C)],
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.surfaceElevated(context),
+                    AppColors.surface(context),
+                  ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -421,11 +447,9 @@ class _FrigoPageState extends State<FrigoPage> {
                   // Fridge Header Light
                   Container(
                     height: 10,
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Color(0xFF4FD1C5), Color(0xFF38B2AC)],
-                      ),
-                      borderRadius: BorderRadius.vertical(
+                    decoration: BoxDecoration(
+                      gradient: AppColors.primaryGradient(context),
+                      borderRadius: const BorderRadius.vertical(
                         top: Radius.circular(30),
                       ),
                     ),
@@ -438,32 +462,32 @@ class _FrigoPageState extends State<FrigoPage> {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          const Color(0xFFE1F5FE).withOpacity(0.3),
-                          const Color(0xFFB3E5FC).withOpacity(0.2),
+                          AppColors.primary(context).withOpacity(0.1),
+                          AppColors.primary(context).withOpacity(0.05),
                         ],
                       ),
                     ),
                     child: Column(
                       children: [
                         // Top Shelf
-                        _buildShelf('Top Shelf', _topShelfItems, 'top'),
+                        _buildShelf(l10n.topShelf, _topShelfItems, 'top'),
                         const SizedBox(height: 20),
                         // Middle Shelf
                         _buildShelf(
-                          'Middle Shelf',
+                          l10n.middleShelf,
                           _middleShelfItems,
                           'middle',
                         ),
                         const SizedBox(height: 20),
                         // Bottom Shelf
                         _buildShelf(
-                          'Bottom Shelf',
+                          l10n.bottomShelf,
                           _bottomShelfItems,
                           'bottom',
                         ),
                         const SizedBox(height: 20),
                         // Door Compartment
-                        _buildShelf('Door', _doorItems, 'door'),
+                        _buildShelf(l10n.door, _doorItems, 'door'),
                       ],
                     ),
                   ),
@@ -488,13 +512,13 @@ class _FrigoPageState extends State<FrigoPage> {
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: isHovering
-                ? const Color(0xFF8B5CF6).withOpacity(0.2)
-                : const Color(0xFFFFFFFF).withOpacity(0.1),
+                ? AppColors.secondary(context).withOpacity(0.2)
+                : AppColors.surface(context).withOpacity(0.3),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: isHovering
-                  ? const Color(0xFF8B5CF6)
-                  : Colors.white.withOpacity(0.2),
+                  ? AppColors.secondary(context)
+                  : AppColors.divider(context),
               width: 2,
             ),
             boxShadow: [
@@ -512,11 +536,11 @@ class _FrigoPageState extends State<FrigoPage> {
                 children: [
                   Text(
                     label,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                      shadows: [
+                      color: AppColors.textPrimary(context),
+                      shadows: const [
                         Shadow(
                           color: Colors.black26,
                           offset: Offset(0, 1),
@@ -532,7 +556,7 @@ class _FrigoPageState extends State<FrigoPage> {
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF8B5CF6),
+                      color: AppColors.secondary(context),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
@@ -608,8 +632,11 @@ class _FrigoPageState extends State<FrigoPage> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: ingredient.isExpiringSoon
-              ? [const Color(0xFFFF6B35), const Color(0xFFF77F00)]
-              : [const Color(0xFFFFFFFF), const Color(0xFFF3F4F6)],
+              ? [AppColors.warning, AppColors.warning]
+              : [
+                  AppColors.surface(context),
+                  AppColors.surfaceElevated(context),
+                ],
         ),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
@@ -636,7 +663,7 @@ class _FrigoPageState extends State<FrigoPage> {
               fontWeight: FontWeight.w700,
               color: ingredient.isExpiringSoon
                   ? Colors.white
-                  : const Color(0xFF111827),
+                  : AppColors.textPrimary(context),
             ),
           ),
           const SizedBox(height: 4),
@@ -644,15 +671,15 @@ class _FrigoPageState extends State<FrigoPage> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.surface(context),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
                 '${ingredient.daysUntilExpiry}d',
-                style: const TextStyle(
+                style: AppleTheme.caption2.copyWith(
                   fontSize: 9,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFFFF6B35),
+                  color: AppColors.warning,
                 ),
               ),
             ),
@@ -666,15 +693,11 @@ class _FrigoPageState extends State<FrigoPage> {
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF8B5CF6), Color(0xFF7C3AED)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        gradient: AppColors.aiGradient(context),
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF8B5CF6).withOpacity(0.4),
+            color: AppColors.secondary(context).withOpacity(0.4),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -699,23 +722,32 @@ class _FrigoPageState extends State<FrigoPage> {
                 ),
               ),
               const SizedBox(width: 16),
-              const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'AI Recipe Suggestions',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Text(
-                      'Based on your ingredients',
-                      style: TextStyle(fontSize: 13, color: Colors.white70),
-                    ),
-                  ],
+              Expanded(
+                child: Consumer(
+                  builder: (context, ref, child) {
+                    final locale = ref.watch(localeProvider);
+                    final l10n = AppLocalizations.of(locale);
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.aiRecipeSuggestions,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Text(
+                          l10n.basedOnYourIngredients,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Colors.white70,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
             ],
@@ -724,15 +756,31 @@ class _FrigoPageState extends State<FrigoPage> {
           Row(
             children: [
               Expanded(
-                child: _buildRecipePreviewCard(
-                  '🍝',
-                  'Pasta Carbonara',
-                  '15 min',
+                child: Consumer(
+                  builder: (context, ref, child) {
+                    final locale = ref.watch(localeProvider);
+                    final l10n = AppLocalizations.of(locale);
+                    return _buildRecipePreviewCard(
+                      '🍝',
+                      l10n.pastaCarbonara,
+                      '15 ${l10n.minutes}',
+                    );
+                  },
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: _buildRecipePreviewCard('🥗', 'Caesar Salad', '10 min'),
+                child: Consumer(
+                  builder: (context, ref, child) {
+                    final locale = ref.watch(localeProvider);
+                    final l10n = AppLocalizations.of(locale);
+                    return _buildRecipePreviewCard(
+                      '🥗',
+                      l10n.caesarSalad,
+                      '10 ${l10n.minutes}',
+                    );
+                  },
+                ),
               ),
             ],
           ),
@@ -779,88 +827,122 @@ class _FrigoPageState extends State<FrigoPage> {
   // ============================================
 
   Widget _buildIngredientBottomSheet(Ingredient ingredient) {
+    final locale = ref.watch(localeProvider);
+    final l10n = AppLocalizations.of(locale);
+
     return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+      padding: const EdgeInsets.all(AppleTheme.spacing24),
+      decoration: BoxDecoration(
+        color: AppColors.surface(context),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 50,
-            height: 5,
+            width: 40,
+            height: 4,
             decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(10),
+              color: AppColors.divider(context),
+              borderRadius: BorderRadius.circular(AppleTheme.radiusSmall),
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppleTheme.spacing20),
           Text(ingredient.emoji, style: const TextStyle(fontSize: 64)),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppleTheme.spacing16),
           Text(
             ingredient.name,
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
+            style: AppleTheme.title2.copyWith(
+              fontWeight: FontWeight.w800,
+              color: AppColors.textPrimary(context),
+            ),
           ),
           const SizedBox(height: 24),
           _buildDetailRow(
-            Icons.shopping_basket,
-            'Quantity',
+            CupertinoIcons.cube_box,
+            l10n.quantity,
             ingredient.quantity,
           ),
           _buildDetailRow(
-            Icons.calendar_today,
-            'Expires in',
-            '${ingredient.daysUntilExpiry} days',
+            CupertinoIcons.calendar,
+            l10n.expiresIn,
+            l10n.expiringDays(ingredient.daysUntilExpiry),
           ),
-          _buildDetailRow(Icons.category, 'Category', ingredient.category),
-          _buildDetailRow(Icons.shelves, 'Location', ingredient.shelfLocation),
+          _buildDetailRow(
+            CupertinoIcons.tag,
+            l10n.category,
+            ingredient.category,
+          ),
+          _buildDetailRow(
+            CupertinoIcons.square_grid_2x2,
+            l10n.location,
+            ingredient.shelfLocation,
+          ),
           const SizedBox(height: 24),
           Row(
             children: [
               Expanded(
-                child: ElevatedButton.icon(
+                child: CupertinoButton(
+                  padding: EdgeInsets.zero,
                   onPressed: () {
                     Navigator.pop(context);
                     _removeIngredient(ingredient.id);
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFEF4444),
+                  child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
+                    decoration: BoxDecoration(
+                      color: AppColors.error,
                       borderRadius: BorderRadius.circular(16),
                     ),
-                  ),
-                  icon: const Icon(Icons.delete, color: Colors.white),
-                  label: const Text(
-                    'Remove',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          CupertinoIcons.trash,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          l10n.remove,
+                          style: AppleTheme.callout.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: ElevatedButton.icon(
+                child: CupertinoButton(
+                  padding: EdgeInsets.zero,
                   onPressed: () => Navigator.pop(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF8B5CF6),
+                  child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
+                    decoration: BoxDecoration(
+                      color: AppColors.secondary(context),
                       borderRadius: BorderRadius.circular(16),
                     ),
-                  ),
-                  icon: const Icon(Icons.edit, color: Colors.white),
-                  label: const Text(
-                    'Edit',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          CupertinoIcons.pencil,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          l10n.edit,
+                          style: AppleTheme.callout.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -882,10 +964,10 @@ class _FrigoPageState extends State<FrigoPage> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: const Color(0xFF8B5CF6).withOpacity(0.1),
+              color: AppColors.secondary(context).withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, size: 20, color: const Color(0xFF8B5CF6)),
+            child: Icon(icon, size: 20, color: AppColors.secondary(context)),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -894,17 +976,17 @@ class _FrigoPageState extends State<FrigoPage> {
               children: [
                 Text(
                   label,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
-                    color: Color(0xFF6B7280),
+                    color: AppColors.textSecondary(context),
                   ),
                 ),
                 Text(
                   value,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF111827),
+                    color: AppColors.textPrimary(context),
                   ),
                 ),
               ],
@@ -916,80 +998,115 @@ class _FrigoPageState extends State<FrigoPage> {
   }
 
   Widget _buildAddIngredientSheet() {
+    final locale = ref.watch(localeProvider);
+    final l10n = AppLocalizations.of(locale);
+
     return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+      padding: const EdgeInsets.all(AppleTheme.spacing24),
+      decoration: BoxDecoration(
+        color: AppColors.surface(context),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 50,
-            height: 5,
+            width: 40,
+            height: 4,
             decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(10),
+              color: AppColors.divider(context),
+              borderRadius: BorderRadius.circular(AppleTheme.radiusSmall),
             ),
           ),
-          const SizedBox(height: 20),
-          const Text(
-            'Add New Ingredient',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
+          const SizedBox(height: AppleTheme.spacing20),
+          Text(
+            l10n.addNewIngredient,
+            style: AppleTheme.title2.copyWith(
+              fontWeight: FontWeight.w800,
+              color: AppColors.textPrimary(context),
+            ),
           ),
           const SizedBox(height: 24),
-          ElevatedButton.icon(
+          CupertinoButton(
+            padding: EdgeInsets.zero,
             onPressed: () async {
               Navigator.pop(context);
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const BarcodeScannerPage(),
+              final result = await Navigator.of(context, rootNavigator: true).push(
+                PageRouteBuilder(
+                  opaque: true,
+                  barrierDismissible: false,
+                  barrierColor: Colors.black,
+                  fullscreenDialog: true,
+                  pageBuilder: (context, animation, secondaryAnimation) =>
+                      const BarcodeScannerPage(),
+                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(
+                      opacity: animation,
+                      child: child,
+                    );
+                  },
                 ),
               );
 
               if (result != null && mounted) {
-                // Handle scanned product result
                 _addScannedProduct(result);
               }
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFFF6B35),
+            child: Container(
+              width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 16),
-              minimumSize: const Size(double.infinity, 0),
-              shape: RoundedRectangleBorder(
+              decoration: BoxDecoration(
+                color: AppColors.warning,
                 borderRadius: BorderRadius.circular(16),
               ),
-            ),
-            icon: const Icon(Icons.qr_code_scanner, color: Colors.white),
-            label: const Text(
-              'Scan Barcode',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    CupertinoIcons.barcode_viewfinder,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    l10n.scanBarcode,
+                    style: AppleTheme.callout.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
           const SizedBox(height: 16),
-          ElevatedButton.icon(
+          CupertinoButton(
+            padding: EdgeInsets.zero,
             onPressed: _showManualAddForm,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF8B5CF6),
+            child: Container(
+              width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 16),
-              minimumSize: const Size(double.infinity, 0),
-              shape: RoundedRectangleBorder(
+              decoration: BoxDecoration(
+                color: AppColors.secondary(context),
                 borderRadius: BorderRadius.circular(16),
               ),
-            ),
-            icon: const Icon(Icons.edit, color: Colors.white),
-            label: const Text(
-              'Add Manually',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    CupertinoIcons.pencil,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    l10n.addManually,
+                    style: AppleTheme.callout.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -1000,22 +1117,25 @@ class _FrigoPageState extends State<FrigoPage> {
   }
 
   Widget _buildManualAddForm() {
+    final locale = ref.watch(localeProvider);
+    final l10n = AppLocalizations.of(locale);
+
     final nameController = TextEditingController();
     final quantityController = TextEditingController();
     final daysController = TextEditingController(text: '7');
     String selectedEmoji = '🍎';
-    String selectedCategory = 'Fruits';
+    String selectedCategory = l10n.fruits;
     String selectedShelf = 'middle';
 
     final categories = [
-      'Fruits',
-      'Vegetables',
-      'Dairy',
-      'Meat',
-      'Beverages',
-      'Condiments',
-      'Snacks',
-      'Other',
+      l10n.fruits,
+      l10n.vegetables,
+      l10n.dairy,
+      l10n.meat,
+      l10n.beverages,
+      l10n.condiments,
+      l10n.snacks,
+      l10n.other,
     ];
 
     final emojis = [
@@ -1070,9 +1190,9 @@ class _FrigoPageState extends State<FrigoPage> {
             top: 24,
             bottom: MediaQuery.of(context).viewInsets.bottom + 24,
           ),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+          decoration: BoxDecoration(
+            color: AppColors.surface(context),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           ),
           child: SingleChildScrollView(
             child: Column(
@@ -1082,11 +1202,13 @@ class _FrigoPageState extends State<FrigoPage> {
                 // Handle bar
                 Center(
                   child: Container(
-                    width: 50,
-                    height: 5,
+                    width: 40,
+                    height: 4,
                     decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(10),
+                      color: AppColors.divider(context),
+                      borderRadius: BorderRadius.circular(
+                        AppleTheme.radiusSmall,
+                      ),
                     ),
                   ),
                 ),
@@ -1099,9 +1221,7 @@ class _FrigoPageState extends State<FrigoPage> {
                       width: 50,
                       height: 50,
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF8B5CF6), Color(0xFF7C3AED)],
-                        ),
+                        gradient: AppColors.aiGradient(context),
                         borderRadius: BorderRadius.circular(15),
                       ),
                       child: const Icon(
@@ -1111,11 +1231,15 @@ class _FrigoPageState extends State<FrigoPage> {
                       ),
                     ),
                     const SizedBox(width: 16),
-                    const Text(
-                      'Add Ingredient Manually',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w800,
+                    Expanded(
+                      child: Text(
+                        l10n.addIngredientManually,
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w800,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
@@ -1123,21 +1247,21 @@ class _FrigoPageState extends State<FrigoPage> {
                 const SizedBox(height: 32),
 
                 // Emoji Picker
-                const Text(
-                  'Choose Icon',
+                Text(
+                  l10n.chooseIcon,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF111827),
+                    color: AppColors.textPrimary(context),
                   ),
                 ),
                 const SizedBox(height: 12),
                 Container(
                   height: 80,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF9FAFB),
+                    color: AppColors.surface(context),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: const Color(0xFFE5E7EB)),
+                    border: Border.all(color: AppColors.divider(context)),
                   ),
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
@@ -1157,13 +1281,13 @@ class _FrigoPageState extends State<FrigoPage> {
                           width: 60,
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? const Color(0xFF8B5CF6)
-                                : Colors.white,
+                                ? AppColors.secondary(context)
+                                : AppColors.surface(context),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: isSelected
-                                  ? const Color(0xFF8B5CF6)
-                                  : const Color(0xFFE5E7EB),
+                                  ? AppColors.secondary(context)
+                                  : AppColors.divider(context),
                               width: 2,
                             ),
                           ),
@@ -1180,91 +1304,91 @@ class _FrigoPageState extends State<FrigoPage> {
                 ),
                 const SizedBox(height: 24),
 
-                // Product Name
-                const Text(
-                  'Product Name',
+                // Nom du Produit
+                Text(
+                  l10n.productName,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF111827),
+                    color: AppColors.textPrimary(context),
                   ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: nameController,
                   decoration: InputDecoration(
-                    hintText: 'e.g., Milk, Eggs, Chicken...',
+                    hintText: l10n.productNameHint,
                     filled: true,
-                    fillColor: const Color(0xFFF9FAFB),
+                    fillColor: AppColors.surface(context),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
-                      borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                      borderSide: BorderSide(color: AppColors.divider(context)),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
-                      borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                      borderSide: BorderSide(color: AppColors.divider(context)),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
-                      borderSide: const BorderSide(
-                        color: Color(0xFF8B5CF6),
+                      borderSide: BorderSide(
+                        color: AppColors.secondary(context),
                         width: 2,
                       ),
                     ),
-                    prefixIcon: const Icon(
+                    prefixIcon: Icon(
                       Icons.fastfood,
-                      color: Color(0xFF8B5CF6),
+                      color: AppColors.secondary(context),
                     ),
                   ),
                 ),
                 const SizedBox(height: 24),
 
-                // Quantity
-                const Text(
-                  'Quantity',
+                // Quantité
+                Text(
+                  l10n.quantity,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF111827),
+                    color: AppColors.textPrimary(context),
                   ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: quantityController,
                   decoration: InputDecoration(
-                    hintText: 'e.g., 1L, 500g, 6 pcs...',
+                    hintText: l10n.quantityHint,
                     filled: true,
-                    fillColor: const Color(0xFFF9FAFB),
+                    fillColor: AppColors.surface(context),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
-                      borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                      borderSide: BorderSide(color: AppColors.divider(context)),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
-                      borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                      borderSide: BorderSide(color: AppColors.divider(context)),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
-                      borderSide: const BorderSide(
-                        color: Color(0xFF8B5CF6),
+                      borderSide: BorderSide(
+                        color: AppColors.secondary(context),
                         width: 2,
                       ),
                     ),
-                    prefixIcon: const Icon(
+                    prefixIcon: Icon(
                       Icons.shopping_basket,
-                      color: Color(0xFF8B5CF6),
+                      color: AppColors.secondary(context),
                     ),
                   ),
                 ),
                 const SizedBox(height: 24),
 
-                // Days Until Expiry
-                const Text(
-                  'Expires in (days)',
+                // Expire dans (jours)
+                Text(
+                  l10n.expiresIn,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF111827),
+                    color: AppColors.textPrimary(context),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -1272,39 +1396,39 @@ class _FrigoPageState extends State<FrigoPage> {
                   controller: daysController,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
-                    hintText: 'Number of days',
+                    hintText: l10n.numberOfDays,
                     filled: true,
-                    fillColor: const Color(0xFFF9FAFB),
+                    fillColor: AppColors.surface(context),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
-                      borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                      borderSide: BorderSide(color: AppColors.divider(context)),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
-                      borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+                      borderSide: BorderSide(color: AppColors.divider(context)),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
-                      borderSide: const BorderSide(
-                        color: Color(0xFF8B5CF6),
+                      borderSide: BorderSide(
+                        color: AppColors.secondary(context),
                         width: 2,
                       ),
                     ),
-                    prefixIcon: const Icon(
+                    prefixIcon: Icon(
                       Icons.calendar_today,
-                      color: Color(0xFF8B5CF6),
+                      color: AppColors.secondary(context),
                     ),
                   ),
                 ),
                 const SizedBox(height: 24),
 
-                // Category
-                const Text(
-                  'Category',
+                // Catégorie
+                Text(
+                  l10n.category,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF111827),
+                    color: AppColors.textPrimary(context),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -1326,13 +1450,13 @@ class _FrigoPageState extends State<FrigoPage> {
                         ),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? const Color(0xFF8B5CF6)
-                              : const Color(0xFFF9FAFB),
+                              ? AppColors.secondary(context)
+                              : AppColors.surface(context),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: isSelected
-                                ? const Color(0xFF8B5CF6)
-                                : const Color(0xFFE5E7EB),
+                                ? AppColors.secondary(context)
+                                : AppColors.divider(context),
                             width: 2,
                           ),
                         ),
@@ -1343,7 +1467,7 @@ class _FrigoPageState extends State<FrigoPage> {
                             fontWeight: FontWeight.w600,
                             color: isSelected
                                 ? Colors.white
-                                : const Color(0xFF6B7280),
+                                : AppColors.textSecondary(context),
                           ),
                         ),
                       ),
@@ -1352,20 +1476,20 @@ class _FrigoPageState extends State<FrigoPage> {
                 ),
                 const SizedBox(height: 24),
 
-                // Shelf Location
-                const Text(
-                  'Fridge Location',
+                // Emplacement du Frigo
+                Text(
+                  l10n.fridgeLocation,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF111827),
+                    color: AppColors.textPrimary(context),
                   ),
                 ),
                 const SizedBox(height: 12),
                 Column(
                   children: [
                     _buildShelfOption(
-                      'Top Shelf',
+                      l10n.topShelf,
                       'top',
                       Icons.vertical_align_top,
                       selectedShelf,
@@ -1373,7 +1497,7 @@ class _FrigoPageState extends State<FrigoPage> {
                     ),
                     const SizedBox(height: 8),
                     _buildShelfOption(
-                      'Middle Shelf',
+                      l10n.middleShelf,
                       'middle',
                       Icons.horizontal_rule,
                       selectedShelf,
@@ -1381,7 +1505,7 @@ class _FrigoPageState extends State<FrigoPage> {
                     ),
                     const SizedBox(height: 8),
                     _buildShelfOption(
-                      'Bottom Shelf',
+                      l10n.bottomShelf,
                       'bottom',
                       Icons.vertical_align_bottom,
                       selectedShelf,
@@ -1389,7 +1513,7 @@ class _FrigoPageState extends State<FrigoPage> {
                     ),
                     const SizedBox(height: 8),
                     _buildShelfOption(
-                      'Door',
+                      l10n.door,
                       'door',
                       Icons.door_front_door,
                       selectedShelf,
@@ -1404,9 +1528,9 @@ class _FrigoPageState extends State<FrigoPage> {
                   onPressed: () {
                     if (nameController.text.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Please enter a product name'),
-                          backgroundColor: Color(0xFFEF4444),
+                        SnackBar(
+                          content: Text(l10n.enterProductName),
+                          backgroundColor: AppColors.error,
                         ),
                       );
                       return;
@@ -1414,9 +1538,9 @@ class _FrigoPageState extends State<FrigoPage> {
 
                     if (quantityController.text.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Please enter a quantity'),
-                          backgroundColor: Color(0xFFEF4444),
+                        SnackBar(
+                          content: Text(l10n.enterQuantity),
+                          backgroundColor: AppColors.error,
                         ),
                       );
                       return;
@@ -1461,7 +1585,7 @@ class _FrigoPageState extends State<FrigoPage> {
                             const SizedBox(width: 12),
                             Expanded(
                               child: Text(
-                                '${nameController.text} added to fridge!',
+                                '${nameController.text} ${l10n.addedToFridge}',
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -1469,7 +1593,7 @@ class _FrigoPageState extends State<FrigoPage> {
                             ),
                           ],
                         ),
-                        backgroundColor: const Color(0xFF10B981),
+                        backgroundColor: AppColors.success,
                         behavior: SnackBarBehavior.floating,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -1478,7 +1602,7 @@ class _FrigoPageState extends State<FrigoPage> {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF8B5CF6),
+                    backgroundColor: AppColors.secondary(context),
                     padding: const EdgeInsets.symmetric(vertical: 18),
                     minimumSize: const Size(double.infinity, 0),
                     shape: RoundedRectangleBorder(
@@ -1486,14 +1610,14 @@ class _FrigoPageState extends State<FrigoPage> {
                     ),
                     elevation: 0,
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.check_circle, color: Colors.white),
-                      SizedBox(width: 12),
+                      const Icon(Icons.check_circle, color: Colors.white),
+                      const SizedBox(width: 12),
                       Text(
-                        'Add to Fridge',
-                        style: TextStyle(
+                        l10n.addToFridge,
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
                           color: Colors.white,
@@ -1525,13 +1649,13 @@ class _FrigoPageState extends State<FrigoPage> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFF8B5CF6).withOpacity(0.1)
-              : const Color(0xFFF9FAFB),
+              ? AppColors.secondary(context).withOpacity(0.1)
+              : AppColors.surface(context),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSelected
-                ? const Color(0xFF8B5CF6)
-                : const Color(0xFFE5E7EB),
+                ? AppColors.secondary(context)
+                : AppColors.divider(context),
             width: 2,
           ),
         ),
@@ -1542,13 +1666,15 @@ class _FrigoPageState extends State<FrigoPage> {
               height: 40,
               decoration: BoxDecoration(
                 color: isSelected
-                    ? const Color(0xFF8B5CF6)
-                    : const Color(0xFFE5E7EB),
+                    ? AppColors.secondary(context)
+                    : AppColors.divider(context),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
                 icon,
-                color: isSelected ? Colors.white : const Color(0xFF6B7280),
+                color: isSelected
+                    ? Colors.white
+                    : AppColors.textSecondary(context),
                 size: 20,
               ),
             ),
@@ -1559,15 +1685,15 @@ class _FrigoPageState extends State<FrigoPage> {
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: isSelected
-                    ? const Color(0xFF8B5CF6)
-                    : const Color(0xFF6B7280),
+                    ? AppColors.secondary(context)
+                    : AppColors.textSecondary(context),
               ),
             ),
             const Spacer(),
             if (isSelected)
-              const Icon(
+              Icon(
                 Icons.check_circle,
-                color: Color(0xFF8B5CF6),
+                color: AppColors.secondary(context),
                 size: 24,
               ),
           ],
@@ -1580,30 +1706,38 @@ class _FrigoPageState extends State<FrigoPage> {
     final recipes = [
       {
         'emoji': '🍝',
-        'name': 'Pasta Carbonara',
+        'name': 'Pâtes Carbonara',
         'time': '15 min',
         'kcal': '480',
       },
-      {'emoji': '🥗', 'name': 'Caesar Salad', 'time': '10 min', 'kcal': '320'},
-      {'emoji': '🍲', 'name': 'Chicken Soup', 'time': '25 min', 'kcal': '250'},
-      {'emoji': '🥪', 'name': 'Club Sandwich', 'time': '8 min', 'kcal': '420'},
+      {'emoji': '🥗', 'name': 'Salade César', 'time': '10 min', 'kcal': '320'},
+      {
+        'emoji': '🍲',
+        'name': 'Soupe au Poulet',
+        'time': '25 min',
+        'kcal': '250',
+      },
+      {'emoji': '🥪', 'name': 'Sandwich Club', 'time': '8 min', 'kcal': '420'},
     ];
 
     return Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.75,
+      ),
       padding: const EdgeInsets.all(24),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+      decoration: BoxDecoration(
+        color: AppColors.background(context),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 50,
-            height: 5,
+            width: 40,
+            height: 4,
             decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(10),
+              color: AppColors.divider(context),
+              borderRadius: BorderRadius.circular(AppleTheme.radiusSmall),
             ),
           ),
           const SizedBox(height: 20),
@@ -1613,9 +1747,7 @@ class _FrigoPageState extends State<FrigoPage> {
                 width: 50,
                 height: 50,
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF8B5CF6), Color(0xFF7C3AED)],
-                  ),
+                  gradient: AppColors.aiGradient(context),
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: const Icon(
@@ -1625,24 +1757,40 @@ class _FrigoPageState extends State<FrigoPage> {
                 ),
               ),
               const SizedBox(width: 16),
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'AI Recipe Suggestions',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
-                  ),
-                  Text(
-                    'Recipes you can make now',
-                    style: TextStyle(fontSize: 13, color: Color(0xFF6B7280)),
-                  ),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Suggestions de Recettes IA',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textPrimary(context),
+                      ),
+                    ),
+                    Text(
+                      'Recettes que vous pouvez faire maintenant',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: AppColors.textSecondary(context),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
           const SizedBox(height: 24),
-          ...recipes.map((recipe) => _buildRecipeCard(recipe)),
-          SizedBox(height: MediaQuery.of(context).padding.bottom + 20),
+          Flexible(
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                ...recipes.map((recipe) => _buildRecipeCard(recipe)),
+                SizedBox(height: MediaQuery.of(context).padding.bottom + 20),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -1653,9 +1801,9 @@ class _FrigoPageState extends State<FrigoPage> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFF9FAFB),
+        color: AppColors.surface(context),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE5E7EB), width: 2),
+        border: Border.all(color: AppColors.divider(context), width: 2),
       ),
       child: Row(
         children: [
@@ -1663,8 +1811,8 @@ class _FrigoPageState extends State<FrigoPage> {
             width: 60,
             height: 60,
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFFFF6B35), Color(0xFFF77F00)],
+              gradient: LinearGradient(
+                colors: [AppColors.warning, AppColors.warning],
               ),
               borderRadius: BorderRadius.circular(16),
             ),
@@ -1682,40 +1830,49 @@ class _FrigoPageState extends State<FrigoPage> {
               children: [
                 Text(
                   recipe['name']!,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary(context),
                   ),
                 ),
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.access_time,
                       size: 14,
-                      color: Color(0xFF6B7280),
+                      color: AppColors.textSecondary(context),
                     ),
                     const SizedBox(width: 4),
-                    Text(
-                      recipe['time']!,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFF6B7280),
+                    Flexible(
+                      child: Text(
+                        recipe['time']!,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textSecondary(context),
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     const SizedBox(width: 16),
-                    const Icon(
+                    Icon(
                       Icons.local_fire_department,
                       size: 14,
-                      color: Color(0xFFFF6B35),
+                      color: AppColors.warning,
                     ),
                     const SizedBox(width: 4),
-                    Text(
-                      '${recipe['kcal']} kcal',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFFFF6B35),
+                    Flexible(
+                      child: Text(
+                        '${recipe['kcal']} kcal',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.warning,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
@@ -1723,10 +1880,10 @@ class _FrigoPageState extends State<FrigoPage> {
               ],
             ),
           ),
-          const Icon(
+          Icon(
             Icons.arrow_forward_ios,
             size: 18,
-            color: Color(0xFF6B7280),
+            color: AppColors.textSecondary(context),
           ),
         ],
       ),

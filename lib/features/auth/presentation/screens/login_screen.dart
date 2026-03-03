@@ -11,21 +11,31 @@ class LoginScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF15803D),
-              Color(0xFF16A34A),
-              Color(0xFF22C55E),
-              Color(0xFF4ADE80),
-              Color(0xFF86EFAC),
-              Color(0xFFBBF7D0),
-            ],
+            colors: isDark
+                ? [
+                    const Color(0xFF0A3D2C),
+                    const Color(0xFF0D5A3F),
+                    const Color(0xFF0E7548),
+                    const Color(0xFF138B57),
+                    const Color(0xFF1BA66A),
+                    const Color(0xFF2DC380),
+                  ]
+                : [
+                    const Color(0xFF15803D),
+                    const Color(0xFF16A34A),
+                    const Color(0xFF22C55E),
+                    const Color(0xFF4ADE80),
+                    const Color(0xFF86EFAC),
+                    const Color(0xFFBBF7D0),
+                  ],
             stops: [0.0, 0.2, 0.4, 0.6, 0.8, 1.0],
           ),
         ),
@@ -120,9 +130,11 @@ class LoginScreen extends ConsumerWidget {
                         if (context.mounted && !authState.hasError) {
                           // Connexion réussie
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Connexion réussie!'),
-                              backgroundColor: Color(0xFF22C55E),
+                            SnackBar(
+                              content: const Text('Connexion réussie!'),
+                              backgroundColor: isDark
+                                  ? const Color(0xFF138B57)
+                                  : const Color(0xFF22C55E),
                             ),
                           );
                         }
@@ -148,7 +160,9 @@ class LoginScreen extends ConsumerWidget {
                         onPressed: () => context.push('/register'),
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.white,
-                          backgroundColor: Colors.white.withOpacity(0.2),
+                          backgroundColor: isDark
+                              ? Colors.white.withOpacity(0.15)
+                              : Colors.white.withOpacity(0.2),
                           padding: const EdgeInsets.symmetric(
                             horizontal: 18,
                             vertical: 10,

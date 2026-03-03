@@ -339,4 +339,64 @@ class AppleTheme {
   static const Color tertiaryBackgroundDark = Color(0xFF2C2C2E);
   static const Color groupedBackgroundDark = Color(0xFF000000);
   static const Color secondaryGroupedBackgroundDark = Color(0xFF1C1C1E);
+
+  // ========================================
+  // 🎯 ADAPTIVE HELPERS - Auto light/dark
+  // ========================================
+
+  /// Adaptive label (primary text) — black in light, white in dark
+  static Color adaptiveLabel(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? labelDark
+        : label;
+  }
+
+  /// Adaptive secondary label
+  static Color adaptiveSecondaryLabel(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? secondaryLabelDark
+        : secondaryLabel;
+  }
+
+  /// Adaptive tertiary label
+  static Color adaptiveTertiaryLabel(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? tertiaryLabelDark
+        : tertiaryLabel;
+  }
+
+  /// Adaptive quaternary label
+  static Color adaptiveQuaternaryLabel(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? quaternaryLabelDark
+        : quaternaryLabel;
+  }
+
+  /// Adaptive separator
+  static Color adaptiveSeparator(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? separatorDark
+        : separator;
+  }
+
+  /// Adaptive background
+  static Color adaptiveBackground(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? backgroundDark
+        : backgroundLight;
+  }
+
+  /// Adaptive secondary background
+  static Color adaptiveSecondaryBackground(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? secondaryBackgroundDark
+        : secondaryBackgroundLight;
+  }
+
+  /// Adaptive grouped background
+  static Color adaptiveGroupedBackground(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? groupedBackgroundDark
+        : groupedBackgroundLight;
+  }
 }

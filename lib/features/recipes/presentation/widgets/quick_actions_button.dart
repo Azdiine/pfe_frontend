@@ -18,18 +18,18 @@ class _QuickActionsButtonState extends State<QuickActionsButton>
   late Animation<double> _rotationAnimation;
   bool _isExpanded = false;
 
-  final List<Map<String, dynamic>> _actions = [
+  List<Map<String, dynamic>> _getActions(BuildContext context) => [
     {
       'icon': CupertinoIcons.add,
       'label': 'Ajouter recette',
-      'color': AppColors.lightPrimary,
-      'gradient': AppColors.lightFreshGradient,
+      'color': AppColors.primary(context),
+      'gradient': AppColors.primaryGradient(context),
     },
     {
       'icon': CupertinoIcons.camera_fill,
       'label': 'Scanner ingrédient',
-      'color': AppColors.lightSecondary,
-      'gradient': AppColors.lightFoodGradient,
+      'color': AppColors.secondary(context),
+      'gradient': AppColors.primaryGradient(context),
     },
     {
       'icon': CupertinoIcons.list_bullet,
@@ -114,7 +114,7 @@ class _QuickActionsButtonState extends State<QuickActionsButton>
           ),
 
         // Action buttons
-        ..._buildActionButtons(),
+        ..._buildActionButtons(context),
 
         // Main FAB
         Positioned(
@@ -128,11 +128,11 @@ class _QuickActionsButtonState extends State<QuickActionsButton>
                   width: 70,
                   height: 70,
                   decoration: BoxDecoration(
-                    gradient: AppColors.lightFreshGradient,
+                    gradient: AppColors.primaryGradient(context),
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.lightPrimary.withOpacity(0.4),
+                        color: AppColors.primary(context).withOpacity(0.4),
                         blurRadius: 20,
                         offset: const Offset(0, 8),
                       ),
@@ -155,15 +155,16 @@ class _QuickActionsButtonState extends State<QuickActionsButton>
     );
   }
 
-  List<Widget> _buildActionButtons() {
+  List<Widget> _buildActionButtons(BuildContext context) {
     final List<Widget> buttons = [];
     const double radius = 120; // Rayon du cercle
     const double startAngle = math.pi; // Commence à gauche
+    final actions = _getActions(context);
     final double angleStep =
-        math.pi / (_actions.length + 1); // Répartition en arc
+        math.pi / (actions.length + 1); // Répartition en arc
 
-    for (int i = 0; i < _actions.length; i++) {
-      final action = _actions[i];
+    for (int i = 0; i < actions.length; i++) {
+      final action = actions[i];
       final angle = startAngle + (angleStep * (i + 1));
 
       buttons.add(
@@ -215,7 +216,7 @@ class _QuickActionsButtonState extends State<QuickActionsButton>
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: AppleTheme.backgroundLight,
+                        color: AppleTheme.adaptiveBackground(context),
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
@@ -229,7 +230,7 @@ class _QuickActionsButtonState extends State<QuickActionsButton>
                         action['label'],
                         style: AppleTheme.caption1.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: AppleTheme.label,
+                          color: AppleTheme.adaptiveLabel(context),
                         ),
                       ),
                     ),

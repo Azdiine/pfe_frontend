@@ -26,7 +26,7 @@ class HomeScreenExample extends StatelessWidget {
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.w800,
-                color: AppColors.lightTextPrimary,
+                color: AppColors.textPrimary(context),
               ),
             ),
             const SizedBox(height: 8),
@@ -34,7 +34,7 @@ class HomeScreenExample extends StatelessWidget {
               'Ready to cook something delicious?',
               style: TextStyle(
                 fontSize: 16,
-                color: AppColors.lightTextSecondary,
+                color: AppColors.textSecondary(context),
               ),
             ),
             const SizedBox(height: 32),
@@ -43,7 +43,7 @@ class HomeScreenExample extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                gradient: AppColors.lightFreshGradient,
+                gradient: AppColors.primaryGradient(context),
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: AppColors.elevation2(false),
               ),
@@ -118,7 +118,7 @@ class HomeScreenExample extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                gradient: AppColors.lightAIGradient,
+                gradient: AppColors.aiGradient(context),
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: AppColors.elevation2(false),
               ),
@@ -322,12 +322,12 @@ class RecipesListExample extends StatelessWidget {
             pinned: true,
             expandedHeight: 120,
             flexibleSpace: FlexibleSpaceBar(
-              title: const Text(
+              title: Text(
                 'Recipes',
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.lightTextPrimary,
+                  color: AppColors.textPrimary(context),
                 ),
               ),
               titlePadding: const EdgeInsets.only(left: 20, bottom: 16),
@@ -349,7 +349,7 @@ class RecipesListExample extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return Container(
                     decoration: BoxDecoration(
-                      gradient: AppColors.lightFoodGradient,
+                      gradient: AppColors.primaryGradient(context),
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: AppColors.elevation2(false),
                     ),
@@ -419,7 +419,7 @@ class ChatbotExample extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                gradient: AppColors.lightAIGradient,
+                gradient: AppColors.aiGradient(context),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -429,7 +429,7 @@ class ChatbotExample extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-            const Column(
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -437,7 +437,7 @@ class ChatbotExample extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.lightTextPrimary,
+                    color: AppColors.textPrimary(context),
                   ),
                 ),
                 Text(
@@ -464,7 +464,7 @@ class ChatbotExample extends StatelessWidget {
                     ),
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      gradient: AppColors.lightAIGradient,
+                      gradient: AppColors.aiGradient(context),
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: AppColors.elevation1(false),
                     ),
@@ -488,11 +488,11 @@ class ChatbotExample extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: AppColors.elevation1(false),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Something with chicken',
                       style: TextStyle(
                         fontSize: 15,
-                        color: AppColors.lightTextPrimary,
+                        color: AppColors.textPrimary(context),
                       ),
                     ),
                   ),
@@ -531,7 +531,7 @@ class ChatbotExample extends StatelessWidget {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    gradient: AppColors.lightFreshGradient,
+                    gradient: AppColors.primaryGradient(context),
                     shape: BoxShape.circle,
                     boxShadow: AppColors.elevation2(false),
                   ),
@@ -562,12 +562,12 @@ class TrackingDashboardExample extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Your Progress',
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.w800,
-                color: AppColors.lightTextPrimary,
+                color: AppColors.textPrimary(context),
               ),
             ),
             const SizedBox(height: 24),
@@ -588,7 +588,7 @@ class TrackingDashboardExample extends StatelessWidget {
                         width: 50,
                         height: 50,
                         decoration: BoxDecoration(
-                          gradient: AppColors.lightFreshGradient,
+                          gradient: AppColors.primaryGradient(context),
                           borderRadius: BorderRadius.circular(15),
                         ),
                         child: const Icon(
@@ -598,7 +598,7 @@ class TrackingDashboardExample extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -607,7 +607,7 @@ class TrackingDashboardExample extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.lightTextSecondary,
+                                color: AppColors.textSecondary(context),
                               ),
                             ),
                             Text(
@@ -615,7 +615,7 @@ class TrackingDashboardExample extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.w800,
-                                color: AppColors.lightTextPrimary,
+                                color: AppColors.textPrimary(context),
                               ),
                             ),
                           ],
@@ -635,11 +635,13 @@ class TrackingDashboardExample extends StatelessWidget {
                       alignment: Alignment.centerLeft,
                       child: Container(
                         decoration: BoxDecoration(
-                          gradient: AppColors.lightFreshGradient,
+                          gradient: AppColors.primaryGradient(context),
                           borderRadius: BorderRadius.circular(6),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.lightPrimary.withOpacity(0.4),
+                              color: AppColors.primary(
+                                context,
+                              ).withOpacity(0.4),
                               blurRadius: 12,
                               offset: const Offset(0, 4),
                             ),

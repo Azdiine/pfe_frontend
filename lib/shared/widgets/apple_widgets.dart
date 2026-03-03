@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // HapticFeedback
 import '../../core/theme/apple_theme.dart';
 import '../../core/theme/app_colors.dart';
 
@@ -25,16 +26,25 @@ class AppleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final content = Container(
-      padding: padding ?? const EdgeInsets.all(AppleTheme.spacing20), // iOS 18: 20pt
+      padding: padding ?? const EdgeInsets.all(AppleTheme.spacing20),
       decoration: BoxDecoration(
-        color: backgroundColor ?? AppleTheme.backgroundLight,
-        borderRadius: BorderRadius.circular(AppleTheme.radiusCard), // iOS 18: 14pt
+        color: backgroundColor ?? AppColors.surface(context),
+        borderRadius: BorderRadius.circular(AppleTheme.radiusXLarge),
         border: Border.all(
-          color: AppleTheme.separator.withOpacity(0.2), // iOS 18: Plus subtil
+          color: AppColors.divider(context).withOpacity(0.3),
           width: 0.5,
         ),
-        boxShadow: AppleTheme.cardShadow, // iOS 18: Ultra-subtle
+        boxShadow: isDark
+            ? []
+            : [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.03),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
       ),
       child: child,
     );
@@ -76,7 +86,7 @@ class AppleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color bgColor = backgroundColor ?? AppColors.lightPrimary;
+    Color bgColor = backgroundColor ?? AppColors.primary(context);
     if (isDestructive) {
       bgColor = AppleTheme.systemRed;
     }
@@ -90,7 +100,9 @@ class AppleButton extends StatelessWidget {
         height: isLarge ? 54 : 50, // iOS 18: Plus de hauteur
         decoration: BoxDecoration(
           color: onPressed == null ? bgColor.withOpacity(0.5) : bgColor,
-          borderRadius: BorderRadius.circular(AppleTheme.radiusButton), // iOS 18: 12pt
+          borderRadius: BorderRadius.circular(
+            AppleTheme.radiusButton,
+          ), // iOS 18: 12pt
           boxShadow: onPressed != null ? AppleTheme.cardShadow : null,
         ),
         child: Center(
@@ -143,12 +155,16 @@ class AppleSectionHeader extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            title.toUpperCase(),
-            style: AppleTheme.caption1.copyWith( // iOS 18: Caption1 (12pt)
-              color: AppleTheme.secondaryLabel,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.6, // iOS 18: Plus espacé
+          Expanded(
+            child: Text(
+              title.toUpperCase(),
+              style: AppleTheme.caption1.copyWith(
+                color: AppleTheme.adaptiveSecondaryLabel(context),
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.6,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
           if (trailing != null)
@@ -158,7 +174,7 @@ class AppleSectionHeader extends StatelessWidget {
               child: Text(
                 trailing!,
                 style: AppleTheme.subhead.copyWith(
-                  color: AppColors.lightPrimary,
+                  color: AppColors.primary(context),
                   fontWeight: FontWeight.w400,
                 ),
               ),
@@ -210,25 +226,31 @@ class AppleListTile extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: AppleTheme.body.copyWith(color: AppleTheme.label),
+                    style: AppleTheme.body.copyWith(
+                      color: AppleTheme.adaptiveLabel(context),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   if (subtitle != null) ...[
                     const SizedBox(height: 4),
                     Text(
                       subtitle!,
                       style: AppleTheme.footnote.copyWith(
-                        color: AppleTheme.secondaryLabel,
+                        color: AppleTheme.adaptiveSecondaryLabel(context),
                       ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ],
               ),
             ),
-            if (trailing != null) trailing!,
+            ?trailing,
             if (showChevron)
-              const Icon(
+              Icon(
                 CupertinoIcons.chevron_right,
-                color: AppleTheme.tertiaryLabel,
+                color: AppleTheme.adaptiveTertiaryLabel(context),
                 size: 16,
               ),
           ],
@@ -259,13 +281,15 @@ class AppleBadge extends StatelessWidget {
         vertical: 6, // iOS 18: Plus de hauteur
       ),
       decoration: BoxDecoration(
-        color: backgroundColor ?? AppColors.lightPrimary.withOpacity(0.12), // iOS 18: Plus subtil
+        color:
+            backgroundColor ??
+            AppColors.primary(context).withOpacity(0.12), // iOS 18: Plus subtil
         borderRadius: BorderRadius.circular(8), // iOS 18: 8pt
       ),
       child: Text(
         text,
         style: AppleTheme.caption1.copyWith(
-          color: textColor ?? AppColors.lightPrimary,
+          color: textColor ?? AppColors.primary(context),
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -292,10 +316,10 @@ class AppleNavigationBar extends StatelessWidget
   @override
   Widget build(BuildContext context) {
     return CupertinoNavigationBar(
-      backgroundColor: AppleTheme.backgroundLight.withOpacity(0.9),
+      backgroundColor: AppleTheme.adaptiveBackground(context).withOpacity(0.9),
       border: Border(
         bottom: BorderSide(
-          color: AppleTheme.separator.withOpacity(0.3),
+          color: AppleTheme.adaptiveSeparator(context).withOpacity(0.3),
           width: 0.5,
         ),
       ),
@@ -303,16 +327,16 @@ class AppleNavigationBar extends StatelessWidget
           ? CupertinoButton(
               padding: EdgeInsets.zero,
               onPressed: onBack,
-              child: const Icon(
+              child: Icon(
                 CupertinoIcons.back,
-                color: AppColors.lightPrimary,
+                color: AppColors.primary(context),
               ),
             )
           : null,
       middle: Text(
         title,
         style: (isLargeTitle ? AppleTheme.largeTitle : AppleTheme.headline)
-            .copyWith(color: AppleTheme.label),
+            .copyWith(color: AppleTheme.adaptiveLabel(context)),
       ),
       trailing: actions != null
           ? Row(mainAxisSize: MainAxisSize.min, children: actions!)
@@ -324,68 +348,210 @@ class AppleNavigationBar extends StatelessWidget
   Size get preferredSize => const Size.fromHeight(44);
 }
 
-/// 🍎 iOS 18 Style Quick Action Card (Radius 14pt, shadows)
-class AppleQuickActionCard extends StatelessWidget {
-  final String emoji;
+/// 🍎 iOS 18 2026 Style Quick Action Card - Modern & Professional
+class AppleQuickActionCard extends StatefulWidget {
+  final IconData icon; // Icons modernes au lieu d'emojis
   final String title;
   final String subtitle;
-  final Color accentColor;
+  final bool isPrimary; // Hiérarchie visuelle
+  final bool isHero; // Mode Hero (full width, extra large)
   final VoidCallback? onTap;
 
   const AppleQuickActionCard({
     super.key,
-    required this.emoji,
+    required this.icon,
     required this.title,
     required this.subtitle,
-    required this.accentColor,
+    this.isPrimary = false, // Secondaire par défaut
+    this.isHero = false, // Hero désactivé par défaut
     this.onTap,
   });
 
   @override
+  State<AppleQuickActionCard> createState() => _AppleQuickActionCardState();
+}
+
+class _AppleQuickActionCardState extends State<AppleQuickActionCard>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _scaleController;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _scaleController = AnimationController(
+      duration: const Duration(milliseconds: 100),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
+      CurvedAnimation(parent: _scaleController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _scaleController.dispose();
+    super.dispose();
+  }
+
+  void _onTapDown(TapDownDetails details) {
+    _scaleController.forward();
+    // Haptic feedback
+    HapticFeedback.lightImpact();
+  }
+
+  void _onTapUp(TapUpDetails details) {
+    _scaleController.reverse();
+  }
+
+  void _onTapCancel() {
+    _scaleController.reverse();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return CupertinoButton(
-      padding: EdgeInsets.zero,
-      onPressed: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(AppleTheme.spacing20), // iOS 18: 20pt
-        decoration: BoxDecoration(
-          color: AppleTheme.backgroundLight,
-          borderRadius: BorderRadius.circular(AppleTheme.radiusCard), // iOS 18: 14pt
-          border: Border.all(
-            color: accentColor.withOpacity(0.15), // iOS 18: Plus subtil
-            width: 1,
+    final accentColor = AppColors.primary(context); // Couleur unifiée teal
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final isLarge = widget.isPrimary || widget.isHero;
+    
+    return GestureDetector(
+      onTapDown: _onTapDown,
+      onTapUp: _onTapUp,
+      onTapCancel: _onTapCancel,
+      onTap: widget.onTap,
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: Container(
+          padding: EdgeInsets.all(widget.isHero ? 24 : (widget.isPrimary ? 22 : 18)),
+          decoration: BoxDecoration(
+            gradient: isLarge
+                ? LinearGradient(
+                    colors: [
+                      accentColor.withOpacity(isDark ? 0.15 : 0.08),
+                      accentColor.withOpacity(isDark ? 0.08 : 0.04),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  )
+                : null,
+            color: isLarge ? null : AppColors.surface(context),
+            borderRadius: BorderRadius.circular(widget.isHero ? 22 : 20),
+            border: Border.all(
+              color: accentColor.withOpacity(isLarge ? 0.25 : 0.12),
+              width: widget.isHero ? 2.0 : (widget.isPrimary ? 1.5 : 0.5),
+            ),
+            boxShadow: isLarge
+                ? [
+                    BoxShadow(
+                      color: accentColor.withOpacity(widget.isHero ? 0.2 : 0.15),
+                      blurRadius: widget.isHero ? 16 : 12,
+                      offset: Offset(0, widget.isHero ? 6 : 4),
+                    ),
+                  ]
+                : null,
           ),
-          boxShadow: AppleTheme.cardShadow, // iOS 18: Ultra-subtle
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Container(
-              width: 52, // iOS 18: Plus grand
-              height: 52,
-              decoration: BoxDecoration(
-                color: accentColor.withOpacity(0.12), // iOS 18: Plus subtil
-                borderRadius: BorderRadius.circular(14), // iOS 18: 14pt
-              ),
-              child: Center(
-                child: Text(emoji, style: const TextStyle(fontSize: 26)), // iOS 18: Plus grand
-              ),
-            ),
-            const SizedBox(height: AppleTheme.spacing16),
-            Text(
-              title,
-              style: AppleTheme.calloutEmphasized.copyWith( // iOS 18: CalloutEmphasized
-                color: AppleTheme.label,
-              ),
-            ),
-            Text(
-              subtitle,
-              style: AppleTheme.caption1.copyWith(
-                color: AppleTheme.secondaryLabel,
-              ),
-            ),
-          ],
+          child: widget.isHero
+              ? Row(
+                  children: [
+                    // Hero Icon Container
+                    Container(
+                      width: 64,
+                      height: 64,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            accentColor.withOpacity(0.25),
+                            accentColor.withOpacity(0.15),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                      child: Icon(
+                        widget.icon,
+                        size: 32,
+                        color: accentColor,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    // Hero Text Content
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.title,
+                            style: AppleTheme.title3.copyWith(
+                              color: AppleTheme.adaptiveLabel(context),
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            widget.subtitle,
+                            style: AppleTheme.callout.copyWith(
+                              color: AppleTheme.adaptiveSecondaryLabel(context),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Hero Chevron
+                    Icon(
+                      CupertinoIcons.chevron_right,
+                      color: accentColor,
+                      size: 20,
+                    ),
+                  ],
+                )
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Standard Icon Container
+                    Container(
+                      width: widget.isPrimary ? 56 : 48,
+                      height: widget.isPrimary ? 56 : 48,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            accentColor.withOpacity(0.2),
+                            accentColor.withOpacity(0.12),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Icon(
+                        widget.icon,
+                        size: widget.isPrimary ? 28 : 24,
+                        color: accentColor,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    // Standard Text
+                    Text(
+                      widget.title,
+                      style: (widget.isPrimary
+                              ? AppleTheme.calloutEmphasized
+                              : AppleTheme.callout)
+                          .copyWith(
+                        color: AppleTheme.adaptiveLabel(context),
+                        fontWeight:
+                            widget.isPrimary ? FontWeight.w700 : FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      widget.subtitle,
+                      style: AppleTheme.caption1.copyWith(
+                        color: AppleTheme.adaptiveSecondaryLabel(context),
+                      ),
+                    ),
+                  ],
+                ),
         ),
       ),
     );

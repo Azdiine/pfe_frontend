@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/apple_theme.dart';
 import '../../../../shared/widgets/apple_widgets.dart';
@@ -7,47 +9,52 @@ import 'package:go_router/go_router.dart';
 import '../../../fridge/presentation/screens/barcode_scanner_page.dart';
 import '../../../../shared/widgets/chatbot_popup.dart';
 import '../../../../shared/widgets/notifications_popup.dart';
+import '../../../../core/localization/locale_provider.dart';
+import '../../../../core/localization/app_localizations.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  String _getTodayDate() {
+class _HomePageState extends ConsumerState<HomePage> {
+  String _getTodayDate(AppLocalizations l10n) {
     final now = DateTime.now();
     final days = [
-      'Lundi',
-      'Mardi',
-      'Mercredi',
-      'Jeudi',
-      'Vendredi',
-      'Samedi',
-      'Dimanche',
+      l10n.monday,
+      l10n.tuesday,
+      l10n.wednesday,
+      l10n.thursday,
+      l10n.friday,
+      l10n.saturday,
+      l10n.sunday,
     ];
     final months = [
-      'janvier',
-      'février',
-      'mars',
-      'avril',
-      'mai',
-      'juin',
-      'juillet',
-      'août',
-      'septembre',
-      'octobre',
-      'novembre',
-      'décembre',
+      l10n.january,
+      l10n.february,
+      l10n.march,
+      l10n.april,
+      l10n.may,
+      l10n.june,
+      l10n.july,
+      l10n.august,
+      l10n.september,
+      l10n.october,
+      l10n.november,
+      l10n.december,
     ];
     return '${days[now.weekday - 1]} ${now.day} ${months[now.month - 1]}';
   }
 
   @override
   Widget build(BuildContext context) {
+    final locale = ref.watch(localeProvider);
+    final l10n = AppLocalizations.of(locale);
+
     return Scaffold(
-      backgroundColor: AppColors.lightBackground,
+      backgroundColor: AppColors.background(context),
       body: Stack(
         children: [
           SafeArea(
@@ -68,111 +75,141 @@ class _HomePageState extends State<HomePage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    '👋 Bonjour ',
-                                    style: AppleTheme.title2.copyWith(
-                                      color: AppleTheme.label,
-                                      fontWeight: FontWeight.w600, // iOS 18
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // 🎯 Greeting avec scroll horizontal (marquee style)
+                                SizedBox(
+                                  height: 32, // Hauteur fixe pour le texte
+                                  child: SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    physics: const BouncingScrollPhysics(),
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          '👋 ${l10n.greeting} ',
+                                          style: AppleTheme.title2.copyWith(
+                                            color: AppleTheme.adaptiveLabel(
+                                              context,
+                                            ),
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        Text(
+                                          'Ezedine',
+                                          style: AppleTheme.title2.copyWith(
+                                            color: AppColors.secondary(context),
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  Text(
-                                    'Ezedine',
-                                    style: AppleTheme.title2.copyWith(
-                                      color: AppColors.lightSecondary,
-                                      fontWeight:
-                                          FontWeight.w800, // iOS 18: Plus bold
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 6,
-                              ), // iOS 18: Plus d'espace
-                              Text(
-                                _getTodayDate(),
-                                style: AppleTheme.subhead.copyWith(
-                                  color: AppleTheme.secondaryLabel,
                                 ),
-                              ),
-                            ],
+                                const SizedBox(height: 8),
+                                Text(
+                                  _getTodayDate(l10n),
+                                  style: AppleTheme.subhead.copyWith(
+                                    color: AppleTheme.adaptiveSecondaryLabel(
+                                      context,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                           Row(
                             children: [
-                              CupertinoButton(
-                                padding: EdgeInsets.zero,
-                                onPressed: () =>
-                                    showNotificationsPopup(context),
-                                child: Stack(
-                                  clipBehavior: Clip.none,
-                                  children: [
-                                    Container(
-                                      width: 44,
-                                      height: 44,
-                                      decoration: BoxDecoration(
-                                        color: AppleTheme.backgroundLight,
-                                        borderRadius: BorderRadius.circular(
-                                          AppleTheme
-                                              .radiusLarge, // iOS 18: 14pt
-                                        ),
-                                        border: Border.all(
-                                          color: AppleTheme.separator
-                                              .withOpacity(
-                                                0.2,
-                                              ), // iOS 18: Plus subtil
-                                          width: 0.5,
-                                        ),
-                                        boxShadow: AppleTheme
-                                            .cardShadow, // iOS 18: Shadow
-                                      ),
-                                      child: const Icon(
-                                        CupertinoIcons.bell,
-                                        size: 20,
-                                        color: AppleTheme.label,
-                                      ),
-                                    ),
-                                    Positioned(
-                                      right: 2,
-                                      top: 2,
-                                      child: Container(
-                                        width: 8,
-                                        height: 8,
+                              Semantics(
+                                label: 'Notifications',
+                                button: true,
+                                child: CupertinoButton(
+                                  padding: EdgeInsets.zero,
+                                  onPressed: () {
+                                    HapticFeedback.lightImpact();
+                                    showNotificationsPopup(context);
+                                  },
+                                  child: Stack(
+                                    clipBehavior: Clip.none,
+                                    children: [
+                                      Container(
+                                        width: 44,
+                                        height: 44,
                                         decoration: BoxDecoration(
-                                          color: Colors.red,
-                                          shape: BoxShape.circle,
+                                          color: AppColors.surface(context),
+                                          borderRadius: BorderRadius.circular(
+                                            AppleTheme
+                                                .radiusLarge, // iOS 18: 14pt
+                                          ),
                                           border: Border.all(
-                                            color: AppColors.lightBackground,
-                                            width: 1.5,
+                                            color:
+                                                AppleTheme.adaptiveSeparator(
+                                                  context,
+                                                ).withOpacity(
+                                                  0.2,
+                                                ), // iOS 18: Plus subtil
+                                            width: 0.5,
+                                          ),
+                                          boxShadow: AppleTheme
+                                              .cardShadow, // iOS 18: Shadow
+                                        ),
+                                        child: Icon(
+                                          CupertinoIcons.bell,
+                                          size: 20,
+                                          color: AppleTheme.adaptiveLabel(
+                                            context,
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                      Positioned(
+                                        right: 2,
+                                        top: 2,
+                                        child: Container(
+                                          width: 8,
+                                          height: 8,
+                                          decoration: BoxDecoration(
+                                            color: AppColors.error,
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                              color: AppColors.background(
+                                                context,
+                                              ),
+                                              width: 1.5,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: AppleTheme.spacing8),
-                              CupertinoButton(
-                                padding: EdgeInsets.zero,
-                                onPressed: () => showChatbotPopup(context),
-                                child: Container(
-                                  width: 44,
-                                  height: 44,
-                                  decoration: BoxDecoration(
-                                    gradient: AppColors.lightAIGradient,
-                                    borderRadius: BorderRadius.circular(
-                                      AppleTheme.radiusLarge, // iOS 18: 14pt
+                              Semantics(
+                                label: 'AI Chat',
+                                button: true,
+                                child: CupertinoButton(
+                                  padding: EdgeInsets.zero,
+                                  onPressed: () {
+                                    HapticFeedback.lightImpact();
+                                    showChatbotPopup(context);
+                                  },
+                                  child: Container(
+                                    width: 44,
+                                    height: 44,
+                                    decoration: BoxDecoration(
+                                      gradient: AppColors.aiGradient(context),
+                                      borderRadius: BorderRadius.circular(
+                                        AppleTheme.radiusLarge, // iOS 18: 14pt
+                                      ),
+                                      boxShadow: AppleTheme
+                                          .floatingShadow, // iOS 18: Shadow
                                     ),
-                                    boxShadow: AppleTheme
-                                        .floatingShadow, // iOS 18: Shadow
-                                  ),
-                                  child: const Icon(
-                                    CupertinoIcons.chat_bubble_text,
-                                    size: 20,
-                                    color: Colors.white,
+                                    child: const Icon(
+                                      CupertinoIcons.chat_bubble_text,
+                                      size: 20,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -183,42 +220,59 @@ class _HomePageState extends State<HomePage> {
                       const SizedBox(
                         height: AppleTheme.spacing20,
                       ), // iOS 18: 20pt
-                      // Smart info pill iOS 18
+                      // Smart info pill — Modern glassmorphism
                       Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: AppleTheme.spacing20, // iOS 18: 20pt
-                          vertical: AppleTheme.spacing16, // iOS 18: 16pt
+                          horizontal: AppleTheme.spacing16,
+                          vertical: AppleTheme.spacing12,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.lightSecondary.withOpacity(0.12),
+                          gradient: LinearGradient(
+                            colors: [
+                              AppColors.primary(context).withOpacity(0.08),
+                              AppColors.secondary(context).withOpacity(0.06),
+                            ],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
                           borderRadius: BorderRadius.circular(
-                            AppleTheme.radiusLarge, // iOS 18: 14pt
+                            AppleTheme.radiusCard,
                           ),
                           border: Border.all(
-                            color: AppColors.lightSecondary.withOpacity(
-                              0.2,
-                            ), // iOS 18: Plus subtil
+                            color: AppColors.primary(context).withOpacity(0.12),
                             width: 0.5,
                           ),
                         ),
                         child: Row(
                           children: [
-                            const Icon(
-                              CupertinoIcons.flame,
-                              color: AppColors.lightSecondary,
-                              size: 18,
+                            Container(
+                              width: 32,
+                              height: 32,
+                              decoration: BoxDecoration(
+                                gradient: AppColors.primaryGradient(context),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(
+                                CupertinoIcons.flame_fill,
+                                color: Colors.white,
+                                size: 16,
+                              ),
                             ),
-                            const SizedBox(width: AppleTheme.spacing8),
+                            const SizedBox(width: AppleTheme.spacing12),
                             Expanded(
                               child: Text(
-                                'Il te reste 650 kcal aujourd\'hui',
+                                l10n.caloriesRemaining,
                                 style: AppleTheme.calloutEmphasized.copyWith(
-                                  // iOS 18: CalloutEmphasized
-                                  color: AppColors.lightSecondary,
+                                  color: AppColors.textPrimary(context),
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
+                            ),
+                            Icon(
+                              CupertinoIcons.chevron_right,
+                              size: 14,
+                              color: AppColors.textTertiary(context),
                             ),
                           ],
                         ),
@@ -245,7 +299,7 @@ class _HomePageState extends State<HomePage> {
                             AppleTheme.spacing24,
                           ), // iOS 18: 24pt
                           decoration: BoxDecoration(
-                            gradient: AppColors.lightFreshGradient,
+                            gradient: AppColors.primaryGradient(context),
                             borderRadius: BorderRadius.circular(
                               AppleTheme
                                   .radiusXLarge, // iOS 18: 16pt pour cards prominentes
@@ -261,7 +315,7 @@ class _HomePageState extends State<HomePage> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    'Nutrition du jour',
+                                    l10n.dailyNutrition,
                                     style: AppleTheme.headline.copyWith(
                                       color: Colors.white,
                                       fontWeight:
@@ -284,19 +338,20 @@ class _HomePageState extends State<HomePage> {
                                   Text(
                                     '1450',
                                     style: AppleTheme.largeTitle.copyWith(
-                                      fontSize: 44, // iOS 18: Encore plus grand
+                                      fontSize: 44,
                                       fontWeight: FontWeight.w800,
                                       color: Colors.white,
                                       height: 1,
                                     ),
                                   ),
-                                  Text(
-                                    ' / 2000 kcal',
-                                    style: AppleTheme.bodyEmphasized.copyWith(
-                                      // iOS 18
-                                      color: Colors.white.withOpacity(
-                                        0.8,
-                                      ), // iOS 18: Meilleur contraste
+                                  Flexible(
+                                    child: Text(
+                                      ' / 2000 ${l10n.kcalUnit}',
+                                      style: AppleTheme.bodyEmphasized.copyWith(
+                                        color: Colors.white.withOpacity(0.8),
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
                                 ],
@@ -326,7 +381,7 @@ class _HomePageState extends State<HomePage> {
                                 children: [
                                   Expanded(
                                     child: _buildMacroItem(
-                                      '🥩 Protéines',
+                                      l10n.proteins,
                                       '80g',
                                       '120g',
                                     ),
@@ -338,7 +393,7 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                   Expanded(
                                     child: _buildMacroItem(
-                                      '🍞 Glucides',
+                                      l10n.carbs,
                                       '150g',
                                       '200g',
                                     ),
@@ -350,7 +405,7 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                   Expanded(
                                     child: _buildMacroItem(
-                                      '🥑 Lipides',
+                                      l10n.fats,
                                       '60g',
                                       '80g',
                                     ),
@@ -365,73 +420,69 @@ class _HomePageState extends State<HomePage> {
                         ), // iOS 18: 28pt entre sections
                         // Actions rapides iOS 18 Style
                         Text(
-                          'Actions rapides',
+                          l10n.quickActions,
                           style: AppleTheme.title3.copyWith(
-                            color: AppleTheme.label,
+                            color: AppleTheme.adaptiveLabel(context),
                             fontWeight: FontWeight.w800, // iOS 18: Plus bold
                           ),
                         ),
                         const SizedBox(
                           height: AppleTheme.spacing20,
                         ), // iOS 18: 20pt
-                        Row(
-                          children: [
-                            Expanded(
-                              child: AppleQuickActionCard(
-                                emoji: '📷',
-                                title: 'Scanner',
-                                subtitle: 'aliment',
-                                accentColor: AppColors.lightPrimary,
-                                onTap: () async {
-                                  final result = await Navigator.of(context)
-                                      .push(
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const BarcodeScannerPage(),
-                                        ),
+                        // 🎯 HERO ACTION - Scanner (Full Width)
+                        AppleQuickActionCard(
+                          icon: CupertinoIcons.barcode_viewfinder,
+                          title: l10n.scan,
+                          subtitle: l10n.food,
+                          isHero: true, // Mode Hero!
+                          onTap: () async {
+                            final result = await Navigator.of(context, rootNavigator: true)
+                                .push(
+                                  PageRouteBuilder(
+                                    opaque: true,
+                                    barrierDismissible: false,
+                                    barrierColor: Colors.black,
+                                    fullscreenDialog: true,
+                                    pageBuilder: (context, animation, secondaryAnimation) =>
+                                        const BarcodeScannerPage(),
+                                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                      return FadeTransition(
+                                        opacity: animation,
+                                        child: child,
                                       );
-                                  if (result != null) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          'Produit scanné: $result',
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                },
-                              ),
-                            ),
-                            const SizedBox(width: AppleTheme.spacing12),
-                            Expanded(
-                              child: AppleQuickActionCard(
-                                emoji: '➕',
-                                title: 'Ajouter',
-                                subtitle: 'repas',
-                                accentColor: AppleTheme.systemBlue,
-                                onTap: () => context.go('/recettes'),
-                              ),
-                            ),
-                          ],
+                                    },
+                                  ),
+                                );
+                            if (result != null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    '${l10n.productScanned}: $result',
+                                  ),
+                                ),
+                              );
+                            }
+                          },
                         ),
-                        const SizedBox(height: AppleTheme.spacing12),
+                        const SizedBox(height: AppleTheme.spacing16), // iOS 18: 16pt spacing moderne
+                        // 🎯 ACTIONS SECONDAIRES - Chat IA + Mon Frigo
                         Row(
                           children: [
                             Expanded(
                               child: AppleQuickActionCard(
-                                emoji: '🤖',
-                                title: 'Chat IA',
-                                subtitle: 'conseils',
-                                accentColor: AppleTheme.systemPurple,
+                                icon: CupertinoIcons.chat_bubble_text,
+                                title: l10n.chatAI,
+                                subtitle: l10n.advice,
+                                isPrimary: false, // Action secondaire
                               ),
                             ),
-                            const SizedBox(width: AppleTheme.spacing12),
+                            const SizedBox(width: AppleTheme.spacing16), // iOS 18: 16pt
                             Expanded(
                               child: AppleQuickActionCard(
-                                emoji: '🧊',
-                                title: 'Mon frigo',
-                                subtitle: 'ingrédients',
-                                accentColor: AppleTheme.systemOrange,
+                                icon: CupertinoIcons.cube_box,
+                                title: l10n.myFridge,
+                                subtitle: l10n.ingredients,
+                                isPrimary: false, // Action secondaire
                                 onTap: () => context.go('/frigo'),
                               ),
                             ),
@@ -444,9 +495,9 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             Expanded(
                               child: Text(
-                                'Recette recommandée pour toi',
+                                l10n.recommendedForYou,
                                 style: AppleTheme.title3.copyWith(
-                                  color: AppleTheme.label,
+                                  color: AppleTheme.adaptiveLabel(context),
                                   fontWeight: FontWeight.w700,
                                 ),
                                 maxLines: 2,
@@ -464,12 +515,14 @@ class _HomePageState extends State<HomePage> {
                         const SizedBox(height: AppleTheme.spacing16),
                         Container(
                           decoration: BoxDecoration(
-                            color: AppleTheme.backgroundLight,
+                            color: AppColors.surface(context),
                             borderRadius: BorderRadius.circular(
                               AppleTheme.radiusCard,
                             ),
                             border: Border.all(
-                              color: AppleTheme.separator.withOpacity(0.3),
+                              color: AppleTheme.adaptiveSeparator(
+                                context,
+                              ).withOpacity(0.3),
                               width: 0.5,
                             ),
                           ),
@@ -481,8 +534,12 @@ class _HomePageState extends State<HomePage> {
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
                                     colors: [
-                                      AppColors.lightSecondary.withOpacity(0.3),
-                                      AppColors.lightSecondary.withOpacity(0.1),
+                                      AppColors.secondary(
+                                        context,
+                                      ).withOpacity(0.3),
+                                      AppColors.secondary(
+                                        context,
+                                      ).withOpacity(0.1),
                                     ],
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
@@ -508,16 +565,18 @@ class _HomePageState extends State<HomePage> {
                                         padding: EdgeInsets.zero,
                                         onPressed: () {},
                                         child: Container(
-                                          width: 36,
-                                          height: 36,
+                                          width: 44,
+                                          height: 44,
                                           decoration: BoxDecoration(
-                                            color: AppleTheme.backgroundLight,
+                                            color: AppColors.surface(context),
                                             shape: BoxShape.circle,
                                           ),
-                                          child: const Icon(
+                                          child: Icon(
                                             CupertinoIcons.heart,
-                                            size: 18,
-                                            color: AppleTheme.label,
+                                            size: 20,
+                                            color: AppleTheme.adaptiveLabel(
+                                              context,
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -533,41 +592,59 @@ class _HomePageState extends State<HomePage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      '🍝 Poulet curry healthy',
+                                      l10n.chickenCurry,
                                       style: AppleTheme.headline.copyWith(
-                                        color: AppleTheme.label,
+                                        color: AppleTheme.adaptiveLabel(
+                                          context,
+                                        ),
                                         fontWeight: FontWeight.w700,
                                       ),
                                     ),
                                     const SizedBox(height: AppleTheme.spacing8),
                                     Row(
                                       children: [
-                                        const Icon(
+                                        Icon(
                                           CupertinoIcons.clock,
                                           size: 16,
-                                          color: AppleTheme.secondaryLabel,
+                                          color:
+                                              AppleTheme.adaptiveSecondaryLabel(
+                                                context,
+                                              ),
                                         ),
                                         const SizedBox(width: 4),
-                                        Text(
-                                          '20 min',
-                                          style: AppleTheme.subhead.copyWith(
-                                            color: AppleTheme.secondaryLabel,
+                                        Flexible(
+                                          child: Text(
+                                            '20 ${l10n.minutes}',
+                                            style: AppleTheme.subhead.copyWith(
+                                              color:
+                                                  AppleTheme.adaptiveSecondaryLabel(
+                                                    context,
+                                                  ),
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
                                         const SizedBox(
                                           width: AppleTheme.spacing16,
                                         ),
-                                        const Icon(
+                                        Icon(
                                           CupertinoIcons.flame_fill,
                                           size: 16,
-                                          color: AppColors.lightSecondary,
+                                          color: AppColors.secondary(context),
                                         ),
                                         const SizedBox(width: 4),
-                                        Text(
-                                          '480 kcal',
-                                          style: AppleTheme.subhead.copyWith(
-                                            fontWeight: FontWeight.w600,
-                                            color: AppColors.lightSecondary,
+                                        Flexible(
+                                          child: Text(
+                                            '480 ${l10n.kcalUnit}',
+                                            style: AppleTheme.subhead.copyWith(
+                                              fontWeight: FontWeight.w600,
+                                              color: AppColors.secondary(
+                                                context,
+                                              ),
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
                                       ],
@@ -578,9 +655,10 @@ class _HomePageState extends State<HomePage> {
                                     SizedBox(
                                       width: double.infinity,
                                       child: AppleButton(
-                                        text: 'Cuisiner',
-                                        backgroundColor:
-                                            AppColors.lightSecondary,
+                                        text: l10n.cook,
+                                        backgroundColor: AppColors.secondary(
+                                          context,
+                                        ),
                                         onPressed: () {},
                                       ),
                                     ),
@@ -594,34 +672,34 @@ class _HomePageState extends State<HomePage> {
 
                         // À cuisiner avec tes ingrédients iOS Style
                         Text(
-                          'À cuisiner avec tes ingrédients',
+                          l10n.cookWithYourIngredients,
                           style: AppleTheme.title3.copyWith(
-                            color: AppleTheme.label,
+                            color: AppleTheme.adaptiveLabel(context),
                             fontWeight: FontWeight.w700,
                           ),
                         ),
                         const SizedBox(height: AppleTheme.spacing16),
                         SizedBox(
-                          height: 200,
+                          height: 230,
                           child: ListView(
                             scrollDirection: Axis.horizontal,
                             children: [
                               _buildRecipeCard(
-                                'Salade César',
-                                '15 min',
-                                '320 kcal',
+                                l10n.caesarSalad,
+                                '15 ${l10n.minutes}',
+                                '320 ${l10n.kcalUnit}',
                               ),
                               const SizedBox(width: AppleTheme.spacing12),
                               _buildRecipeCard(
-                                'Omelette légumes',
-                                '10 min',
-                                '280 kcal',
+                                l10n.veggiesOmelette,
+                                '10 ${l10n.minutes}',
+                                '280 ${l10n.kcalUnit}',
                               ),
                               const SizedBox(width: AppleTheme.spacing12),
                               _buildRecipeCard(
-                                'Pâtes carbonara',
-                                '25 min',
-                                '550 kcal',
+                                l10n.pastaCarbonara,
+                                '25 ${l10n.minutes}',
+                                '550 ${l10n.kcalUnit}',
                               ),
                             ],
                           ),
@@ -630,9 +708,9 @@ class _HomePageState extends State<HomePage> {
 
                         // Suivi du jour iOS Style
                         Text(
-                          'Suivi du jour',
+                          l10n.dailyTracking,
                           style: AppleTheme.title3.copyWith(
-                            color: AppleTheme.label,
+                            color: AppleTheme.adaptiveLabel(context),
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -645,19 +723,41 @@ class _HomePageState extends State<HomePage> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
                                 children: [
-                                  _buildStatItem('🍽️', 'Repas', '3/3'),
+                                  Expanded(
+                                    child: _buildStatItem(
+                                      '🍽️',
+                                      l10n.meals,
+                                      '3/3',
+                                    ),
+                                  ),
                                   Container(
                                     width: 0.5,
                                     height: 40,
-                                    color: AppleTheme.separator,
+                                    color: AppleTheme.adaptiveSeparator(
+                                      context,
+                                    ),
                                   ),
-                                  _buildStatItem('💧', 'Eau', '1.5L'),
+                                  Expanded(
+                                    child: _buildStatItem(
+                                      '💧',
+                                      l10n.water,
+                                      '1.5L',
+                                    ),
+                                  ),
                                   Container(
                                     width: 0.5,
                                     height: 40,
-                                    color: AppleTheme.separator,
+                                    color: AppleTheme.adaptiveSeparator(
+                                      context,
+                                    ),
                                   ),
-                                  _buildStatItem('⭐', 'Score', '8.5/10'),
+                                  Expanded(
+                                    child: _buildStatItem(
+                                      '⭐',
+                                      l10n.score,
+                                      '8.5/10',
+                                    ),
+                                  ),
                                 ],
                               ),
                               const SizedBox(height: AppleTheme.spacing16),
@@ -668,12 +768,12 @@ class _HomePageState extends State<HomePage> {
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
                                     colors: [
-                                      AppColors.lightSecondary.withOpacity(
-                                        0.15,
-                                      ),
-                                      AppColors.lightSecondary.withOpacity(
-                                        0.05,
-                                      ),
+                                      AppColors.secondary(
+                                        context,
+                                      ).withOpacity(0.15),
+                                      AppColors.secondary(
+                                        context,
+                                      ).withOpacity(0.05),
                                     ],
                                   ),
                                   borderRadius: BorderRadius.circular(
@@ -683,18 +783,18 @@ class _HomePageState extends State<HomePage> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Icon(
+                                    Icon(
                                       CupertinoIcons.flame_fill,
-                                      color: AppColors.lightSecondary,
+                                      color: AppColors.secondary(context),
                                       size: 20,
                                     ),
                                     const SizedBox(width: AppleTheme.spacing8),
                                     Flexible(
                                       child: Text(
-                                        '🔥 5 jours healthy d\'affilée',
+                                        '🔥 ${l10n.healthyDaysStreak}',
                                         style: AppleTheme.callout.copyWith(
                                           fontWeight: FontWeight.w600,
-                                          color: AppColors.lightSecondary,
+                                          color: AppColors.secondary(context),
                                         ),
                                         overflow: TextOverflow.ellipsis,
                                       ),
@@ -735,7 +835,7 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                     const SizedBox(height: AppleTheme.spacing8),
                                     Text(
-                                      'Besoin d\'idées ?',
+                                      l10n.needIdeas,
                                       style: AppleTheme.headline.copyWith(
                                         fontWeight: FontWeight.w700,
                                         color: Colors.white,
@@ -743,7 +843,7 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      'Demande-moi une recette',
+                                      l10n.askMeRecipe,
                                       style: AppleTheme.subhead.copyWith(
                                         color: Colors.white.withOpacity(0.8),
                                       ),
@@ -763,7 +863,7 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 onPressed: () {},
                                 child: Text(
-                                  'Ouvrir chat',
+                                  l10n.openChat,
                                   style: AppleTheme.callout.copyWith(
                                     fontWeight: FontWeight.w600,
                                     color: AppleTheme.systemPurple,
@@ -773,7 +873,7 @@ class _HomePageState extends State<HomePage> {
                             ],
                           ),
                         ),
-                        const SizedBox(height: 100),
+                        const SizedBox(height: 120),
                       ],
                     ),
                   ),
@@ -787,6 +887,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildMacroItem(String label, String value, String total) {
+    final locale = ref.watch(localeProvider);
+    final l10n = AppLocalizations.of(locale);
+
     return Column(
       children: [
         Text(
@@ -810,7 +913,7 @@ class _HomePageState extends State<HomePage> {
           overflow: TextOverflow.ellipsis,
         ),
         Text(
-          'sur $total',
+          '${l10n.outOf} $total',
           style: AppleTheme.caption2.copyWith(
             color: Colors.white.withOpacity(0.6),
           ),
@@ -823,15 +926,25 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildRecipeCard(String title, String time, String calories) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      width: 160,
+      width: 170,
       decoration: BoxDecoration(
-        color: AppleTheme.backgroundLight,
-        borderRadius: BorderRadius.circular(AppleTheme.radiusCard),
+        color: AppColors.surface(context),
+        borderRadius: BorderRadius.circular(AppleTheme.radiusXLarge),
         border: Border.all(
-          color: AppleTheme.separator.withOpacity(0.3),
+          color: AppColors.divider(context).withOpacity(0.3),
           width: 0.5,
         ),
+        boxShadow: isDark
+            ? []
+            : [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.04),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -841,21 +954,29 @@ class _HomePageState extends State<HomePage> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  AppColors.lightPrimary.withOpacity(0.2),
-                  AppColors.lightPrimary.withOpacity(0.05),
+                  AppColors.primary(context).withOpacity(0.15),
+                  AppColors.primary(context).withOpacity(0.08),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(AppleTheme.radiusCard),
+                top: Radius.circular(AppleTheme.radiusXLarge),
               ),
             ),
             child: Center(
-              child: Icon(
-                CupertinoIcons.square_fill_on_square_fill,
-                size: 40,
-                color: AppColors.lightPrimary.withOpacity(0.6),
+              child: Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  CupertinoIcons.heart_fill,
+                  size: 24,
+                  color: AppColors.primary(context).withOpacity(0.7),
+                ),
               ),
             ),
           ),
@@ -866,9 +987,8 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Text(
                   title,
-                  style: AppleTheme.callout.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: AppleTheme.label,
+                  style: AppleTheme.calloutEmphasized.copyWith(
+                    color: AppleTheme.adaptiveLabel(context),
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -876,34 +996,34 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(height: AppleTheme.spacing8),
                 Row(
                   children: [
-                    const Icon(
+                    Icon(
                       CupertinoIcons.clock,
                       size: 12,
-                      color: AppleTheme.secondaryLabel,
+                      color: AppleTheme.adaptiveSecondaryLabel(context),
                     ),
                     const SizedBox(width: 4),
                     Text(
                       time,
                       style: AppleTheme.caption1.copyWith(
-                        color: AppleTheme.secondaryLabel,
+                        color: AppleTheme.adaptiveSecondaryLabel(context),
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    const Icon(
+                    const SizedBox(width: 8),
+                    Icon(
                       CupertinoIcons.flame_fill,
                       size: 12,
-                      color: AppColors.lightSecondary,
+                      color: AppColors.primary(context),
                     ),
-                    const SizedBox(width: 4),
-                    Text(
-                      calories,
-                      style: AppleTheme.caption1.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.lightSecondary,
+                    const SizedBox(width: 3),
+                    Flexible(
+                      child: Text(
+                        calories,
+                        style: AppleTheme.caption1.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primary(context),
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
@@ -923,15 +1043,23 @@ class _HomePageState extends State<HomePage> {
         const SizedBox(height: 4),
         Text(
           label,
-          style: AppleTheme.footnote.copyWith(color: AppleTheme.secondaryLabel),
+          style: AppleTheme.footnote.copyWith(
+            color: AppleTheme.adaptiveSecondaryLabel(context),
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.center,
         ),
         const SizedBox(height: 2),
         Text(
           value,
           style: AppleTheme.headline.copyWith(
             fontWeight: FontWeight.w700,
-            color: AppleTheme.label,
+            color: AppleTheme.adaptiveLabel(context),
           ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.center,
         ),
       ],
     );

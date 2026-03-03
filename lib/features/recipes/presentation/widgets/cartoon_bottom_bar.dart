@@ -76,7 +76,7 @@ class _CartoonBottomBarState extends State<CartoonBottomBar>
     return Container(
       height: 90,
       decoration: BoxDecoration(
-        color: AppleTheme.backgroundLight,
+        color: AppleTheme.adaptiveBackground(context),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
         boxShadow: [
           BoxShadow(
@@ -95,13 +95,13 @@ class _CartoonBottomBarState extends State<CartoonBottomBar>
               0,
               CupertinoIcons.house_fill,
               'Accueil',
-              AppColors.lightPrimary,
+              AppColors.primary(context),
             ),
             _buildNavItem(
               1,
               CupertinoIcons.square_grid_2x2_fill,
               'Recettes',
-              AppColors.lightSecondary,
+              AppColors.secondary(context),
             ),
             const SizedBox(width: 60), // Espace pour le FAB central
             _buildNavItem(
@@ -174,7 +174,7 @@ class _CartoonBottomBarState extends State<CartoonBottomBar>
                             : null,
                         color: isSelected
                             ? null
-                            : AppleTheme.secondaryBackgroundLight,
+                            : AppleTheme.adaptiveSecondaryBackground(context),
                         borderRadius: BorderRadius.circular(15),
                         boxShadow: isSelected
                             ? [
@@ -190,7 +190,7 @@ class _CartoonBottomBarState extends State<CartoonBottomBar>
                         icon,
                         color: isSelected
                             ? Colors.white
-                            : AppleTheme.tertiaryLabel,
+                            : AppleTheme.adaptiveTertiaryLabel(context),
                         size: 26,
                       ),
                     ),
@@ -198,7 +198,9 @@ class _CartoonBottomBarState extends State<CartoonBottomBar>
                     AnimatedDefaultTextStyle(
                       duration: const Duration(milliseconds: 200),
                       style: AppleTheme.caption2.copyWith(
-                        color: isSelected ? color : AppleTheme.tertiaryLabel,
+                        color: isSelected
+                            ? color
+                            : AppleTheme.adaptiveTertiaryLabel(context),
                         fontWeight: isSelected
                             ? FontWeight.w700
                             : FontWeight.w500,

@@ -7,10 +7,7 @@ import 'dart:async';
 class OtpVerificationScreen extends StatefulWidget {
   final String email;
 
-  const OtpVerificationScreen({
-    super.key,
-    required this.email,
-  });
+  const OtpVerificationScreen({super.key, required this.email});
 
   @override
   State<OtpVerificationScreen> createState() => _OtpVerificationScreenState();
@@ -21,10 +18,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     6,
     (index) => TextEditingController(),
   );
-  final List<FocusNode> _focusNodes = List.generate(
-    6,
-    (index) => FocusNode(),
-  );
+  final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
 
   bool _isLoading = false;
   int _resendTimer = 60;
@@ -77,7 +71,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
   Future<void> _verifyOtp() async {
     final code = _controllers.map((c) => c.text).join();
-    
+
     if (code.length != 6) {
       _showError('Veuillez entrer le code complet');
       return;
@@ -114,20 +108,23 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   }
 
   void _showError(String message) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: const Color(0xFFEF4444),
+        backgroundColor: isDark
+            ? const Color(0xFFB91C1C)
+            : const Color(0xFFEF4444),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
   }
 
   Future<void> _resendCode() async {
     if (_resendTimer > 0) return;
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     // TODO: Implement actual resend logic
     ScaffoldMessenger.of(context).showSnackBar(
@@ -136,11 +133,11 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
           'Code renvoyé à ${widget.email}',
           style: GoogleFonts.inter(),
         ),
-        backgroundColor: const Color(0xFF22C55E),
+        backgroundColor: isDark
+            ? const Color(0xFF138B57)
+            : const Color(0xFF22C55E),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
 
@@ -152,14 +149,19 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFFFF),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF111111)),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Theme.of(context).textTheme.displayLarge?.color,
+          ),
           onPressed: () => context.pop(),
         ),
       ),
@@ -176,13 +178,17 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF22C55E).withOpacity(0.1),
+                  color: isDark
+                      ? const Color(0xFF138B57).withOpacity(0.2)
+                      : const Color(0xFF22C55E).withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.mail_outline,
                   size: 40,
-                  color: Color(0xFF22C55E),
+                  color: isDark
+                      ? const Color(0xFF22C55E)
+                      : const Color(0xFF22C55E),
                 ),
               ),
 
@@ -194,7 +200,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 style: GoogleFonts.inter(
                   fontSize: 28,
                   fontWeight: FontWeight.w700,
-                  color: const Color(0xFF111111),
+                  color: Theme.of(context).textTheme.displayLarge?.color,
                   letterSpacing: -0.5,
                 ),
                 textAlign: TextAlign.center,
@@ -208,7 +214,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 style: GoogleFonts.inter(
                   fontSize: 15,
                   fontWeight: FontWeight.w400,
-                  color: const Color(0xFF7A7A7A),
+                  color: Theme.of(context).textTheme.bodySmall?.color,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -220,7 +226,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 style: GoogleFonts.inter(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
-                  color: const Color(0xFF111111),
+                  color: Theme.of(context).textTheme.displayLarge?.color,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -244,15 +250,19 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                       style: GoogleFonts.inter(
                         fontSize: 24,
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF111111),
+                        color: Theme.of(context).textTheme.displayLarge?.color,
                       ),
                       decoration: InputDecoration(
                         counterText: '',
-                        contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 16,
+                        ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                            color: Color(0xFFEAEAEA),
+                          borderSide: BorderSide(
+                            color: isDark
+                                ? const Color(0xFF2A2A2A)
+                                : const Color(0xFFEAEAEA),
                             width: 1.5,
                           ),
                         ),
@@ -264,11 +274,11 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                           ),
                         ),
                         filled: true,
-                        fillColor: const Color(0xFFF6F6F6),
+                        fillColor: isDark
+                            ? const Color(0xFF1A1A1A)
+                            : const Color(0xFFF6F6F6),
                       ),
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       onChanged: (value) => _onCodeChanged(value, index),
                     ),
                   );
@@ -284,9 +294,13 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _verifyOtp,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF22C55E),
+                    backgroundColor: isDark
+                        ? const Color(0xFF138B57)
+                        : const Color(0xFF22C55E),
                     foregroundColor: Colors.white,
-                    disabledBackgroundColor: const Color(0xFFEAEAEA),
+                    disabledBackgroundColor: isDark
+                        ? const Color(0xFF2A2A2A)
+                        : const Color(0xFFEAEAEA),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
@@ -298,7 +312,9 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                           width: 24,
                           child: CircularProgressIndicator(
                             strokeWidth: 2.5,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
                           ),
                         )
                       : Text(
@@ -321,7 +337,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                   style: GoogleFonts.inter(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
-                    color: const Color(0xFF7A7A7A),
+                    color: Theme.of(context).textTheme.bodySmall?.color,
                   ),
                 )
               else
@@ -332,7 +348,9 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                     style: GoogleFonts.inter(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
-                      color: const Color(0xFF22C55E),
+                      color: isDark
+                          ? const Color(0xFF22C55E)
+                          : const Color(0xFF22C55E),
                     ),
                   ),
                 ),
@@ -345,5 +363,3 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     );
   }
 }
-
-
