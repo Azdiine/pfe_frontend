@@ -1,61 +1,54 @@
-import '../../../data/models/user_model.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../../core/constants.dart';
 
 class ProfileRepository {
-  // Simulated get profile method
-  Future<UserModel> getProfile() async {
-    // Simulate API call delay
-    await Future.delayed(const Duration(seconds: 2));
+  static const String _baseUrl = ApiConstants.baseUrl;
 
-    // TODO: Replace with actual API call
-    // Simulated success response
-    return UserModel(
-      id: '1',
-      email: 'user@example.com',
-      name: 'John Doe',
-      avatarUrl: null,
-      createdAt: DateTime.now().subtract(const Duration(days: 90)),
-      lastLoginAt: DateTime.now(),
-    );
-
-    // Simulated error (uncomment to test error handling)
-    // throw Exception('Failed to load profile');
+  Future<Map<String, String>> _authHeaders() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString(AppConstants.tokenKey);
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
   }
 
-  // Simulated update profile method
-  Future<void> updateProfile(UserModel user) async {
-    // Simulate API call delay
-    await Future.delayed(const Duration(seconds: 1));
+  // Get full profile from API
+  Future<Map<String, dynamic>> getProfile() async {
+    final headers = await _authHeaders();
+    final response = await http
+        .get(
+          Uri.parse('$_baseUrl/api/profile'),
+          headers: headers,
+        )
+        .timeout(ApiConstants.connectionTimeout);
 
-    // TODO: Replace with actual API call
-    // Success
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      return body['data'] as Map<String, dynamic>;
+    }
+
+    throw Exception('Failed to load profile');
   }
 
-  // Simulated update avatar method
-  Future<void> updateAvatar(String avatarUrl) async {
-    // Simulate API call delay
-    await Future.delayed(const Duration(seconds: 1));
+  // Update profile fields
+  Future<Map<String, dynamic>> updateProfile(Map<String, dynamic> data) async {
+    final headers = await _authHeaders();
+    final response = await http
+        .put(
+          Uri.parse('$_baseUrl/api/profile'),
+          headers: headers,
+          body: jsonEncode(data),
+        )
+        .timeout(ApiConstants.connectionTimeout);
 
-    // TODO: Replace with actual API call
-    // Success
-  }
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      return body['data'] as Map<String, dynamic>;
+    }
 
-  // Simulated change password method
-  Future<void> changePassword(String oldPassword, String newPassword) async {
-    // Simulate API call delay
-    await Future.delayed(const Duration(seconds: 1));
-
-    // TODO: Replace with actual API call
-    // Verify old password and update to new password
-    // Success or throw error
-  }
-
-  // Simulated delete account method
-  Future<void> deleteAccount(String password) async {
-    // Simulate API call delay
-    await Future.delayed(const Duration(seconds: 1));
-
-    // TODO: Replace with actual API call
-    // Verify password and delete account
-    // Success or throw error
+    throw Exception('Failed to update profile');
   }
 }

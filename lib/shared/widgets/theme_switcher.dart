@@ -120,7 +120,7 @@ class _ToggleStyle extends StatelessWidget {
           color: !isDark ? Colors.amber : Colors.grey,
         ),
         const SizedBox(width: 8),
-        Switch(value: isDark, onChanged: onChanged, activeColor: Colors.amber),
+        Switch(value: isDark, onChanged: onChanged, activeThumbColor: Colors.amber),
         const SizedBox(width: 8),
         Icon(
           Icons.dark_mode,

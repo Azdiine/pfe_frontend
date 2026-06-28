@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../auth/application/auth_provider.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
+class _SplashScreenState extends ConsumerState<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
@@ -35,12 +37,34 @@ class _SplashScreenState extends State<SplashScreen>
     // Start animation
     _animationController.forward();
 
-    // Navigate to login after delay
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
+    // Check auth status and navigate accordingly
+    _checkAuthAndNavigate();
+  }
+
+  Future<void> _checkAuthAndNavigate() async {
+    // Wait for splash animation to show
+    await Future.delayed(const Duration(seconds: 2));
+
+    if (!mounted) return;
+
+    try {
+      await ref.read(authProvider.notifier).checkAuthStatus();
+      final state = ref.read(authProvider);
+
+      if (!mounted) return;
+
+      if (state.isAuthenticated) {
+        if (state.user?.onboardingDone == true) {
+          context.go('/home');
+        } else {
+          context.go('/onboarding');
+        }
+      } else {
         context.go('/login');
       }
-    });
+    } catch (_) {
+      if (mounted) context.go('/login');
+    }
   }
 
   @override

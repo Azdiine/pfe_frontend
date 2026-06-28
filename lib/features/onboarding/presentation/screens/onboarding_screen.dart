@@ -1,12 +1,16 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../data/models/onboarding_question.dart';
 import '../widgets/question_card.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/providers/theme_provider.dart';
 import '../../../../core/providers/locale_provider.dart';
+import '../../../../core/constants.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -17,118 +21,137 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   int _currentIndex = 0;
+  bool _isSaving = false;
   final Map<int, List<String>> _answers = {};
   final Map<int, String> _textInputs = {};
 
+  String? _toIsoBirthDate(String value) {
+    final parts = value.split('/');
+    if (parts.length != 3) return null;
+
+    final day = int.tryParse(parts[0]);
+    final month = int.tryParse(parts[1]);
+    final year = int.tryParse(parts[2]);
+
+    if (day == null || month == null || year == null) return null;
+
+    final date = DateTime(year, month, day);
+    if (date.year != year || date.month != month || date.day != day) {
+      return null;
+    }
+
+    final isoMonth = month.toString().padLeft(2, '0');
+    final isoDay = day.toString().padLeft(2, '0');
+    return '$year-$isoMonth-$isoDay';
+  }
+
   List<OnboardingQuestion> _buildQuestions() {
     return [
+      // Q1: Gender
       OnboardingQuestion(
         id: 1,
         questionKey: 'onbQ1',
         subtitleKey: 'onbQ1Sub',
-        optionKeys: ['onbQ1Opt1', 'onbQ1Opt2', 'onbQ1Opt3', 'onbQ1Opt4'],
-        benefitKeys: ['onbQ1Ben1', 'onbQ1Ben2'],
+        fieldKey: 'gender',
+        optionKeys: ['male', 'female', 'other'],
+        benefitKeys: ['onbQ1Ben1'],
       ),
+      // Q2: Birth date
       OnboardingQuestion(
         id: 2,
         questionKey: 'onbQ2',
-        optionKeys: ['onbQ2Opt1', 'onbQ2Opt2', 'onbQ2Opt3', 'onbQ2Opt4'],
-        benefitKeys: ['onbQ2Ben1', 'onbQ2Ben2'],
+        subtitleKey: 'onbQ2Sub',
+        fieldKey: 'birthDate',
+        isNumericInput: true,
+        hintKey: 'onbQ2Hint',
+        benefitKeys: ['onbQ2Ben1'],
       ),
+      // Q3: Height
       OnboardingQuestion(
         id: 3,
         questionKey: 'onbQ3',
         subtitleKey: 'onbQ3Sub',
-        optionKeys: ['onbQ3Opt1', 'onbQ3Opt2', 'onbQ3Opt3', 'onbQ3Opt4'],
-        benefitKeys: ['onbQ3Ben1', 'onbQ3Ben2'],
+        fieldKey: 'heightCm',
+        isNumericInput: true,
+        hintKey: 'onbQ3Hint',
+        benefitKeys: ['onbQ3Ben1'],
       ),
+      // Q4: Current weight
       OnboardingQuestion(
         id: 4,
         questionKey: 'onbQ4',
-        optionKeys: ['onbQ4Opt1', 'onbQ4Opt2', 'onbQ4Opt3'],
-        benefitKeys: ['onbQ4Ben1', 'onbQ4Ben2', 'onbQ4Ben3'],
+        subtitleKey: 'onbQ4Sub',
+        fieldKey: 'weightKg',
+        isNumericInput: true,
+        hintKey: 'onbQ4Hint',
+        benefitKeys: ['onbQ4Ben1'],
       ),
+      // Q5: Target weight
       OnboardingQuestion(
         id: 5,
         questionKey: 'onbQ5',
-        optionKeys: [
-          'onbQ5Opt1',
-          'onbQ5Opt2',
-          'onbQ5Opt3',
-          'onbQ5Opt4',
-          'onbQ5Opt5',
-          'onbQ5Opt6',
-          'onbQ5Opt7',
-          'onbQ5Opt8',
-        ],
+        subtitleKey: 'onbQ5Sub',
+        fieldKey: 'targetWeightKg',
+        isNumericInput: true,
+        hintKey: 'onbQ5Hint',
         benefitKeys: ['onbQ5Ben1'],
-        multiSelect: true,
       ),
+      // Q6: Goal
       OnboardingQuestion(
         id: 6,
         questionKey: 'onbQ6',
-        optionKeys: [
-          'onbQ6Opt1',
-          'onbQ6Opt2',
-          'onbQ6Opt3',
-          'onbQ6Opt4',
-          'onbQ6Opt5',
-          'onbQ6Opt6',
-        ],
+        fieldKey: 'goal',
+        optionKeys: ['lose_weight', 'gain_muscle', 'maintain', 'eat_healthier', 'improve_fitness'],
         benefitKeys: ['onbQ6Ben1'],
-        multiSelect: true,
-        hasTextInput: true,
       ),
+      // Q7: Activity level
       OnboardingQuestion(
         id: 7,
         questionKey: 'onbQ7',
         subtitleKey: 'onbQ7Sub',
-        optionKeys: [
-          'onbQ7Opt1',
-          'onbQ7Opt2',
-          'onbQ7Opt3',
-          'onbQ7Opt4',
-          'onbQ7Opt5',
-          'onbQ7Opt6',
-          'onbQ7Opt7',
-        ],
+        fieldKey: 'activityLevel',
+        optionKeys: ['sedentary', 'lightly_active', 'moderately_active', 'active', 'very_active'],
         benefitKeys: ['onbQ7Ben1'],
-        multiSelect: true,
       ),
+      // Q8: Diet type
       OnboardingQuestion(
         id: 8,
         questionKey: 'onbQ8',
-        optionKeys: ['onbQ8Opt1', 'onbQ8Opt2', 'onbQ8Opt3'],
+        fieldKey: 'dietType',
+        optionKeys: ['omnivore', 'vegetarian', 'vegan', 'halal', 'keto', 'paleo', 'no_preference'],
         benefitKeys: ['onbQ8Ben1'],
       ),
+      // Q9: Allergies
       OnboardingQuestion(
         id: 9,
         questionKey: 'onbQ9',
         subtitleKey: 'onbQ9Sub',
-        optionKeys: [
-          'onbQ9Opt1',
-          'onbQ9Opt2',
-          'onbQ9Opt3',
-          'onbQ9Opt4',
-          'onbQ9Opt5',
-          'onbQ9Opt6',
-          'onbQ9Opt7',
-        ],
+        fieldKey: 'allergies',
+        optionKeys: ['peanuts', 'seafood', 'dairy', 'eggs', 'gluten', 'soy', 'allergy_other', 'allergy_none'],
         benefitKeys: ['onbQ9Ben1'],
         multiSelect: true,
+        hasTextInput: true,
       ),
+      // Q10: Health conditions
       OnboardingQuestion(
         id: 10,
         questionKey: 'onbQ10',
-        optionKeys: ['onbQ10Opt1', 'onbQ10Opt2', 'onbQ10Opt3', 'onbQ10Opt4'],
-        benefitKeys: ['onbQ10Ben1', 'onbQ10Ben2'],
+        subtitleKey: 'onbQ10Sub',
+        fieldKey: 'healthConditions',
+        optionKeys: ['diabetes', 'hypertension', 'high_cholesterol', 'heart_disease', 'health_other', 'health_none'],
+        benefitKeys: ['onbQ10Ben1'],
+        multiSelect: true,
+        hasTextInput: true,
       ),
+      // Q11: Cuisine preferences
       OnboardingQuestion(
         id: 11,
         questionKey: 'onbQ11',
         subtitleKey: 'onbQ11Sub',
-        optionKeys: ['onbQ11Opt1', 'onbQ11Opt2', 'onbQ11Opt3'],
+        fieldKey: 'cuisinePrefs',
+        optionKeys: ['quick_simple', 'healthy', 'high_protein', 'budget_friendly', 'gourmet', 'world_cuisine', 'traditional'],
         benefitKeys: ['onbQ11Ben1'],
+        multiSelect: true,
       ),
     ];
   }
@@ -164,20 +187,43 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   void _nextQuestion() {
     final l10n = AppLocalizations.of(context);
     final questions = _buildQuestions();
-    final questionId = questions[_currentIndex].id;
+    final question = questions[_currentIndex];
+    final questionId = question.id;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    if (_answers[questionId] == null || _answers[questionId]!.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.pleaseSelectOption),
-          backgroundColor: isDark
-              ? const Color(0xFF1A1A1A)
-              : const Color(0xFF111111),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-      return;
+    // Validate: numeric → check textInputs, options → check answers
+    if (question.isNumericInput) {
+      final value = _textInputs[questionId];
+      final isBirthDateQuestion = question.fieldKey == 'birthDate';
+      final isValid = isBirthDateQuestion
+          ? value != null && value.isNotEmpty
+          : value != null && value.isNotEmpty && num.tryParse(value) != null;
+
+      if (!isValid) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.pleaseEnterValue),
+            backgroundColor: isDark
+                ? const Color(0xFF1A1A1A)
+                : const Color(0xFF111111),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        return;
+      }
+    } else {
+      if (_answers[questionId] == null || _answers[questionId]!.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.pleaseSelectOption),
+            backgroundColor: isDark
+                ? const Color(0xFF1A1A1A)
+                : const Color(0xFF111111),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        return;
+      }
     }
 
     if (_currentIndex < questions.length - 1) {
@@ -197,14 +243,82 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     }
   }
 
-  void _completeOnboarding() {
-    // Save answers
-    debugPrint('Onboarding completed!');
-    debugPrint('Answers: $_answers');
-    debugPrint('Text inputs: $_textInputs');
+  void _completeOnboarding() async {
+    if (_isSaving) return;
+    setState(() => _isSaving = true);
 
-    // Navigate to home
-    context.go('/home');
+    final questions = _buildQuestions();
+    final Map<String, dynamic> profileData = {};
+
+    for (final q in questions) {
+      if (q.isNumericInput) {
+        final value = _textInputs[q.id];
+        if (value != null && value.isNotEmpty) {
+          profileData[q.fieldKey] = q.fieldKey == 'birthDate'
+              ? _toIsoBirthDate(value)
+              : num.tryParse(value);
+        }
+      } else if (q.multiSelect) {
+        final selected = _answers[q.id] ?? [];
+        // Add free-text "other" value if present
+        final extra = _textInputs[q.id];
+        final list = List<String>.from(selected);
+        if (extra != null && extra.isNotEmpty) {
+          list.remove('allergy_other');
+          list.remove('health_other');
+          list.add(extra);
+        }
+        // Remove "none" markers
+        list.remove('allergy_none');
+        list.remove('health_none');
+        profileData[q.fieldKey] = list;
+      } else {
+        final selected = _answers[q.id];
+        if (selected != null && selected.isNotEmpty) {
+          profileData[q.fieldKey] = selected.first;
+        }
+      }
+    }
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString(AppConstants.tokenKey);
+
+      final response = await http
+          .put(
+            Uri.parse('${ApiConstants.baseUrl}/api/profile/onboarding'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+            body: jsonEncode(profileData),
+          )
+          .timeout(ApiConstants.connectionTimeout);
+
+      if (!mounted) return;
+
+      if (response.statusCode == 200) {
+        context.go('/home');
+      } else {
+        final body = jsonDecode(response.body) as Map<String, dynamic>;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(body['message'] ?? 'Error saving profile'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
   }
 
   @override
@@ -464,7 +578,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     width: double.infinity,
                     height: 56,
                     child: ElevatedButton(
-                      onPressed: _nextQuestion,
+                      onPressed: _isSaving ? null : _nextQuestion,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary(context),
                         foregroundColor: Colors.white,

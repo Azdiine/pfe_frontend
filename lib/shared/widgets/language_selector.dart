@@ -93,11 +93,10 @@ class CompactLanguageSelector extends ConsumerWidget {
       padding: const EdgeInsets.only(left: 12, top: 4),
       child: CupertinoButton(
         padding: EdgeInsets.zero,
-        minSize: 0,
         onPressed: () {
           notifier.toggleLanguage();
           HapticFeedback.lightImpact();
-        },
+        }, minimumSize: Size(0, 0),
         child: Container(
           height: 34,
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),

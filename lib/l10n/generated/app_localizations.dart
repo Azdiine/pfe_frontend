@@ -503,7 +503,7 @@ abstract class AppLocalizations {
   /// No description provided for @age.
   ///
   /// In en, this message translates to:
-  /// **'Age'**
+  /// **'Date of birth'**
   String get age;
 
   /// No description provided for @height.
@@ -2258,6 +2258,12 @@ abstract class AppLocalizations {
   /// **'Please select at least one option'**
   String get pleaseSelectOption;
 
+  /// No description provided for @pleaseEnterValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a value'**
+  String get pleaseEnterValue;
+
   /// No description provided for @specifyHere.
   ///
   /// In en, this message translates to:
@@ -2267,518 +2273,458 @@ abstract class AppLocalizations {
   /// No description provided for @onbQ1.
   ///
   /// In en, this message translates to:
-  /// **'How many people do you cook for?'**
+  /// **'What is your gender?'**
   String get onbQ1;
 
   /// No description provided for @onbQ1Sub.
   ///
   /// In en, this message translates to:
-  /// **'Very important for portions.'**
+  /// **'Helps personalize your nutrition plan'**
   String get onbQ1Sub;
-
-  /// No description provided for @onbQ1Opt1.
-  ///
-  /// In en, this message translates to:
-  /// **'Just me'**
-  String get onbQ1Opt1;
-
-  /// No description provided for @onbQ1Opt2.
-  ///
-  /// In en, this message translates to:
-  /// **'2 people'**
-  String get onbQ1Opt2;
-
-  /// No description provided for @onbQ1Opt3.
-  ///
-  /// In en, this message translates to:
-  /// **'3–4'**
-  String get onbQ1Opt3;
-
-  /// No description provided for @onbQ1Opt4.
-  ///
-  /// In en, this message translates to:
-  /// **'5+'**
-  String get onbQ1Opt4;
 
   /// No description provided for @onbQ1Ben1.
   ///
   /// In en, this message translates to:
-  /// **'adjust portions'**
+  /// **'personalized calorie calculation'**
   String get onbQ1Ben1;
 
-  /// No description provided for @onbQ1Ben2.
+  /// No description provided for @onbGenderMale.
   ///
   /// In en, this message translates to:
-  /// **'auto shopping list'**
-  String get onbQ1Ben2;
+  /// **'Male'**
+  String get onbGenderMale;
+
+  /// No description provided for @onbGenderFemale.
+  ///
+  /// In en, this message translates to:
+  /// **'Female'**
+  String get onbGenderFemale;
+
+  /// No description provided for @onbGenderOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get onbGenderOther;
 
   /// No description provided for @onbQ2.
   ///
   /// In en, this message translates to:
-  /// **'How often do you cook per week?'**
+  /// **'What is your date of birth?'**
   String get onbQ2;
 
-  /// No description provided for @onbQ2Opt1.
+  /// No description provided for @onbQ2Sub.
   ///
   /// In en, this message translates to:
-  /// **'Never'**
-  String get onbQ2Opt1;
+  /// **'Your date of birth helps personalize your nutritional needs'**
+  String get onbQ2Sub;
 
-  /// No description provided for @onbQ2Opt2.
+  /// No description provided for @onbQ2Hint.
   ///
   /// In en, this message translates to:
-  /// **'1–2 times'**
-  String get onbQ2Opt2;
-
-  /// No description provided for @onbQ2Opt3.
-  ///
-  /// In en, this message translates to:
-  /// **'3–5 times'**
-  String get onbQ2Opt3;
-
-  /// No description provided for @onbQ2Opt4.
-  ///
-  /// In en, this message translates to:
-  /// **'Every day'**
-  String get onbQ2Opt4;
+  /// **'Select your date of birth'**
+  String get onbQ2Hint;
 
   /// No description provided for @onbQ2Ben1.
   ///
   /// In en, this message translates to:
-  /// **'recommendation frequency'**
+  /// **'adapted nutritional targets'**
   String get onbQ2Ben1;
-
-  /// No description provided for @onbQ2Ben2.
-  ///
-  /// In en, this message translates to:
-  /// **'meal plan or not'**
-  String get onbQ2Ben2;
 
   /// No description provided for @onbQ3.
   ///
   /// In en, this message translates to:
-  /// **'Max time for a meal?'**
+  /// **'What is your height?'**
   String get onbQ3;
 
   /// No description provided for @onbQ3Sub.
   ///
   /// In en, this message translates to:
-  /// **'Super important for UX.'**
+  /// **'Used to calculate your BMI'**
   String get onbQ3Sub;
 
-  /// No description provided for @onbQ3Opt1.
+  /// No description provided for @onbQ3Hint.
   ///
   /// In en, this message translates to:
-  /// **'10 min (quick)'**
-  String get onbQ3Opt1;
-
-  /// No description provided for @onbQ3Opt2.
-  ///
-  /// In en, this message translates to:
-  /// **'20 min'**
-  String get onbQ3Opt2;
-
-  /// No description provided for @onbQ3Opt3.
-  ///
-  /// In en, this message translates to:
-  /// **'30 min'**
-  String get onbQ3Opt3;
-
-  /// No description provided for @onbQ3Opt4.
-  ///
-  /// In en, this message translates to:
-  /// **'Doesn\'\'t matter'**
-  String get onbQ3Opt4;
+  /// **'Height in cm'**
+  String get onbQ3Hint;
 
   /// No description provided for @onbQ3Ben1.
   ///
   /// In en, this message translates to:
-  /// **'filter long recipes'**
+  /// **'precise BMI calculation'**
   String get onbQ3Ben1;
-
-  /// No description provided for @onbQ3Ben2.
-  ///
-  /// In en, this message translates to:
-  /// **'express recipes'**
-  String get onbQ3Ben2;
 
   /// No description provided for @onbQ4.
   ///
   /// In en, this message translates to:
-  /// **'Your cooking level?'**
+  /// **'What is your current weight?'**
   String get onbQ4;
 
-  /// No description provided for @onbQ4Opt1.
+  /// No description provided for @onbQ4Sub.
   ///
   /// In en, this message translates to:
-  /// **'Beginner'**
-  String get onbQ4Opt1;
+  /// **'Starting point for your journey'**
+  String get onbQ4Sub;
 
-  /// No description provided for @onbQ4Opt2.
+  /// No description provided for @onbQ4Hint.
   ///
   /// In en, this message translates to:
-  /// **'Intermediate'**
-  String get onbQ4Opt2;
-
-  /// No description provided for @onbQ4Opt3.
-  ///
-  /// In en, this message translates to:
-  /// **'Advanced'**
-  String get onbQ4Opt3;
+  /// **'Weight in kg'**
+  String get onbQ4Hint;
 
   /// No description provided for @onbQ4Ben1.
   ///
   /// In en, this message translates to:
-  /// **'recipe difficulty'**
+  /// **'track your progress'**
   String get onbQ4Ben1;
-
-  /// No description provided for @onbQ4Ben2.
-  ///
-  /// In en, this message translates to:
-  /// **'simplified steps'**
-  String get onbQ4Ben2;
-
-  /// No description provided for @onbQ4Ben3.
-  ///
-  /// In en, this message translates to:
-  /// **'tutorials or not'**
-  String get onbQ4Ben3;
 
   /// No description provided for @onbQ5.
   ///
   /// In en, this message translates to:
-  /// **'Your dietary preferences?'**
+  /// **'What is your target weight?'**
   String get onbQ5;
 
-  /// No description provided for @onbQ5Opt1.
+  /// No description provided for @onbQ5Sub.
   ///
   /// In en, this message translates to:
-  /// **'Omnivore'**
-  String get onbQ5Opt1;
+  /// **'We will help you reach it'**
+  String get onbQ5Sub;
 
-  /// No description provided for @onbQ5Opt2.
+  /// No description provided for @onbQ5Hint.
   ///
   /// In en, this message translates to:
-  /// **'Vegetarian'**
-  String get onbQ5Opt2;
-
-  /// No description provided for @onbQ5Opt3.
-  ///
-  /// In en, this message translates to:
-  /// **'Vegan'**
-  String get onbQ5Opt3;
-
-  /// No description provided for @onbQ5Opt4.
-  ///
-  /// In en, this message translates to:
-  /// **'Halal'**
-  String get onbQ5Opt4;
-
-  /// No description provided for @onbQ5Opt5.
-  ///
-  /// In en, this message translates to:
-  /// **'No pork'**
-  String get onbQ5Opt5;
-
-  /// No description provided for @onbQ5Opt6.
-  ///
-  /// In en, this message translates to:
-  /// **'Lactose-free'**
-  String get onbQ5Opt6;
-
-  /// No description provided for @onbQ5Opt7.
-  ///
-  /// In en, this message translates to:
-  /// **'Gluten-free'**
-  String get onbQ5Opt7;
-
-  /// No description provided for @onbQ5Opt8.
-  ///
-  /// In en, this message translates to:
-  /// **'Keto'**
-  String get onbQ5Opt8;
+  /// **'Target in kg'**
+  String get onbQ5Hint;
 
   /// No description provided for @onbQ5Ben1.
   ///
   /// In en, this message translates to:
-  /// **'automatic recipe filter'**
+  /// **'personalized meal plan'**
   String get onbQ5Ben1;
 
   /// No description provided for @onbQ6.
   ///
   /// In en, this message translates to:
-  /// **'Allergies or forbidden foods?'**
+  /// **'What is your main goal?'**
   String get onbQ6;
-
-  /// No description provided for @onbQ6Opt1.
-  ///
-  /// In en, this message translates to:
-  /// **'Peanuts'**
-  String get onbQ6Opt1;
-
-  /// No description provided for @onbQ6Opt2.
-  ///
-  /// In en, this message translates to:
-  /// **'Seafood'**
-  String get onbQ6Opt2;
-
-  /// No description provided for @onbQ6Opt3.
-  ///
-  /// In en, this message translates to:
-  /// **'Milk'**
-  String get onbQ6Opt3;
-
-  /// No description provided for @onbQ6Opt4.
-  ///
-  /// In en, this message translates to:
-  /// **'Eggs'**
-  String get onbQ6Opt4;
-
-  /// No description provided for @onbQ6Opt5.
-  ///
-  /// In en, this message translates to:
-  /// **'Other'**
-  String get onbQ6Opt5;
-
-  /// No description provided for @onbQ6Opt6.
-  ///
-  /// In en, this message translates to:
-  /// **'None'**
-  String get onbQ6Opt6;
 
   /// No description provided for @onbQ6Ben1.
   ///
   /// In en, this message translates to:
-  /// **'safety + medical credibility'**
+  /// **'tailored recommendations'**
   String get onbQ6Ben1;
+
+  /// No description provided for @onbGoalLose.
+  ///
+  /// In en, this message translates to:
+  /// **'Lose weight'**
+  String get onbGoalLose;
+
+  /// No description provided for @onbGoalGain.
+  ///
+  /// In en, this message translates to:
+  /// **'Gain muscle'**
+  String get onbGoalGain;
+
+  /// No description provided for @onbGoalMaintain.
+  ///
+  /// In en, this message translates to:
+  /// **'Maintain weight'**
+  String get onbGoalMaintain;
+
+  /// No description provided for @onbGoalHealthy.
+  ///
+  /// In en, this message translates to:
+  /// **'Eat healthier'**
+  String get onbGoalHealthy;
+
+  /// No description provided for @onbGoalFitness.
+  ///
+  /// In en, this message translates to:
+  /// **'Improve fitness'**
+  String get onbGoalFitness;
 
   /// No description provided for @onbQ7.
   ///
   /// In en, this message translates to:
-  /// **'What type of dishes do you prefer?'**
+  /// **'What is your activity level?'**
   String get onbQ7;
 
   /// No description provided for @onbQ7Sub.
   ///
   /// In en, this message translates to:
-  /// **'Fun + useful for personalization'**
+  /// **'Affects your daily calorie needs'**
   String get onbQ7Sub;
-
-  /// No description provided for @onbQ7Opt1.
-  ///
-  /// In en, this message translates to:
-  /// **'Quick / simple'**
-  String get onbQ7Opt1;
-
-  /// No description provided for @onbQ7Opt2.
-  ///
-  /// In en, this message translates to:
-  /// **'Healthy'**
-  String get onbQ7Opt2;
-
-  /// No description provided for @onbQ7Opt3.
-  ///
-  /// In en, this message translates to:
-  /// **'High protein (sport)'**
-  String get onbQ7Opt3;
-
-  /// No description provided for @onbQ7Opt4.
-  ///
-  /// In en, this message translates to:
-  /// **'Budget-friendly'**
-  String get onbQ7Opt4;
-
-  /// No description provided for @onbQ7Opt5.
-  ///
-  /// In en, this message translates to:
-  /// **'Gourmet / comfort food'**
-  String get onbQ7Opt5;
-
-  /// No description provided for @onbQ7Opt6.
-  ///
-  /// In en, this message translates to:
-  /// **'World cuisine'**
-  String get onbQ7Opt6;
-
-  /// No description provided for @onbQ7Opt7.
-  ///
-  /// In en, this message translates to:
-  /// **'Traditional'**
-  String get onbQ7Opt7;
 
   /// No description provided for @onbQ7Ben1.
   ///
   /// In en, this message translates to:
-  /// **'personalized recommendations'**
+  /// **'accurate calorie target'**
   String get onbQ7Ben1;
+
+  /// No description provided for @onbActivitySedentary.
+  ///
+  /// In en, this message translates to:
+  /// **'Sedentary'**
+  String get onbActivitySedentary;
+
+  /// No description provided for @onbActivityLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Lightly active'**
+  String get onbActivityLight;
+
+  /// No description provided for @onbActivityModerate.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderately active'**
+  String get onbActivityModerate;
+
+  /// No description provided for @onbActivityActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get onbActivityActive;
+
+  /// No description provided for @onbActivityVery.
+  ///
+  /// In en, this message translates to:
+  /// **'Very active'**
+  String get onbActivityVery;
 
   /// No description provided for @onbQ8.
   ///
   /// In en, this message translates to:
-  /// **'Food budget?'**
+  /// **'What is your dietary preference?'**
   String get onbQ8;
-
-  /// No description provided for @onbQ8Opt1.
-  ///
-  /// In en, this message translates to:
-  /// **'Low budget'**
-  String get onbQ8Opt1;
-
-  /// No description provided for @onbQ8Opt2.
-  ///
-  /// In en, this message translates to:
-  /// **'Normal'**
-  String get onbQ8Opt2;
-
-  /// No description provided for @onbQ8Opt3.
-  ///
-  /// In en, this message translates to:
-  /// **'Premium'**
-  String get onbQ8Opt3;
 
   /// No description provided for @onbQ8Ben1.
   ///
   /// In en, this message translates to:
-  /// **'ingredient choices (rice/chicken vs salmon/avocado)'**
+  /// **'filtered recipe suggestions'**
   String get onbQ8Ben1;
+
+  /// No description provided for @onbDietOmnivore.
+  ///
+  /// In en, this message translates to:
+  /// **'Omnivore'**
+  String get onbDietOmnivore;
+
+  /// No description provided for @onbDietVegetarian.
+  ///
+  /// In en, this message translates to:
+  /// **'Vegetarian'**
+  String get onbDietVegetarian;
+
+  /// No description provided for @onbDietVegan.
+  ///
+  /// In en, this message translates to:
+  /// **'Vegan'**
+  String get onbDietVegan;
+
+  /// No description provided for @onbDietHalal.
+  ///
+  /// In en, this message translates to:
+  /// **'Halal'**
+  String get onbDietHalal;
+
+  /// No description provided for @onbDietKeto.
+  ///
+  /// In en, this message translates to:
+  /// **'Keto'**
+  String get onbDietKeto;
+
+  /// No description provided for @onbDietPaleo.
+  ///
+  /// In en, this message translates to:
+  /// **'Paleo'**
+  String get onbDietPaleo;
+
+  /// No description provided for @onbDietNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No preference'**
+  String get onbDietNone;
 
   /// No description provided for @onbQ9.
   ///
   /// In en, this message translates to:
-  /// **'What equipment do you have?'**
+  /// **'Any food allergies?'**
   String get onbQ9;
 
   /// No description provided for @onbQ9Sub.
   ///
   /// In en, this message translates to:
-  /// **'Specific and very smart'**
+  /// **'Your safety comes first'**
   String get onbQ9Sub;
-
-  /// No description provided for @onbQ9Opt1.
-  ///
-  /// In en, this message translates to:
-  /// **'Oven'**
-  String get onbQ9Opt1;
-
-  /// No description provided for @onbQ9Opt2.
-  ///
-  /// In en, this message translates to:
-  /// **'Microwave'**
-  String get onbQ9Opt2;
-
-  /// No description provided for @onbQ9Opt3.
-  ///
-  /// In en, this message translates to:
-  /// **'Air fryer'**
-  String get onbQ9Opt3;
-
-  /// No description provided for @onbQ9Opt4.
-  ///
-  /// In en, this message translates to:
-  /// **'Blender'**
-  String get onbQ9Opt4;
-
-  /// No description provided for @onbQ9Opt5.
-  ///
-  /// In en, this message translates to:
-  /// **'Food processor'**
-  String get onbQ9Opt5;
-
-  /// No description provided for @onbQ9Opt6.
-  ///
-  /// In en, this message translates to:
-  /// **'BBQ'**
-  String get onbQ9Opt6;
-
-  /// No description provided for @onbQ9Opt7.
-  ///
-  /// In en, this message translates to:
-  /// **'Stovetop only'**
-  String get onbQ9Opt7;
 
   /// No description provided for @onbQ9Ben1.
   ///
   /// In en, this message translates to:
-  /// **'avoid suggesting impossible recipes'**
+  /// **'safe recipe recommendations'**
   String get onbQ9Ben1;
+
+  /// No description provided for @onbAllergyPeanuts.
+  ///
+  /// In en, this message translates to:
+  /// **'Peanuts'**
+  String get onbAllergyPeanuts;
+
+  /// No description provided for @onbAllergySeafood.
+  ///
+  /// In en, this message translates to:
+  /// **'Seafood'**
+  String get onbAllergySeafood;
+
+  /// No description provided for @onbAllergyDairy.
+  ///
+  /// In en, this message translates to:
+  /// **'Dairy'**
+  String get onbAllergyDairy;
+
+  /// No description provided for @onbAllergyEggs.
+  ///
+  /// In en, this message translates to:
+  /// **'Eggs'**
+  String get onbAllergyEggs;
+
+  /// No description provided for @onbAllergyGluten.
+  ///
+  /// In en, this message translates to:
+  /// **'Gluten'**
+  String get onbAllergyGluten;
+
+  /// No description provided for @onbAllergySoy.
+  ///
+  /// In en, this message translates to:
+  /// **'Soy'**
+  String get onbAllergySoy;
+
+  /// No description provided for @onbAllergyOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get onbAllergyOther;
+
+  /// No description provided for @onbAllergyNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get onbAllergyNone;
 
   /// No description provided for @onbQ10.
   ///
   /// In en, this message translates to:
-  /// **'How often do you shop?'**
+  /// **'Any health conditions?'**
   String get onbQ10;
 
-  /// No description provided for @onbQ10Opt1.
+  /// No description provided for @onbQ10Sub.
   ///
   /// In en, this message translates to:
-  /// **'Every day'**
-  String get onbQ10Opt1;
-
-  /// No description provided for @onbQ10Opt2.
-  ///
-  /// In en, this message translates to:
-  /// **'2–3 times/week'**
-  String get onbQ10Opt2;
-
-  /// No description provided for @onbQ10Opt3.
-  ///
-  /// In en, this message translates to:
-  /// **'Once a week'**
-  String get onbQ10Opt3;
-
-  /// No description provided for @onbQ10Opt4.
-  ///
-  /// In en, this message translates to:
-  /// **'Rarely'**
-  String get onbQ10Opt4;
+  /// **'Helps us adapt your nutrition'**
+  String get onbQ10Sub;
 
   /// No description provided for @onbQ10Ben1.
   ///
   /// In en, this message translates to:
-  /// **'weekly meal plan'**
+  /// **'health-adapted meals'**
   String get onbQ10Ben1;
 
-  /// No description provided for @onbQ10Ben2.
+  /// No description provided for @onbHealthDiabetes.
   ///
   /// In en, this message translates to:
-  /// **'stock management'**
-  String get onbQ10Ben2;
+  /// **'Diabetes'**
+  String get onbHealthDiabetes;
+
+  /// No description provided for @onbHealthHypertension.
+  ///
+  /// In en, this message translates to:
+  /// **'Hypertension'**
+  String get onbHealthHypertension;
+
+  /// No description provided for @onbHealthCholesterol.
+  ///
+  /// In en, this message translates to:
+  /// **'High cholesterol'**
+  String get onbHealthCholesterol;
+
+  /// No description provided for @onbHealthHeart.
+  ///
+  /// In en, this message translates to:
+  /// **'Heart disease'**
+  String get onbHealthHeart;
+
+  /// No description provided for @onbHealthOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get onbHealthOther;
+
+  /// No description provided for @onbHealthNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get onbHealthNone;
 
   /// No description provided for @onbQ11.
   ///
   /// In en, this message translates to:
-  /// **'Want to scan your fridge now?'**
+  /// **'What type of cuisine do you prefer?'**
   String get onbQ11;
 
   /// No description provided for @onbQ11Sub.
   ///
   /// In en, this message translates to:
-  /// **'Start the AI magic right away 🔥'**
+  /// **'We will prioritize your favorites'**
   String get onbQ11Sub;
-
-  /// No description provided for @onbQ11Opt1.
-  ///
-  /// In en, this message translates to:
-  /// **'Scan with camera'**
-  String get onbQ11Opt1;
-
-  /// No description provided for @onbQ11Opt2.
-  ///
-  /// In en, this message translates to:
-  /// **'Add ingredients'**
-  String get onbQ11Opt2;
-
-  /// No description provided for @onbQ11Opt3.
-  ///
-  /// In en, this message translates to:
-  /// **'Later'**
-  String get onbQ11Opt3;
 
   /// No description provided for @onbQ11Ben1.
   ///
   /// In en, this message translates to:
-  /// **'start the AI magic right away'**
+  /// **'personalized meal suggestions'**
   String get onbQ11Ben1;
+
+  /// No description provided for @onbCuisineQuick.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick & simple'**
+  String get onbCuisineQuick;
+
+  /// No description provided for @onbCuisineHealthy.
+  ///
+  /// In en, this message translates to:
+  /// **'Healthy'**
+  String get onbCuisineHealthy;
+
+  /// No description provided for @onbCuisineProtein.
+  ///
+  /// In en, this message translates to:
+  /// **'High protein'**
+  String get onbCuisineProtein;
+
+  /// No description provided for @onbCuisineBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget-friendly'**
+  String get onbCuisineBudget;
+
+  /// No description provided for @onbCuisineGourmet.
+  ///
+  /// In en, this message translates to:
+  /// **'Gourmet'**
+  String get onbCuisineGourmet;
+
+  /// No description provided for @onbCuisineWorld.
+  ///
+  /// In en, this message translates to:
+  /// **'World cuisine'**
+  String get onbCuisineWorld;
+
+  /// No description provided for @onbCuisineTraditional.
+  ///
+  /// In en, this message translates to:
+  /// **'Traditional'**
+  String get onbCuisineTraditional;
 }
 
 class _AppLocalizationsDelegate

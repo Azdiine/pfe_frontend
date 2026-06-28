@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/apple_theme.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/models/ingredient_model.dart';
+import '../../data/services/recommendation_service.dart';
+import '../widgets/recipe_details_popup.dart';
 import 'barcode_scanner_page.dart';
 import '../../../../core/localization/locale_provider.dart';
 import '../../../../core/localization/app_localizations.dart';
@@ -20,6 +22,10 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
   late List<Ingredient> _middleShelfItems;
   late List<Ingredient> _bottomShelfItems;
   late List<Ingredient> _doorItems;
+  final RecommendationService _recommendationService = RecommendationService();
+  final Set<String> _selectedIngredientIds = {};
+  bool _isGenerating = false;
+  List<Map<String, dynamic>> _recommendations = [];
 
   @override
   void initState() {
@@ -33,6 +39,7 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
         id: '1',
         emoji: '🥛',
         name: 'Lait',
+        englishName: 'milk',
         quantity: '1L',
         daysUntilExpiry: 7,
         category: 'Dairy',
@@ -42,6 +49,7 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
         id: '2',
         emoji: '🧃',
         name: 'Jus d\'orange',
+        englishName: 'orange juice',
         quantity: '500ml',
         daysUntilExpiry: 5,
         category: 'Beverages',
@@ -54,6 +62,7 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
         id: '3',
         emoji: '🍗',
         name: 'Poulet',
+        englishName: 'chicken',
         quantity: '500g',
         daysUntilExpiry: 2,
         category: 'Meat',
@@ -63,6 +72,7 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
         id: '4',
         emoji: '🧀',
         name: 'Fromage',
+        englishName: 'cheese',
         quantity: '200g',
         daysUntilExpiry: 10,
         category: 'Dairy',
@@ -72,6 +82,7 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
         id: '5',
         emoji: '🥚',
         name: 'Œufs',
+        englishName: 'eggs',
         quantity: '12 pcs',
         daysUntilExpiry: 14,
         category: 'Dairy',
@@ -84,6 +95,7 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
         id: '6',
         emoji: '🍅',
         name: 'Tomates',
+        englishName: 'tomatoes',
         quantity: '6 pcs',
         daysUntilExpiry: 4,
         category: 'Vegetables',
@@ -93,6 +105,7 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
         id: '7',
         emoji: '🥕',
         name: 'Carottes',
+        englishName: 'carrots',
         quantity: '8 pcs',
         daysUntilExpiry: 8,
         category: 'Vegetables',
@@ -102,6 +115,7 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
         id: '8',
         emoji: '🥬',
         name: 'Laitue',
+        englishName: 'lettuce',
         quantity: '1 pc',
         daysUntilExpiry: 3,
         category: 'Vegetables',
@@ -114,6 +128,7 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
         id: '9',
         emoji: '🍯',
         name: 'Miel',
+        englishName: 'honey',
         quantity: '250g',
         daysUntilExpiry: 365,
         category: 'Condiments',
@@ -123,6 +138,7 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
         id: '10',
         emoji: '🥫',
         name: 'Sauce',
+        englishName: 'tomato sauce',
         quantity: '300ml',
         daysUntilExpiry: 30,
         category: 'Condiments',
@@ -171,6 +187,7 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
       _middleShelfItems.removeWhere((i) => i.id == id);
       _bottomShelfItems.removeWhere((i) => i.id == id);
       _doorItems.removeWhere((i) => i.id == id);
+      _selectedIngredientIds.remove(id);
     });
   }
 
@@ -198,6 +215,252 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => _buildRecipeSuggestionsSheet(),
+    );
+  }
+
+  void _toggleIngredientSelection(String ingredientId) {
+    setState(() {
+      if (_selectedIngredientIds.contains(ingredientId)) {
+        _selectedIngredientIds.remove(ingredientId);
+      } else {
+        _selectedIngredientIds.add(ingredientId);
+      }
+    });
+  }
+
+  Future<void> _generateRecommendations() async {
+    if (_selectedIngredientIds.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Veuillez sélectionner au moins un ingrédient.'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isGenerating = true);
+
+    try {
+      final selectedIngredients = allIngredients
+          .where((ingredient) => _selectedIngredientIds.contains(ingredient.id))
+          .map((ingredient) => ingredient.searchName)
+          .toList();
+
+      final result = await _recommendationService
+          .getRecommendationsByIngredients(selectedIngredients, topK: 5);
+
+      _recommendations = List<Map<String, dynamic>>.from(
+        result['recommendations'] as List<dynamic>? ?? [],
+      );
+
+      if (_recommendations.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Aucune recette trouvée pour ces ingrédients.'),
+            backgroundColor: AppColors.warning,
+          ),
+        );
+      } else {
+        _showRecommendationsBottomSheet();
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur de recommandation: ${e.toString()}'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    } finally {
+      setState(() => _isGenerating = false);
+    }
+  }
+
+  void _showRecommendationsBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.78,
+          ),
+          decoration: BoxDecoration(
+            color: AppColors.background(context),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+          ),
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.divider(context),
+                  borderRadius: BorderRadius.circular(AppleTheme.radiusSmall),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Recettes correspondantes',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textPrimary(context),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Expanded(
+                child: ListView.separated(
+                  itemCount: _recommendations.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final recipe = _recommendations[index];
+                    final cal = (recipe['calories'] as num? ?? 0).toInt();
+                    final prep = recipe['prep_time_min'] ?? 0;
+                    final category = recipe['category']?.toString() ?? '';
+
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                        _showRecipeDetails(recipe);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: AppColors.surface(context),
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(color: AppColors.divider(context)),
+                        ),
+                        child: Row(
+                          children: [
+                            // Emoji badge
+                            Container(
+                              width: 54,
+                              height: 54,
+                              decoration: BoxDecoration(
+                                color: AppColors.secondary(context).withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  _emojiForRecipe(recipe),
+                                  style: const TextStyle(fontSize: 26),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 14),
+                            // Info
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    recipe['name']?.toString() ?? 'Recette',
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.textPrimary(context),
+                                      height: 1.3,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Wrap(
+                                    spacing: 6,
+                                    runSpacing: 4,
+                                    children: [
+                                      if (cal > 0)
+                                        _RecipeChip(
+                                          icon: '🔥',
+                                          label: '$cal kcal',
+                                          context: context,
+                                        ),
+                                      if (prep > 0)
+                                        _RecipeChip(
+                                          icon: '⏱️',
+                                          label: '$prep min',
+                                          context: context,
+                                        ),
+                                      if (category.isNotEmpty && category != 'nan')
+                                        _RecipeChip(
+                                          icon: '🏷️',
+                                          label: category,
+                                          context: context,
+                                        ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Icon(
+                              Icons.arrow_forward_ios,
+                              size: 14,
+                              color: AppColors.textSecondary(context),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  String _emojiForRecipe(Map<String, dynamic> recipe) {
+    if (recipe['emoji'] != null) return recipe['emoji'].toString();
+    final category = (recipe['category'] ?? '').toString().toLowerCase();
+    const map = {
+      'pasta': '🍝',
+      'salad': '🥗',
+      'soup': '🍲',
+      'sandwich': '🥪',
+      'burger': '🍔',
+      'pizza': '🍕',
+      'chicken': '🍗',
+      'fish': '🐟',
+      'seafood': '🦐',
+      'meat': '🥩',
+      'beef': '🥩',
+      'pork': '🥓',
+      'vegetarian': '🥦',
+      'vegan': '🌱',
+      'dessert': '🍰',
+      'cake': '🎂',
+      'breakfast': '🍳',
+      'egg': '🥚',
+      'rice': '🍚',
+      'curry': '🍛',
+      'taco': '🌮',
+      'wrap': '🌯',
+      'steak': '🥩',
+      'smoothie': '🥤',
+      'juice': '🧃',
+      'bread': '🍞',
+      'snack': '🍿',
+    };
+    for (final entry in map.entries) {
+      if (category.contains(entry.key)) return entry.value;
+    }
+    return '🍽️';
+  }
+
+  void _showRecipeDetails(Map<String, dynamic> recipe) {
+    showDialog(
+      context: context,
+      builder: (context) => RecipeDetailsPopup(
+        recipe: recipe,
+        emoji: _emojiForRecipe(recipe),
+      ),
     );
   }
 
@@ -320,7 +583,90 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
               // 3D Fridge Container
               _build3DFridge(),
               const SizedBox(height: 30),
-              // Recipe Suggestions Section
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            'Ingrédients sélectionnés : ${_selectedIngredientIds.length}',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: AppColors.textSecondary(context),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        if (_selectedIngredientIds.isNotEmpty)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.success.withOpacity(0.12),
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            child: Text(
+                              'Prêt à générer',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: AppColors.success,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: CupertinoButton(
+                        color: AppColors.secondary(context),
+                        borderRadius: BorderRadius.circular(20),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        onPressed: _isGenerating
+                            ? null
+                            : _generateRecommendations,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (_isGenerating)
+                              const SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            else
+                              const Icon(
+                                Icons.food_bank,
+                                color: Colors.white,
+                                size: 18,
+                              ),
+                            const SizedBox(width: 10),
+                            Text(
+                              _selectedIngredientIds.isEmpty
+                                  ? 'Sélectionnez des ingrédients'
+                                  : 'Générer des recettes',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
               _buildRecipeSuggestionsPreview(),
             ],
           ),
@@ -623,72 +969,128 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
     Ingredient ingredient, {
     bool isDragging = false,
   }) {
+    final isSelected = _selectedIngredientIds.contains(ingredient.id);
+    final expiring = ingredient.isExpiringSoon;
+
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      width: 80,
-      padding: const EdgeInsets.all(10),
+      duration: const Duration(milliseconds: 250),
+      width: 82,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: ingredient.isExpiringSoon
-              ? [AppColors.warning, AppColors.warning]
-              : [
-                  AppColors.surface(context),
-                  AppColors.surfaceElevated(context),
-                ],
+          colors: expiring
+              ? [AppColors.warning, AppColors.warning.withValues(alpha: 0.85)]
+              : [AppColors.surface(context), AppColors.surfaceElevated(context)],
         ),
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isSelected
+              ? AppColors.secondary(context)
+              : expiring
+                  ? AppColors.warning.withValues(alpha: 0.4)
+                  : AppColors.divider(context),
+          width: isSelected ? 2 : 1,
+        ),
         boxShadow: [
           BoxShadow(
-            color: isDragging
-                ? Colors.black.withOpacity(0.3)
-                : Colors.black.withOpacity(0.1),
-            blurRadius: isDragging ? 20 : 10,
-            offset: isDragging ? const Offset(0, 10) : const Offset(0, 4),
+            color: Colors.black.withValues(alpha: isDragging ? 0.3 : 0.08),
+            blurRadius: isDragging ? 20 : 8,
+            offset: isDragging ? const Offset(0, 10) : const Offset(0, 3),
           ),
         ],
       ),
-      child: Column(
+      child: Stack(
         children: [
-          Text(ingredient.emoji, style: const TextStyle(fontSize: 32)),
-          const SizedBox(height: 6),
-          Text(
-            ingredient.name,
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: ingredient.isExpiringSoon
-                  ? Colors.white
-                  : AppColors.textPrimary(context),
+          // Content
+          Padding(
+            padding: const EdgeInsets.fromLTRB(6, 10, 6, 8),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Checkbox row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    GestureDetector(
+                      onTap: () => _toggleIngredientSelection(ingredient.id),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        width: 20,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? AppColors.secondary(context)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(
+                            color: isSelected
+                                ? AppColors.secondary(context)
+                                : expiring
+                                    ? Colors.white.withValues(alpha: 0.7)
+                                    : AppColors.divider(context),
+                            width: 1.5,
+                          ),
+                        ),
+                        child: isSelected
+                            ? const Icon(Icons.check, size: 13, color: Colors.white)
+                            : null,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                // Emoji
+                Text(ingredient.emoji, style: const TextStyle(fontSize: 28)),
+                const SizedBox(height: 5),
+                // Name
+                Text(
+                  ingredient.name,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: expiring ? Colors.white : AppColors.textPrimary(context),
+                    height: 1.2,
+                  ),
+                ),
+                // Expiry badge
+                if (expiring) ...[
+                  const SizedBox(height: 4),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.25),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      '${ingredient.daysUntilExpiry}j',
+                      style: const TextStyle(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
-          const SizedBox(height: 4),
-          if (ingredient.isExpiringSoon)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: AppColors.surface(context),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                '${ingredient.daysUntilExpiry}d',
-                style: AppleTheme.caption2.copyWith(
-                  fontSize: 9,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.warning,
-                ),
-              ),
-            ),
         ],
       ),
     );
   }
 
   Widget _buildRecipeSuggestionsPreview() {
+    final locale = ref.watch(localeProvider);
+    final l10n = AppLocalizations.of(locale);
+
+    final previewRecipes = _recommendations.isNotEmpty
+        ? _recommendations.take(2).toList()
+        : null;
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(20),
@@ -723,67 +1125,70 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
               ),
               const SizedBox(width: 16),
               Expanded(
-                child: Consumer(
-                  builder: (context, ref, child) {
-                    final locale = ref.watch(localeProvider);
-                    final l10n = AppLocalizations.of(locale);
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          l10n.aiRecipeSuggestions,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
-                          ),
-                        ),
-                        Text(
-                          l10n.basedOnYourIngredients,
-                          style: const TextStyle(
-                            fontSize: 13,
-                            color: Colors.white70,
-                          ),
-                        ),
-                      ],
-                    );
-                  },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.aiRecipeSuggestions,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Text(
+                      previewRecipes != null
+                          ? 'Dernières recettes générées'
+                          : l10n.basedOnYourIngredients,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: Colors.white70,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
           const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: Consumer(
-                  builder: (context, ref, child) {
-                    final locale = ref.watch(localeProvider);
-                    final l10n = AppLocalizations.of(locale);
-                    return _buildRecipePreviewCard(
-                      '🍝',
-                      l10n.pastaCarbonara,
-                      '15 ${l10n.minutes}',
-                    );
-                  },
+          if (previewRecipes != null)
+            Row(
+              children: [
+                for (int i = 0; i < previewRecipes.length; i++) ...[
+                  if (i > 0) const SizedBox(width: 12),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => _showRecipeDetails(previewRecipes[i]),
+                      child: _buildRecipePreviewCard(
+                        _emojiForRecipe(previewRecipes[i]),
+                        previewRecipes[i]['name']?.toString() ?? 'Recette',
+                        '${previewRecipes[i]['prep_time_min'] ?? 0} ${l10n.minutes}',
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            )
+          else
+            Row(
+              children: [
+                Expanded(
+                  child: _buildRecipePreviewCard(
+                    '🍝',
+                    l10n.pastaCarbonara,
+                    '15 ${l10n.minutes}',
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Consumer(
-                  builder: (context, ref, child) {
-                    final locale = ref.watch(localeProvider);
-                    final l10n = AppLocalizations.of(locale);
-                    return _buildRecipePreviewCard(
-                      '🥗',
-                      l10n.caesarSalad,
-                      '10 ${l10n.minutes}',
-                    );
-                  },
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildRecipePreviewCard(
+                    '🥗',
+                    l10n.caesarSalad,
+                    '10 ${l10n.minutes}',
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
         ],
       ),
     );
@@ -1031,22 +1436,24 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
             padding: EdgeInsets.zero,
             onPressed: () async {
               Navigator.pop(context);
-              final result = await Navigator.of(context, rootNavigator: true).push(
-                PageRouteBuilder(
-                  opaque: true,
-                  barrierDismissible: false,
-                  barrierColor: Colors.black,
-                  fullscreenDialog: true,
-                  pageBuilder: (context, animation, secondaryAnimation) =>
-                      const BarcodeScannerPage(),
-                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                    return FadeTransition(
-                      opacity: animation,
-                      child: child,
-                    );
-                  },
-                ),
-              );
+              final result = await Navigator.of(context, rootNavigator: true)
+                  .push(
+                    PageRouteBuilder(
+                      opaque: true,
+                      barrierDismissible: false,
+                      barrierColor: Colors.black,
+                      fullscreenDialog: true,
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          const BarcodeScannerPage(),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                            return FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            );
+                          },
+                    ),
+                  );
 
               if (result != null && mounted) {
                 _addScannedProduct(result);
@@ -1884,6 +2291,45 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
             Icons.arrow_forward_ios,
             size: 18,
             color: AppColors.textSecondary(context),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RecipeChip extends StatelessWidget {
+  final String icon;
+  final String label;
+  final BuildContext context;
+
+  const _RecipeChip({
+    required this.icon,
+    required this.label,
+    required this.context,
+  });
+
+  @override
+  Widget build(BuildContext ctx) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: AppColors.surface(context).withValues(alpha: 0.0),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppColors.divider(context)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(icon, style: const TextStyle(fontSize: 11)),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              color: AppColors.textSecondary(context),
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),

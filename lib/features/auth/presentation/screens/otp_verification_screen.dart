@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:async';
+import '../../application/auth_provider.dart';
 
-class OtpVerificationScreen extends StatefulWidget {
+class OtpVerificationScreen extends ConsumerStatefulWidget {
   final String email;
 
   const OtpVerificationScreen({super.key, required this.email});
 
   @override
-  State<OtpVerificationScreen> createState() => _OtpVerificationScreenState();
+  ConsumerState<OtpVerificationScreen> createState() => _OtpVerificationScreenState();
 }
 
-class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
+class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
   final List<TextEditingController> _controllers = List.generate(
     6,
     (index) => TextEditingController(),
@@ -81,21 +83,17 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       _isLoading = true;
     });
 
-    // Simulate API call
-    await Future.delayed(const Duration(seconds: 2));
+    await ref.read(authProvider.notifier).verifyOtp(widget.email, code);
+    final state = ref.read(authProvider);
 
     setState(() {
       _isLoading = false;
     });
 
-    // TODO: Replace with actual API verification
-    // For now, accept any 6-digit code
-    if (code.length == 6) {
-      if (mounted) {
-        context.push('/onboarding');
-      }
-    } else {
-      _showError('Code invalide');
+    if (state.isAuthenticated && mounted) {
+      context.go('/onboarding');
+    } else if (state.hasError && mounted) {
+      _showError(state.error ?? 'Code invalide');
       _clearCode();
     }
   }
@@ -126,20 +124,28 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    // TODO: Implement actual resend logic
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Code renvoyé à ${widget.email}',
-          style: GoogleFonts.inter(),
-        ),
-        backgroundColor: isDark
-            ? const Color(0xFF138B57)
-            : const Color(0xFF22C55E),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
-    );
+    try {
+      await ref.read(authProvider.notifier).resendOtp(widget.email);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Code renvoyé à ${widget.email}',
+              style: GoogleFonts.inter(),
+            ),
+            backgroundColor: isDark
+                ? const Color(0xFF138B57)
+                : const Color(0xFF22C55E),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        _showError('Erreur lors du renvoi du code');
+      }
+    }
 
     setState(() {
       _resendTimer = 60;

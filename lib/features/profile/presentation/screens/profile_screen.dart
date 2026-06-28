@@ -186,6 +186,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Widget _buildPremiumHeader(authState) {
     final locale = ref.read(localeProvider);
     final l10n = AppLocalizations.of(locale);
+    final profileState = ref.watch(profileProvider);
+    final displayName = profileState.name ?? authState.user?.name ?? l10n.user;
+    final displayEmail = profileState.email ?? authState.user?.email ?? 'email@exemple.com';
     return Container(
       margin: const EdgeInsets.all(AppleTheme.spacing20),
       padding: const EdgeInsets.all(AppleTheme.spacing28),
@@ -224,8 +227,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               radius: 48,
               backgroundColor: AppColors.surface(context),
               child: Text(
-                (authState.user?.name.isNotEmpty == true)
-                    ? authState.user!.name.substring(0, 1).toUpperCase()
+                (displayName.isNotEmpty)
+                    ? displayName.substring(0, 1).toUpperCase()
                     : 'U',
                 style: AppleTheme.largeTitle.copyWith(
                   fontSize: 42,
@@ -238,7 +241,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           const SizedBox(height: 16),
           // Name
           Text(
-            authState.user?.name ?? l10n.user,
+            displayName,
             style: AppleTheme.title1.copyWith(
               fontWeight: FontWeight.w800,
               color: AppColors.textOnPrimary(context),
@@ -259,7 +262,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               const SizedBox(width: 6),
               Flexible(
                 child: Text(
-                  authState.user?.email ?? 'email@exemple.com',
+                  displayEmail,
                   style: AppleTheme.callout.copyWith(
                     color: AppColors.textOnPrimary(context).withOpacity(0.9),
                     fontWeight: FontWeight.w500,
@@ -313,6 +316,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Widget _buildStatsRow() {
     final locale = ref.read(localeProvider);
     final l10n = AppLocalizations.of(locale);
+    final profileState = ref.watch(profileProvider);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppleTheme.spacing20),
@@ -321,10 +325,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           Expanded(
             child: _buildStatCard(
               context: context,
-              icon: CupertinoIcons.flame_fill,
-              value: '7',
-              label: l10n.days,
-              subtitle: l10n.streak,
+              icon: CupertinoIcons.speedometer,
+              value: profileState.weightDisplay,
+              label: l10n.goal,
+              subtitle: profileState.goal ?? '--',
               color: AppColors.primary(context),
             ),
           ),
@@ -332,10 +336,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           Expanded(
             child: _buildStatCard(
               context: context,
-              icon: CupertinoIcons.heart_fill,
-              value: '42',
-              label: l10n.recipes,
-              subtitle: l10n.favorites,
+              icon: CupertinoIcons.resize_v,
+              value: profileState.heightDisplay,
+              label: l10n.profile,
+              subtitle: profileState.gender ?? '--',
               color: AppColors.secondary(context),
             ),
           ),
@@ -344,9 +348,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             child: _buildStatCard(
               context: context,
               icon: CupertinoIcons.chart_bar_fill,
-              value: '89%',
+              value: profileState.targetWeightDisplay,
               label: l10n.goal,
-              subtitle: l10n.achieved,
+              subtitle: profileState.activityLevel ?? '--',
               color: AppColors.primary(context),
             ),
           ),

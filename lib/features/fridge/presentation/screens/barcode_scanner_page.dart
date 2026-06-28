@@ -6,6 +6,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:async';
 import '../../../../core/theme/app_colors.dart';
+import '../../../fridge/data/services/recommendation_service.dart';
 
 class BarcodeScannerPage extends StatefulWidget {
   const BarcodeScannerPage({super.key});
@@ -17,12 +18,13 @@ class BarcodeScannerPage extends StatefulWidget {
 class _BarcodeScannerPageState extends State<BarcodeScannerPage>
     with SingleTickerProviderStateMixin {
   MobileScannerController cameraController = MobileScannerController(
-    detectionSpeed: DetectionSpeed.normal, // 🔥 Amélioration détection
+    detectionSpeed: DetectionSpeed.normal,
     facing: CameraFacing.back,
-    detectionTimeoutMs: 1000, // 🔥 Meilleure détection tous environnements
+    detectionTimeoutMs: 1000,
   );
-  
+
   final ImagePicker _imagePicker = ImagePicker();
+  final RecommendationService _recommendationService = RecommendationService();
 
   bool _isProcessing = false;
   bool _isAnalyzing = false;
@@ -74,27 +76,41 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage>
   }
 
   Future<void> _analyzeProduct(String barcode) async {
-    // 🍎 Haptic feedback
     HapticFeedback.mediumImpact();
-    
+
     setState(() {
       _isAnalyzing = true;
     });
 
-    // Simulate product analysis
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      // Appel à l'API backend pour obtenir les recommandations
+      final result = await _recommendationService.getRecommendationsByBarcode(barcode);
 
-    setState(() {
-      _isAnalyzing = false;
-    });
+      if (!mounted) return;
 
-    // Return result to previous screen
-    if (mounted) {
+      final scannedProduct = result['scannedProduct'] as Map<String, dynamic>?;
+      if (scannedProduct == null) {
+        _showError('Produit non trouvé. Essayez un autre code-barres.');
+        return;
+      }
+
+      // Retourner le produit scanné à l'écran précédent
       Navigator.pop(context, {
         'barcode': barcode,
-        'productName': 'Produit scanné',
+        'productName': scannedProduct['name'] ?? 'Produit scanné',
         'emoji': '🥫',
+        'scannedProduct': scannedProduct,
       });
+    } catch (e) {
+      if (!mounted) return;
+      _showError('Erreur: ${e.toString()}');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isAnalyzing = false;
+          _isProcessing = false;
+        });
+      }
     }
   }
 

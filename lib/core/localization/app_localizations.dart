@@ -1,5 +1,6 @@
 /// 🌍 Système de Localisation 2026
 /// Support Français / Anglais avec traduction en temps réel
+library;
 
 class AppLocalizations {
   final String languageCode;

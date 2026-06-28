@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/utils/validators.dart';
 
 class AuthForm extends StatefulWidget {
   final bool isLogin;
   final Future<void> Function(String email, String password, String? name)
-  onSubmit;
+      onSubmit;
+  final Future<void> Function()? onGoogleSignIn;
 
-  const AuthForm({super.key, required this.isLogin, required this.onSubmit});
+  const AuthForm({
+    super.key,
+    required this.isLogin,
+    required this.onSubmit,
+    this.onGoogleSignIn,
+  });
 
   @override
   State<AuthForm> createState() => _AuthFormState();
@@ -45,8 +54,62 @@ class _AuthFormState extends State<AuthForm> {
     }
   }
 
+  InputDecoration _inputDecoration({
+    required String label,
+    required String hint,
+    required IconData icon,
+    Widget? suffixIcon,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryColor = isDark ? AppColors.darkPrimary : AppColors.lightPrimary;
+
+    return InputDecoration(
+      labelText: label,
+      hintText: hint,
+      labelStyle: GoogleFonts.inter(
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+        color: Theme.of(context).textTheme.bodySmall?.color,
+      ),
+      hintStyle: GoogleFonts.inter(
+        fontSize: 14,
+        color: isDark ? AppColors.darkTextTertiary : AppColors.lightTextTertiary,
+      ),
+      prefixIcon: Icon(icon, color: primaryColor, size: 20),
+      suffixIcon: suffixIcon,
+      filled: true,
+      fillColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide.none,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide(
+          color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide(color: primaryColor, width: 2),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: AppColors.error),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: AppColors.error, width: 2),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryColor = isDark ? AppColors.darkPrimary : AppColors.lightPrimary;
+
     return Form(
       key: _formKey,
       child: Column(
@@ -56,48 +119,14 @@ class _AuthFormState extends State<AuthForm> {
           if (!widget.isLogin) ...[
             TextFormField(
               controller: _nameController,
-              decoration: InputDecoration(
-                labelText: 'Nom complet',
-                hintText: 'Entrez votre nom',
-                prefixIcon: Container(
-                  margin: const EdgeInsets.all(12),
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        const Color(0xFF22C55E).withOpacity(0.15),
-                        const Color(0xFF16A34A).withOpacity(0.1),
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.email_outlined,
-                    color: Color(0xFF22C55E),
-                    size: 20,
-                  ),
-                ),
-                filled: true,
-                fillColor: Colors.grey[50],
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey[200]!),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(
-                    color: Color(0xFF22C55E),
-                    width: 2,
-                  ),
-                ),
-                errorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Colors.red),
-                ),
+              style: GoogleFonts.inter(
+                fontSize: 15,
+                color: Theme.of(context).textTheme.displayLarge?.color,
+              ),
+              decoration: _inputDecoration(
+                label: 'Nom complet',
+                hint: 'Entrez votre nom',
+                icon: Icons.person_outline_rounded,
               ),
               validator: Validators.validateName,
               textInputAction: TextInputAction.next,
@@ -108,48 +137,14 @@ class _AuthFormState extends State<AuthForm> {
           // Email field
           TextFormField(
             controller: _emailController,
-            decoration: InputDecoration(
-              labelText: 'Email',
-              hintText: 'exemple@email.com',
-              prefixIcon: Container(
-                margin: const EdgeInsets.all(12),
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      const Color(0xFF22C55E).withOpacity(0.15),
-                      const Color(0xFF16A34A).withOpacity(0.1),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(
-                  Icons.email_outlined,
-                  color: Color(0xFF22C55E),
-                  size: 20,
-                ),
-              ),
-              filled: true,
-              fillColor: Colors.grey[50],
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey[200]!),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(
-                  color: Color(0xFF22C55E),
-                  width: 2,
-                ),
-              ),
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Colors.red),
-              ),
+            style: GoogleFonts.inter(
+              fontSize: 15,
+              color: Theme.of(context).textTheme.displayLarge?.color,
+            ),
+            decoration: _inputDecoration(
+              label: 'Email',
+              hint: 'exemple@email.com',
+              icon: Icons.email_outlined,
             ),
             keyboardType: TextInputType.emailAddress,
             validator: Validators.validateEmail,
@@ -160,58 +155,27 @@ class _AuthFormState extends State<AuthForm> {
           // Password field
           TextFormField(
             controller: _passwordController,
-            decoration: InputDecoration(
-              labelText: 'Mot de passe',
-              hintText: '••••••••',
-              prefixIcon: Container(
-                margin: const EdgeInsets.all(12),
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      const Color(0xFF22C55E).withOpacity(0.15),
-                      const Color(0xFF16A34A).withOpacity(0.1),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(
-                  Icons.lock_outline,
-                  color: Color(0xFF22C55E),
-                  size: 20,
-                ),
-              ),
+            style: GoogleFonts.inter(
+              fontSize: 15,
+              color: Theme.of(context).textTheme.displayLarge?.color,
+            ),
+            decoration: _inputDecoration(
+              label: 'Mot de passe',
+              hint: '••••••••',
+              icon: Icons.lock_outline_rounded,
               suffixIcon: IconButton(
                 icon: Icon(
                   _obscurePassword
                       ? Icons.visibility_outlined
                       : Icons.visibility_off_outlined,
-                  color: Colors.grey[600],
+                  color: isDark
+                      ? AppColors.darkTextTertiary
+                      : AppColors.lightTextTertiary,
+                  size: 20,
                 ),
                 onPressed: () {
                   setState(() => _obscurePassword = !_obscurePassword);
                 },
-              ),
-              filled: true,
-              fillColor: Colors.grey[50],
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey[200]!),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(
-                  color: Color(0xFF22C55E),
-                  width: 2,
-                ),
-              ),
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Colors.red),
               ),
             ),
             obscureText: _obscurePassword,
@@ -219,176 +183,234 @@ class _AuthFormState extends State<AuthForm> {
             textInputAction: TextInputAction.done,
             onFieldSubmitted: (_) => _handleSubmit(),
           ),
-          const SizedBox(height: 20),
+
+          if (widget.isLogin) ...[
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () {
+                  // TODO: Forgot password
+                },
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                ),
+                child: Text(
+                  'Mot de passe oublié ?',
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: primaryColor,
+                  ),
+                ),
+              ),
+            ),
+          ] else ...[
+            const SizedBox(height: 16),
+          ],
 
           // Submit button
-          Container(
+          SizedBox(
             height: 48,
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF22C55E), Color(0xFF16A34A)],
-              ),
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF22C55E).withOpacity(0.3),
-                  blurRadius: 12,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-            ),
             child: ElevatedButton(
               onPressed: _isLoading ? null : _handleSubmit,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.transparent,
-                shadowColor: Colors.transparent,
+                backgroundColor: primaryColor,
+                foregroundColor: isDark
+                    ? AppColors.darkTextOnPrimary
+                    : AppColors.lightTextOnPrimary,
+                disabledBackgroundColor: primaryColor.withOpacity(0.5),
+                elevation: 0,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(14),
                 ),
               ),
               child: _isLoading
                   ? const SizedBox(
-                      height: 24,
-                      width: 24,
+                      height: 22,
+                      width: 22,
                       child: CircularProgressIndicator(
                         strokeWidth: 2.5,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(Colors.white),
                       ),
                     )
                   : Text(
                       widget.isLogin ? 'Se connecter' : 'S\'inscrire',
-                      style: const TextStyle(
+                      style: GoogleFonts.inter(
                         fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
             ),
           ),
 
-          // Separator "ou"
-          if (widget.isLogin) ...[
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(child: Divider(color: Colors.grey[300], thickness: 1)),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    'ou',
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
+          const SizedBox(height: 16),
+
+          // Divider "ou"
+          Row(
+            children: [
+              Expanded(
+                child: Divider(
+                  color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
+                  thickness: 0.5,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  'ou',
+                  style: GoogleFonts.inter(
+                    color: isDark
+                        ? AppColors.darkTextTertiary
+                        : AppColors.lightTextTertiary,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-                Expanded(child: Divider(color: Colors.grey[300], thickness: 1)),
+              ),
+              Expanded(
+                child: Divider(
+                  color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
+                  thickness: 0.5,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+
+          // Social login buttons
+          Row(
+            children: [
+              // Google
+              Expanded(
+                child: _SocialButton(
+                  icon: Icons.g_mobiledata,
+                  label: 'Google',
+                  isLoading: _isLoading,
+                  onTap: _isLoading
+                      ? null
+                      : () async {
+                          setState(() => _isLoading = true);
+                          try {
+                            await widget.onGoogleSignIn?.call();
+                          } finally {
+                            if (mounted) {
+                              setState(() => _isLoading = false);
+                            }
+                          }
+                        },
+                ),
+              ),
+              const SizedBox(width: 12),
+              // Apple
+              Expanded(
+                child: _SocialButton(
+                  icon: Icons.apple,
+                  label: 'Apple',
+                  isApple: true,
+                  onTap: () {
+                    // TODO: Apple Sign In
+                  },
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SocialButton extends StatelessWidget {
+  final IconData? icon;
+  final String label;
+  final VoidCallback? onTap;
+  final bool isApple;
+  final bool isLoading;
+
+  const _SocialButton({
+    this.icon,
+    required this.label,
+    required this.onTap,
+    this.isApple = false,
+    this.isLoading = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Opacity(
+          opacity: onTap == null ? 0.6 : 1,
+          child: Container(
+            height: 50,
+          decoration: BoxDecoration(
+            color: isApple
+                ? (isDark ? Colors.white : Colors.black)
+                : (isDark ? AppColors.darkSurface : AppColors.lightSurface),
+            borderRadius: BorderRadius.circular(14),
+            border: isApple
+                ? null
+                : Border.all(
+                    color: isDark
+                        ? AppColors.darkDivider
+                        : AppColors.lightDivider,
+                  ),
+          ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (isLoading)
+                  SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.2,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        isApple
+                            ? (isDark ? Colors.black : Colors.white)
+                            : (isDark
+                                ? AppColors.darkTextPrimary
+                                : AppColors.lightTextPrimary),
+                      ),
+                    ),
+                  )
+                else if (isApple)
+                  Icon(
+                    Icons.apple,
+                    size: 22,
+                    color: isDark ? Colors.black : Colors.white,
+                  )
+                else
+                  FaIcon(
+                    FontAwesomeIcons.google,
+                    size: 22,
+                    color: isDark
+                        ? AppColors.darkTextPrimary
+                        : AppColors.lightTextPrimary,
+                  ),
+                const SizedBox(width: 8),
+                Text(
+                  isLoading ? 'Connexion...' : label,
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: isApple
+                        ? (isDark ? Colors.black : Colors.white)
+                        : (isDark
+                            ? AppColors.darkTextPrimary
+                            : AppColors.lightTextPrimary),
+                  ),
+                ),
               ],
             ),
-            const SizedBox(height: 12),
-
-            // Google Sign In
-            Container(
-              height: 44,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.white, Colors.grey[50]!],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey[300]!, width: 1.5),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.03),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () {
-                    // TODO: Implement Google Sign In
-                  },
-                  borderRadius: BorderRadius.circular(12),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.network(
-                        'https://www.google.com/favicon.ico',
-                        width: 20,
-                        height: 20,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Icon(
-                              Icons.g_mobiledata,
-                              size: 28,
-                              color: Colors.red,
-                            ),
-                      ),
-                      const SizedBox(width: 12),
-                      const Text(
-                        'Continuer avec Google',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-
-            // Apple Sign In
-            Container(
-              height: 44,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF2C2C2C), Color(0xFF1A1A1A)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () {
-                    // TODO: Implement Apple Sign In
-                  },
-                  borderRadius: BorderRadius.circular(12),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.apple, size: 24, color: Colors.white),
-                      SizedBox(width: 12),
-                      Text(
-                        'Continuer avec Apple',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ],
+          ),
+        ),
       ),
     );
   }

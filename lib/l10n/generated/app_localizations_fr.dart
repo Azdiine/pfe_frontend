@@ -217,7 +217,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get email => 'Email';
 
   @override
-  String get age => 'Âge';
+  String get age => 'Date de naissance';
 
   @override
   String get height => 'Taille';
@@ -1127,263 +1127,237 @@ class AppLocalizationsFr extends AppLocalizations {
   String get pleaseSelectOption => 'Veuillez sélectionner au moins une option';
 
   @override
+  String get pleaseEnterValue => 'Veuillez entrer une valeur';
+
+  @override
   String get specifyHere => 'Précisez ici...';
 
   @override
-  String get onbQ1 => 'Pour combien de personnes tu cuisines ?';
+  String get onbQ1 => 'Quel est votre genre ?';
 
   @override
-  String get onbQ1Sub => 'Très important pour les quantités.';
+  String get onbQ1Sub => 'Aide à personnaliser votre plan nutritionnel';
 
   @override
-  String get onbQ1Opt1 => 'Juste moi';
+  String get onbQ1Ben1 => 'calcul calorique personnalisé';
 
   @override
-  String get onbQ1Opt2 => '2 personnes';
+  String get onbGenderMale => 'Homme';
 
   @override
-  String get onbQ1Opt3 => '3–4';
+  String get onbGenderFemale => 'Femme';
 
   @override
-  String get onbQ1Opt4 => '5+';
+  String get onbGenderOther => 'Autre';
 
   @override
-  String get onbQ1Ben1 => 'ajuster portions';
+  String get onbQ2 => 'Quelle est votre date de naissance ?';
 
   @override
-  String get onbQ1Ben2 => 'liste de courses auto';
+  String get onbQ2Sub =>
+      'Votre date de naissance aide à personnaliser vos besoins nutritionnels';
 
   @override
-  String get onbQ2 => 'Tu cuisines combien de fois par semaine ?';
+  String get onbQ2Hint => 'Sélectionnez votre date de naissance';
 
   @override
-  String get onbQ2Opt1 => 'Jamais';
+  String get onbQ2Ben1 => 'objectifs nutritionnels adaptés';
 
   @override
-  String get onbQ2Opt2 => '1–2 fois';
+  String get onbQ3 => 'Quelle est votre taille ?';
 
   @override
-  String get onbQ2Opt3 => '3–5 fois';
+  String get onbQ3Sub => 'Utilisée pour calculer votre IMC';
 
   @override
-  String get onbQ2Opt4 => 'Tous les jours';
+  String get onbQ3Hint => 'Taille en cm';
 
   @override
-  String get onbQ2Ben1 => 'fréquence recommandations';
+  String get onbQ3Ben1 => 'calcul IMC précis';
 
   @override
-  String get onbQ2Ben2 => 'meal plan ou pas';
+  String get onbQ4 => 'Quel est votre poids actuel ?';
 
   @override
-  String get onbQ3 => 'Combien de temps max pour un repas ?';
+  String get onbQ4Sub => 'Point de départ de votre parcours';
 
   @override
-  String get onbQ3Sub => 'Ultra important pour UX.';
+  String get onbQ4Hint => 'Poids en kg';
 
   @override
-  String get onbQ3Opt1 => '10 min (rapide)';
+  String get onbQ4Ben1 => 'suivre votre progression';
 
   @override
-  String get onbQ3Opt2 => '20 min';
+  String get onbQ5 => 'Quel est votre poids cible ?';
 
   @override
-  String get onbQ3Opt3 => '30 min';
+  String get onbQ5Sub => 'On vous aide à y arriver';
 
   @override
-  String get onbQ3Opt4 => 'Peu importe';
+  String get onbQ5Hint => 'Objectif en kg';
 
   @override
-  String get onbQ3Ben1 => 'filtre recettes longues';
+  String get onbQ5Ben1 => 'plan repas personnalisé';
 
   @override
-  String get onbQ3Ben2 => 'recettes express';
+  String get onbQ6 => 'Quel est votre objectif principal ?';
 
   @override
-  String get onbQ4 => 'Ton niveau en cuisine ?';
+  String get onbQ6Ben1 => 'recommandations sur mesure';
 
   @override
-  String get onbQ4Opt1 => 'Débutant';
+  String get onbGoalLose => 'Perdre du poids';
 
   @override
-  String get onbQ4Opt2 => 'Intermédiaire';
+  String get onbGoalGain => 'Prendre du muscle';
 
   @override
-  String get onbQ4Opt3 => 'Avancé';
+  String get onbGoalMaintain => 'Maintenir mon poids';
 
   @override
-  String get onbQ4Ben1 => 'difficulté recette';
+  String get onbGoalHealthy => 'Manger plus sainement';
 
   @override
-  String get onbQ4Ben2 => 'étapes simplifiées';
+  String get onbGoalFitness => 'Améliorer ma forme';
 
   @override
-  String get onbQ4Ben3 => 'tutoriels ou non';
+  String get onbQ7 => 'Quel est votre niveau d\'activité ?';
 
   @override
-  String get onbQ5 => 'Tes préférences alimentaires ?';
+  String get onbQ7Sub => 'Influence vos besoins caloriques';
 
   @override
-  String get onbQ5Opt1 => 'Omnivore';
+  String get onbQ7Ben1 => 'objectif calorique précis';
 
   @override
-  String get onbQ5Opt2 => 'Végétarien';
+  String get onbActivitySedentary => 'Sédentaire';
 
   @override
-  String get onbQ5Opt3 => 'Vegan';
+  String get onbActivityLight => 'Légèrement actif';
 
   @override
-  String get onbQ5Opt4 => 'Halal';
+  String get onbActivityModerate => 'Modérément actif';
 
   @override
-  String get onbQ5Opt5 => 'Sans porc';
+  String get onbActivityActive => 'Actif';
 
   @override
-  String get onbQ5Opt6 => 'Sans lactose';
+  String get onbActivityVery => 'Très actif';
 
   @override
-  String get onbQ5Opt7 => 'Sans gluten';
+  String get onbQ8 => 'Quelle est votre préférence alimentaire ?';
 
   @override
-  String get onbQ5Opt8 => 'Keto';
+  String get onbQ8Ben1 => 'suggestions recettes filtrées';
 
   @override
-  String get onbQ5Ben1 => 'filtre automatique recettes';
+  String get onbDietOmnivore => 'Omnivore';
 
   @override
-  String get onbQ6 => 'Allergies ou aliments interdits ?';
+  String get onbDietVegetarian => 'Végétarien';
 
   @override
-  String get onbQ6Opt1 => 'Arachides';
+  String get onbDietVegan => 'Végan';
 
   @override
-  String get onbQ6Opt2 => 'Fruits de mer';
+  String get onbDietHalal => 'Halal';
 
   @override
-  String get onbQ6Opt3 => 'Lait';
+  String get onbDietKeto => 'Keto';
 
   @override
-  String get onbQ6Opt4 => 'Œufs';
+  String get onbDietPaleo => 'Paléo';
 
   @override
-  String get onbQ6Opt5 => 'Autre';
+  String get onbDietNone => 'Pas de préférence';
 
   @override
-  String get onbQ6Opt6 => 'Aucune';
+  String get onbQ9 => 'Des allergies alimentaires ?';
 
   @override
-  String get onbQ6Ben1 => 'sécurité + crédibilité médicale';
+  String get onbQ9Sub => 'Votre sécurité avant tout';
 
   @override
-  String get onbQ7 => 'Tu préfères quel type de plats ?';
+  String get onbQ9Ben1 => 'recettes sûres recommandées';
 
   @override
-  String get onbQ7Sub => 'Fun + utile pour personnalisation';
+  String get onbAllergyPeanuts => 'Arachides';
 
   @override
-  String get onbQ7Opt1 => 'Rapide / simple';
+  String get onbAllergySeafood => 'Fruits de mer';
 
   @override
-  String get onbQ7Opt2 => 'Healthy';
+  String get onbAllergyDairy => 'Produits laitiers';
 
   @override
-  String get onbQ7Opt3 => 'Protéiné (sport)';
+  String get onbAllergyEggs => 'Œufs';
 
   @override
-  String get onbQ7Opt4 => 'Pas cher';
+  String get onbAllergyGluten => 'Gluten';
 
   @override
-  String get onbQ7Opt5 => 'Gourmand / comfort food';
+  String get onbAllergySoy => 'Soja';
 
   @override
-  String get onbQ7Opt6 => 'Cuisine du monde';
+  String get onbAllergyOther => 'Autre';
 
   @override
-  String get onbQ7Opt7 => 'Traditionnel';
+  String get onbAllergyNone => 'Aucune';
 
   @override
-  String get onbQ7Ben1 => 'personnalisation recommandations';
+  String get onbQ10 => 'Des conditions de santé ?';
 
   @override
-  String get onbQ8 => 'Budget nourriture ?';
+  String get onbQ10Sub => 'Pour adapter votre nutrition';
 
   @override
-  String get onbQ8Opt1 => 'Petit budget';
+  String get onbQ10Ben1 => 'repas adaptés santé';
 
   @override
-  String get onbQ8Opt2 => 'Normal';
+  String get onbHealthDiabetes => 'Diabète';
 
   @override
-  String get onbQ8Opt3 => 'Premium';
+  String get onbHealthHypertension => 'Hypertension';
 
   @override
-  String get onbQ8Ben1 => 'choix ingrédients (riz/poulet vs saumon/avocat)';
+  String get onbHealthCholesterol => 'Cholestérol élevé';
 
   @override
-  String get onbQ9 => 'Quels équipements tu as ?';
+  String get onbHealthHeart => 'Maladie cardiaque';
 
   @override
-  String get onbQ9Sub => 'Spécifique et très intelligent';
+  String get onbHealthOther => 'Autre';
 
   @override
-  String get onbQ9Opt1 => 'Four';
+  String get onbHealthNone => 'Aucune';
 
   @override
-  String get onbQ9Opt2 => 'Micro-ondes';
+  String get onbQ11 => 'Quel type de cuisine préférez-vous ?';
 
   @override
-  String get onbQ9Opt3 => 'Air fryer';
+  String get onbQ11Sub => 'On priorise vos favoris';
 
   @override
-  String get onbQ9Opt4 => 'Mixeur';
+  String get onbQ11Ben1 => 'suggestions repas personnalisées';
 
   @override
-  String get onbQ9Opt5 => 'Robot cuisine';
+  String get onbCuisineQuick => 'Rapide & simple';
 
   @override
-  String get onbQ9Opt6 => 'BBQ';
+  String get onbCuisineHealthy => 'Healthy';
 
   @override
-  String get onbQ9Opt7 => 'Plaques seulement';
+  String get onbCuisineProtein => 'Protéiné';
 
   @override
-  String get onbQ9Ben1 => 'évite proposer des recettes impossibles';
+  String get onbCuisineBudget => 'Petit budget';
 
   @override
-  String get onbQ10 => 'Tu fais les courses combien de fois ?';
+  String get onbCuisineGourmet => 'Gourmand';
 
   @override
-  String get onbQ10Opt1 => 'Tous les jours';
+  String get onbCuisineWorld => 'Cuisine du monde';
 
   @override
-  String get onbQ10Opt2 => '2–3 fois/semaine';
-
-  @override
-  String get onbQ10Opt3 => '1 fois/semaine';
-
-  @override
-  String get onbQ10Opt4 => 'Rarement';
-
-  @override
-  String get onbQ10Ben1 => 'meal plan semaine';
-
-  @override
-  String get onbQ10Ben2 => 'gestion stock';
-
-  @override
-  String get onbQ11 => 'Veux-tu scanner ton frigo maintenant ?';
-
-  @override
-  String get onbQ11Sub => 'Démarre direct la magie IA 🔥';
-
-  @override
-  String get onbQ11Opt1 => 'Scanner avec caméra';
-
-  @override
-  String get onbQ11Opt2 => 'Ajouter ingrédients';
-
-  @override
-  String get onbQ11Opt3 => 'Plus tard';
-
-  @override
-  String get onbQ11Ben1 => 'démarre direct la magie IA';
+  String get onbCuisineTraditional => 'Traditionnel';
 }

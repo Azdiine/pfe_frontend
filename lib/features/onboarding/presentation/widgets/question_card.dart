@@ -1,9 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../../../l10n/generated/app_localizations.dart';
 import '../../data/models/onboarding_question.dart';
 import '../../../../core/theme/app_colors.dart';
 
-class QuestionCard extends StatelessWidget {
+class QuestionCard extends StatefulWidget {
   final OnboardingQuestion question;
   final List<String> selectedOptions;
   final Function(String) onOptionSelected;
@@ -20,7 +21,62 @@ class QuestionCard extends StatelessWidget {
   });
 
   @override
+  State<QuestionCard> createState() => _QuestionCardState();
+}
+
+class _QuestionCardState extends State<QuestionCard> {
+  String _defaultBirthDateValue() {
+    final now = DateTime.now();
+    final defaultDate = DateTime(now.year - 18, now.month, now.day);
+    return _formatBirthDate(defaultDate);
+  }
+
+  String _formatBirthDate(DateTime date) {
+    final day = date.day.toString().padLeft(2, '0');
+    final month = date.month.toString().padLeft(2, '0');
+    final year = date.year.toString();
+    return '$day/$month/$year';
+  }
+
+  DateTime _parseBirthDate(String? value) {
+    if (value == null || value.isEmpty) {
+      final now = DateTime.now();
+      return DateTime(now.year - 18, now.month, now.day);
+    }
+
+    final parts = value.split('/');
+    if (parts.length != 3) return DateTime.now();
+
+    final day = int.tryParse(parts[0]);
+    final month = int.tryParse(parts[1]);
+    final year = int.tryParse(parts[2]);
+
+    if (day == null || month == null || year == null) return DateTime.now();
+
+    return DateTime(year, month, day);
+  }
+
+  List<String> _buildNumericValues(String fieldKey) {
+    switch (fieldKey) {
+      case 'heightCm':
+        return List.generate(201, (index) => '${100 + index}');
+      case 'weightKg':
+        return List.generate(181, (index) => '${40 + index}');
+      case 'targetWeightKg':
+        return List.generate(181, (index) => '${40 + index}');
+      default:
+        return List.generate(100, (index) => '${index + 1}');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final question = widget.question;
+    final selectedOptions = widget.selectedOptions;
+    final textInput = widget.textInput;
+    final onOptionSelected = widget.onOptionSelected;
+    final onTextInputChanged = widget.onTextInputChanged;
+
     final l10n = AppLocalizations.of(context);
     final questionText = question.getQuestion(l10n);
     final subtitleText = question.getSubtitle(l10n);
@@ -126,7 +182,146 @@ class QuestionCard extends StatelessWidget {
 
           const SizedBox(height: 28),
 
+          // iOS-style picker mode for numeric/date questions
+          if (question.isNumericInput) ...[
+            Builder(
+              builder: (context) {
+                final isBirthDate = question.fieldKey == 'birthDate';
+                final pickerItems = isBirthDate
+                    ? const <String>[]
+                    : _buildNumericValues(question.fieldKey);
+                final currentValue = textInput.isNotEmpty
+                    ? textInput
+                    : (isBirthDate ? _defaultBirthDateValue() : pickerItems.first);
+                final selectedIndex = isBirthDate
+                    ? 0
+                    : pickerItems.indexOf(currentValue).clamp(0, pickerItems.length - 1);
+
+                return Container(
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF1A1A1A) : Colors.white,
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                      color: AppColors.primary(context),
+                      width: 2,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary(context).withOpacity(isDark ? 0.22 : 0.12),
+                        blurRadius: 18,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              isBirthDate ? l10n.age : 'Sélectionnez une valeur',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: isDark ? const Color(0xFFD4D4D4) : const Color(0xFF4B5563),
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary(context).withOpacity(isDark ? 0.18 : 0.1),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                currentValue,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.primary(context),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        height: 220,
+                        margin: const EdgeInsets.symmetric(horizontal: 10),
+                        decoration: BoxDecoration(
+                          color: isDark ? const Color(0xFF111111) : const Color(0xFFF8FAFC),
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        child: isBirthDate
+                            ? CupertinoTheme(
+                                data: CupertinoThemeData(
+                                  brightness: isDark ? Brightness.dark : Brightness.light,
+                                ),
+                                child: CupertinoDatePicker(
+                                  mode: CupertinoDatePickerMode.date,
+                                  initialDateTime: _parseBirthDate(currentValue),
+                                  minimumDate: DateTime(1950, 1, 1),
+                                  maximumDate: DateTime.now(),
+                                  use24hFormat: true,
+                                  onDateTimeChanged: (date) {
+                                    onTextInputChanged(_formatBirthDate(date));
+                                  },
+                                ),
+                              )
+                            : CupertinoPicker(
+                                key: ValueKey('picker_${question.id}_$currentValue'),
+                                itemExtent: 46,
+                                scrollController: FixedExtentScrollController(initialItem: selectedIndex),
+                                backgroundColor: Colors.transparent,
+                                useMagnifier: true,
+                                magnification: 1.06,
+                                diameterRatio: 1.25,
+                                squeeze: 1.1,
+                                onSelectedItemChanged: (index) {
+                                  onTextInputChanged(pickerItems[index]);
+                                },
+                                children: pickerItems.map((value) {
+                                  final unit = question.fieldKey == 'heightCm'
+                                      ? 'cm'
+                                      : question.fieldKey == 'weightKg' || question.fieldKey == 'targetWeightKg'
+                                          ? 'kg'
+                                          : '';
+                                  return Center(
+                                    child: Text(
+                                      unit.isEmpty ? value : '$value $unit',
+                                      style: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.w700,
+                                        color: isDark ? const Color(0xFFFAFAFA) : const Color(0xFF111827),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                      ),
+                      if (question.getHint(l10n) != null)
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                          child: Text(
+                            question.getHint(l10n)!,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                              color: isDark ? const Color(0xFF9A9A9A) : const Color(0xFF6B7280),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ],
+
           // Options - Professional Style
+          if (!question.isNumericInput)
           ...options.asMap().entries.map((entry) {
             final index = entry.key;
             final option = entry.value;

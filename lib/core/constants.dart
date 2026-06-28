@@ -1,6 +1,8 @@
 // API Constants
 class ApiConstants {
-  static const String baseUrl = 'https://api.example.com';
+  // Appareil physique : utilise l'IP locale de ta machine
+  // Émulateur Android : utilise 'http://10.0.2.2:5000'
+  static const String baseUrl = 'http://192.168.1.26:5000';
   static const String apiVersion = 'v1';
   
   // Endpoints
