@@ -274,7 +274,7 @@ class _HelpSupportPageState extends ConsumerState<HelpSupportPage> {
           color: AppColors.surface(context),
           borderRadius: BorderRadius.circular(AppleTheme.radiusXLarge),
           border: Border.all(
-            color: AppColors.divider(context).withOpacity(0.3),
+            color: AppColors.divider(context).withValues(alpha: 0.3),
             width: 0.5,
           ),
         ),
@@ -285,7 +285,7 @@ class _HelpSupportPageState extends ConsumerState<HelpSupportPage> {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.15),
+                color: color.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(icon, color: color, size: 22),
@@ -346,7 +346,7 @@ class _HelpSupportPageState extends ConsumerState<HelpSupportPage> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: AppColors.primary(context).withOpacity(0.12),
+              color: AppColors.primary(context).withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, size: 20, color: AppColors.primary(context)),
@@ -407,7 +407,7 @@ class _HelpSupportPageState extends ConsumerState<HelpSupportPage> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: AppColors.secondary(context).withOpacity(0.12),
+              color: AppColors.secondary(context).withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, size: 20, color: AppColors.secondary(context)),
@@ -456,7 +456,7 @@ class _HelpSupportPageState extends ConsumerState<HelpSupportPage> {
     return Divider(
       height: 1,
       thickness: 0.5,
-      color: AppColors.divider(context).withOpacity(0.3),
+      color: AppColors.divider(context).withValues(alpha: 0.3),
       indent: 68,
     );
   }

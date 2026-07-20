@@ -97,7 +97,7 @@ class _QuickActionsButtonState extends State<QuickActionsButton>
               child: AnimatedOpacity(
                 duration: const Duration(milliseconds: 300),
                 opacity: _isExpanded ? 1.0 : 0.0,
-                child: Container(color: Colors.black.withOpacity(0.2)), // Overlay plus léger
+                child: Container(color: Colors.black.withValues(alpha: 0.2)), // Overlay plus léger
               ),
             ),
           ),
@@ -121,7 +121,7 @@ class _QuickActionsButtonState extends State<QuickActionsButton>
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primary(context).withOpacity(0.4),
+                        color: AppColors.primary(context).withValues(alpha: 0.4),
                         blurRadius: 20,
                         offset: const Offset(0, 8),
                       ),
@@ -183,7 +183,7 @@ class _QuickActionsButtonState extends State<QuickActionsButton>
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: (action['color'] as Color).withOpacity(
+                              color: (action['color'] as Color).withValues(alpha: 
                                 0.4,
                               ),
                               blurRadius: 15,
@@ -209,7 +209,7 @@ class _QuickActionsButtonState extends State<QuickActionsButton>
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withValues(alpha: 0.1),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -237,7 +237,7 @@ class _QuickActionsButtonState extends State<QuickActionsButton>
 
   void _handleAction(String action) {
     // Gestionnaire d'actions
-    print('Action selected: $action');
+    debugPrint('Action selected: $action');
     // Ici vous pouvez ajouter la navigation ou la logique pour chaque action
   }
 }

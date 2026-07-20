@@ -2,9 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/apple_theme.dart';
 import '../../../../shared/widgets/apple_widgets.dart';
+import '../../../auth/application/auth_provider.dart';
 
 class SecurityPrivacyPage extends ConsumerStatefulWidget {
   const SecurityPrivacyPage({super.key});
@@ -15,10 +17,65 @@ class SecurityPrivacyPage extends ConsumerStatefulWidget {
 }
 
 class _SecurityPrivacyPageState extends ConsumerState<SecurityPrivacyPage> {
-  bool _biometricEnabled = true;
-  bool _twoFactorEnabled = false;
   bool _shareDataForResearch = false;
   bool _shareDataWithPartners = false;
+
+  List<Map<String, dynamic>>? _sessions;
+  bool _sessionsLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPrefs();
+    _loadSessions();
+  }
+
+  Future<void> _loadPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    setState(() {
+      _shareDataForResearch = prefs.getBool('privacy_share_research') ?? false;
+      _shareDataWithPartners = prefs.getBool('privacy_share_partners') ?? false;
+    });
+  }
+
+  Future<void> _savePref(String key, bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(key, value);
+  }
+
+  Future<void> _loadSessions() async {
+    setState(() => _sessionsLoading = true);
+    try {
+      final sessions = await ref.read(authRepositoryProvider).listSessions();
+      if (!mounted) return;
+      setState(() {
+        _sessions = sessions;
+        _sessionsLoading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _sessions = null;
+        _sessionsLoading = false;
+      });
+    }
+  }
+
+  Future<void> _revokeSession(String sessionId) async {
+    try {
+      await ref.read(authRepositoryProvider).revokeSession(sessionId);
+      await _loadSessions();
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Impossible de révoquer cette session.'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,43 +108,13 @@ class _SecurityPrivacyPageState extends ConsumerState<SecurityPrivacyPage> {
             const AppleSectionHeader(title: 'Sécurité'),
             const SizedBox(height: 8),
             AppleCard(
-              child: Column(
-                children: [
-                  _buildSwitchRow(
-                    label: 'Authentification biométrique',
-                    subtitle: 'Utiliser Face ID / Empreinte',
-                    icon: CupertinoIcons.lock_shield_fill,
-                    value: _biometricEnabled,
-                    onChanged: (value) {
-                      HapticFeedback.lightImpact();
-                      setState(() {
-                        _biometricEnabled = value;
-                      });
-                    },
-                  ),
-                  _buildDivider(),
-                  _buildSwitchRow(
-                    label: 'Authentification à 2 facteurs',
-                    subtitle: 'Couche de sécurité supplémentaire',
-                    icon: CupertinoIcons.shield_lefthalf_fill,
-                    value: _twoFactorEnabled,
-                    onChanged: (value) {
-                      HapticFeedback.lightImpact();
-                      setState(() {
-                        _twoFactorEnabled = value;
-                      });
-                    },
-                  ),
-                  _buildDivider(),
-                  _buildNavigationRow(
-                    label: 'Changer le mot de passe',
-                    icon: CupertinoIcons.lock_rotation,
-                    onTap: () {
-                      HapticFeedback.lightImpact();
-                      _showChangePasswordSheet();
-                    },
-                  ),
-                ],
+              child: _buildNavigationRow(
+                label: 'Changer le mot de passe',
+                icon: CupertinoIcons.lock_rotation,
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  _showChangePasswordSheet();
+                },
               ),
             ),
             const SizedBox(height: 24),
@@ -105,9 +132,8 @@ class _SecurityPrivacyPageState extends ConsumerState<SecurityPrivacyPage> {
                     value: _shareDataForResearch,
                     onChanged: (value) {
                       HapticFeedback.lightImpact();
-                      setState(() {
-                        _shareDataForResearch = value;
-                      });
+                      setState(() => _shareDataForResearch = value);
+                      _savePref('privacy_share_research', value);
                     },
                   ),
                   _buildDivider(),
@@ -118,9 +144,8 @@ class _SecurityPrivacyPageState extends ConsumerState<SecurityPrivacyPage> {
                     value: _shareDataWithPartners,
                     onChanged: (value) {
                       HapticFeedback.lightImpact();
-                      setState(() {
-                        _shareDataWithPartners = value;
-                      });
+                      setState(() => _shareDataWithPartners = value);
+                      _savePref('privacy_share_partners', value);
                     },
                   ),
                   _buildDivider(),
@@ -137,71 +162,73 @@ class _SecurityPrivacyPageState extends ConsumerState<SecurityPrivacyPage> {
             ),
             const SizedBox(height: 24),
 
-            // Legal Section
-            const AppleSectionHeader(title: 'Légal'),
-            const SizedBox(height: 8),
-            AppleCard(
-              child: Column(
-                children: [
-                  _buildNavigationRow(
-                    label: 'Politique de confidentialité',
-                    icon: CupertinoIcons.doc_plaintext,
-                    onTap: () {
-                      HapticFeedback.lightImpact();
-                      _openPrivacyPolicy();
-                    },
+            // Active Sessions (données réelles du serveur)
+            Row(
+              children: [
+                const AppleSectionHeader(title: 'Sessions actives'),
+                const Spacer(),
+                CupertinoButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: _loadSessions,
+                  child: Icon(
+                    CupertinoIcons.refresh,
+                    size: 18,
+                    color: AppColors.primary(context),
                   ),
-                  _buildDivider(),
-                  _buildNavigationRow(
-                    label: 'Conditions d\'utilisation',
-                    icon: CupertinoIcons.doc_on_doc,
-                    onTap: () {
-                      HapticFeedback.lightImpact();
-                      _openTermsOfService();
-                    },
-                  ),
-                  _buildDivider(),
-                  _buildNavigationRow(
-                    label: 'Télécharger mes données',
-                    icon: CupertinoIcons.arrow_down_doc,
-                    onTap: () {
-                      HapticFeedback.lightImpact();
-                      _downloadData();
-                    },
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-            const SizedBox(height: 32),
-
-            // Active Sessions
-            const AppleSectionHeader(title: 'Sessions actives'),
             const SizedBox(height: 8),
             AppleCard(
               padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  _buildSessionItem(
-                    device: 'iPhone 15 Pro',
-                    location: 'Paris, France',
-                    lastActive: 'Maintenant',
-                    isCurrent: true,
-                  ),
-                  const SizedBox(height: 12),
-                  _buildSessionItem(
-                    device: 'MacBook Pro',
-                    location: 'Paris, France',
-                    lastActive: 'Il y a 2 heures',
-                    isCurrent: false,
-                  ),
-                ],
-              ),
+              child: _buildSessionsContent(),
             ),
             const SizedBox(height: 40),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildSessionsContent() {
+    if (_sessionsLoading) {
+      return const Padding(
+        padding: EdgeInsets.all(12),
+        child: Center(child: CupertinoActivityIndicator()),
+      );
+    }
+    final sessions = _sessions;
+    if (sessions == null) {
+      return Text(
+        'Impossible de charger les sessions.',
+        style: AppleTheme.subhead.copyWith(
+          color: AppColors.textSecondary(context),
+        ),
+      );
+    }
+    if (sessions.isEmpty) {
+      return Text(
+        'Aucune session active.',
+        style: AppleTheme.subhead.copyWith(
+          color: AppColors.textSecondary(context),
+        ),
+      );
+    }
+    return Column(
+      children: [
+        for (var i = 0; i < sessions.length; i++) ...[
+          if (i > 0) const SizedBox(height: 12),
+          _buildSessionItem(sessions[i]),
+        ],
+      ],
+    );
+  }
+
+  String _formatDate(String? iso) {
+    final d = DateTime.tryParse(iso ?? '')?.toLocal();
+    if (d == null) return '';
+    return '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year} '
+        '${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
   }
 
   Widget _buildSwitchRow({
@@ -219,7 +246,7 @@ class _SecurityPrivacyPageState extends ConsumerState<SecurityPrivacyPage> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: AppColors.success.withOpacity(0.12),
+              color: AppColors.success.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, size: 20, color: AppColors.success),
@@ -270,7 +297,7 @@ class _SecurityPrivacyPageState extends ConsumerState<SecurityPrivacyPage> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: AppColors.success.withOpacity(0.12),
+              color: AppColors.success.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, size: 20, color: AppColors.success),
@@ -294,25 +321,21 @@ class _SecurityPrivacyPageState extends ConsumerState<SecurityPrivacyPage> {
     );
   }
 
-  Widget _buildSessionItem({
-    required String device,
-    required String location,
-    required String lastActive,
-    required bool isCurrent,
-  }) {
+  Widget _buildSessionItem(Map<String, dynamic> session) {
+    final isCurrent = session['isCurrent'] == true;
+    final createdAt = _formatDate(session['createdAt']?.toString());
+
     return Row(
       children: [
         Container(
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            color: AppColors.primary(context).withOpacity(0.12),
+            color: AppColors.primary(context).withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(
-            device.contains('iPhone')
-                ? CupertinoIcons.device_phone_portrait
-                : CupertinoIcons.device_laptop,
+            CupertinoIcons.device_phone_portrait,
             color: AppColors.primary(context),
           ),
         ),
@@ -324,7 +347,7 @@ class _SecurityPrivacyPageState extends ConsumerState<SecurityPrivacyPage> {
               Row(
                 children: [
                   Text(
-                    device,
+                    isCurrent ? 'Cet appareil' : 'Session',
                     style: AppleTheme.callout.copyWith(
                       color: AppColors.textPrimary(context),
                       fontWeight: FontWeight.w600,
@@ -342,7 +365,7 @@ class _SecurityPrivacyPageState extends ConsumerState<SecurityPrivacyPage> {
               ),
               const SizedBox(height: 2),
               Text(
-                '$location • $lastActive',
+                'Connectée le $createdAt',
                 style: AppleTheme.caption1.copyWith(
                   color: AppColors.textSecondary(context),
                 ),
@@ -355,7 +378,7 @@ class _SecurityPrivacyPageState extends ConsumerState<SecurityPrivacyPage> {
             padding: EdgeInsets.zero,
             onPressed: () {
               HapticFeedback.lightImpact();
-              // TODO: Terminate session
+              _revokeSession(session['id'].toString());
             },
             child: Icon(
               CupertinoIcons.xmark_circle_fill,
@@ -371,47 +394,130 @@ class _SecurityPrivacyPageState extends ConsumerState<SecurityPrivacyPage> {
     return Divider(
       height: 1,
       thickness: 0.5,
-      color: AppColors.divider(context).withOpacity(0.3),
+      color: AppColors.divider(context).withValues(alpha: 0.3),
       indent: 68,
     );
   }
 
   void _showChangePasswordSheet() {
-    // TODO: Implement change password
+    final currentController = TextEditingController();
+    final newController = TextEditingController();
+    final confirmController = TextEditingController();
+    var saving = false;
+    String? errorText;
+
     showCupertinoModalPopup(
       context: context,
-      builder: (context) => Container(
-        height: 400,
-        color: AppColors.surface(context),
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            Text(
-              'Changer le mot de passe',
-              style: AppleTheme.title2.copyWith(fontWeight: FontWeight.w700),
+      builder: (sheetContext) => StatefulBuilder(
+        builder: (sheetContext, setSheetState) {
+          Future<void> submit() async {
+            final current = currentController.text;
+            final newPass = newController.text;
+            final confirm = confirmController.text;
+
+            if (current.isEmpty) {
+              setSheetState(() => errorText = 'Entrez votre mot de passe actuel.');
+              return;
+            }
+            if (newPass.length < 6) {
+              setSheetState(() =>
+                  errorText = 'Le nouveau mot de passe doit faire 6 caractères minimum.');
+              return;
+            }
+            if (newPass != confirm) {
+              setSheetState(() =>
+                  errorText = 'Les mots de passe ne correspondent pas.');
+              return;
+            }
+
+            setSheetState(() {
+              saving = true;
+              errorText = null;
+            });
+            try {
+              await ref
+                  .read(authRepositoryProvider)
+                  .changePassword(current, newPass);
+              if (!sheetContext.mounted) return;
+              Navigator.pop(sheetContext);
+              // La révocation des autres sessions est faite côté serveur
+              _loadSessions();
+              if (!mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('✅ Mot de passe changé'),
+                  backgroundColor: AppColors.success,
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            } catch (e) {
+              setSheetState(() {
+                saving = false;
+                errorText = e.toString().replaceFirst('Exception: ', '');
+              });
+            }
+          }
+
+          return Container(
+            padding: EdgeInsets.only(
+              left: 20,
+              right: 20,
+              top: 20,
+              bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 20,
             ),
-            const SizedBox(height: 20),
-            CupertinoTextField(
-              placeholder: 'Mot de passe actuel',
-              obscureText: true,
+            decoration: BoxDecoration(
+              color: AppColors.surface(context),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(24)),
             ),
-            const SizedBox(height: 12),
-            CupertinoTextField(
-              placeholder: 'Nouveau mot de passe',
-              obscureText: true,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Changer le mot de passe',
+                  style: AppleTheme.title2.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary(context),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                CupertinoTextField(
+                  controller: currentController,
+                  placeholder: 'Mot de passe actuel',
+                  obscureText: true,
+                  padding: const EdgeInsets.all(14),
+                ),
+                const SizedBox(height: 12),
+                CupertinoTextField(
+                  controller: newController,
+                  placeholder: 'Nouveau mot de passe (6 caractères min.)',
+                  obscureText: true,
+                  padding: const EdgeInsets.all(14),
+                ),
+                const SizedBox(height: 12),
+                CupertinoTextField(
+                  controller: confirmController,
+                  placeholder: 'Confirmer le mot de passe',
+                  obscureText: true,
+                  padding: const EdgeInsets.all(14),
+                ),
+                if (errorText != null) ...[
+                  const SizedBox(height: 12),
+                  Text(
+                    errorText!,
+                    style: AppleTheme.footnote.copyWith(color: AppColors.error),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+                const SizedBox(height: 20),
+                AppleButton(
+                  text: saving ? 'Changement...' : 'Changer',
+                  onPressed: submit,
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
-            CupertinoTextField(
-              placeholder: 'Confirmer le mot de passe',
-              obscureText: true,
-            ),
-            const Spacer(),
-            AppleButton(
-              text: 'Changer',
-              onPressed: () => Navigator.pop(context),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -430,24 +536,6 @@ class _SecurityPrivacyPageState extends ConsumerState<SecurityPrivacyPage> {
             child: const Text('Compris'),
           ),
         ],
-      ),
-    );
-  }
-
-  void _openPrivacyPolicy() {
-    // TODO: Open privacy policy URL
-  }
-
-  void _openTermsOfService() {
-    // TODO: Open terms URL
-  }
-
-  void _downloadData() {
-    // TODO: Download user data
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Préparation de vos données...'),
-        backgroundColor: AppColors.info,
       ),
     );
   }

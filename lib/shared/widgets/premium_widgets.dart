@@ -142,7 +142,7 @@ class StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final effectiveColor = color ?? AppColors.primary(context);
-    final effectiveBg = backgroundColor ?? effectiveColor.withOpacity(0.1);
+    final effectiveBg = backgroundColor ?? effectiveColor.withValues(alpha: 0.1);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -210,7 +210,7 @@ class PremiumBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: (config.color ?? Colors.black).withOpacity(0.2),
+            color: (config.color ?? Colors.black).withValues(alpha: 0.2),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -342,7 +342,7 @@ class RecipeCard extends StatelessWidget {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.3),
+                  color: Colors.white.withValues(alpha: 0.3),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -439,7 +439,7 @@ class PremiumProgressBar extends StatelessWidget {
                 borderRadius: BorderRadius.circular(4),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primary(context).withOpacity(0.4),
+                    color: AppColors.primary(context).withValues(alpha: 0.4),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),

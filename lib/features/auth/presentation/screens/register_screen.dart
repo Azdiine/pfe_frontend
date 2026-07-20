@@ -66,7 +66,7 @@ class RegisterScreen extends ConsumerWidget {
                               shape: BoxShape.circle,
                               boxShadow: [
                                 BoxShadow(
-                                  color: primaryColor.withOpacity(0.15),
+                                  color: primaryColor.withValues(alpha: 0.15),
                                   blurRadius: 24,
                                   offset: const Offset(0, 8),
                                 ),

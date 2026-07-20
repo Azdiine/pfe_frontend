@@ -104,7 +104,7 @@ class WelcomeScreen extends ConsumerWidget {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+                      color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.08),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -132,7 +132,7 @@ class WelcomeScreen extends ConsumerWidget {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+                      color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.08),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -228,7 +228,7 @@ class _PrimaryButton extends StatelessWidget {
           backgroundColor: isDark ? Colors.white : const Color(0xFF000000),
           foregroundColor: isDark ? Colors.black : Colors.white,
           elevation: 0,
-          shadowColor: Colors.black.withOpacity(0.1),
+          shadowColor: Colors.black.withValues(alpha: 0.1),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -421,7 +421,7 @@ class _SocialIconButton extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.3 : 0.04),
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.04),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -464,7 +464,7 @@ class _EmailLoginButton extends StatelessWidget {
           backgroundColor: isDark ? Colors.white : const Color(0xFF000000),
           foregroundColor: isDark ? Colors.black : Colors.white,
           elevation: 0,
-          shadowColor: Colors.black.withOpacity(0.1),
+          shadowColor: Colors.black.withValues(alpha: 0.1),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),

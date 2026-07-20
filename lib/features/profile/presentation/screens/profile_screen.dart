@@ -94,13 +94,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   expandedHeight: 0,
                   floating: true,
                   pinned: true,
-                  backgroundColor: AppColors.surface(context).withOpacity(0.8),
+                  backgroundColor: AppColors.surface(context).withValues(alpha: 0.8),
                   elevation: 0,
                   flexibleSpace: ClipRRect(
                     child: BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                       child: Container(
-                        color: AppColors.surface(context).withOpacity(0.8),
+                        color: AppColors.surface(context).withValues(alpha: 0.8),
                       ),
                     ),
                   ),
@@ -126,7 +126,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             BoxShadow(
                               color: AppColors.primary(
                                 context,
-                              ).withOpacity(0.3),
+                              ).withValues(alpha: 0.3),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
@@ -183,12 +183,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   /// Premium Header with Gradient Background
-  Widget _buildPremiumHeader(authState) {
+  Widget _buildPremiumHeader(AuthState authState) {
     final locale = ref.read(localeProvider);
     final l10n = AppLocalizations.of(locale);
     final profileState = ref.watch(profileProvider);
     final displayName = profileState.name ?? authState.user?.name ?? l10n.user;
     final displayEmail = profileState.email ?? authState.user?.email ?? 'email@exemple.com';
+    final avatarUrl = profileState.avatarUrl;
     return Container(
       margin: const EdgeInsets.all(AppleTheme.spacing20),
       padding: const EdgeInsets.all(AppleTheme.spacing28),
@@ -197,7 +198,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         borderRadius: BorderRadius.circular(AppleTheme.spacing24),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary(context).withOpacity(0.2),
+            color: AppColors.primary(context).withValues(alpha: 0.2),
             blurRadius: 24,
             offset: const Offset(0, 12),
           ),
@@ -215,7 +216,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(
+                  color: Colors.black.withValues(alpha: 
                     AppColors.isDark(context) ? 0.3 : 0.1,
                   ),
                   blurRadius: 20,
@@ -226,6 +227,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             child: CircleAvatar(
               radius: 48,
               backgroundColor: AppColors.surface(context),
+              // Photo du compte Google si disponible, sinon initiale
+              foregroundImage: (avatarUrl != null && avatarUrl.isNotEmpty)
+                  ? NetworkImage(avatarUrl)
+                  : null,
               child: Text(
                 (displayName.isNotEmpty)
                     ? displayName.substring(0, 1).toUpperCase()
@@ -257,14 +262,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               Icon(
                 CupertinoIcons.mail_solid,
                 size: 14,
-                color: AppColors.textOnPrimary(context).withOpacity(0.9),
+                color: AppColors.textOnPrimary(context).withValues(alpha: 0.9),
               ),
               const SizedBox(width: 6),
               Flexible(
                 child: Text(
                   displayEmail,
                   style: AppleTheme.callout.copyWith(
-                    color: AppColors.textOnPrimary(context).withOpacity(0.9),
+                    color: AppColors.textOnPrimary(context).withValues(alpha: 0.9),
                     fontWeight: FontWeight.w500,
                   ),
                   maxLines: 1,
@@ -278,10 +283,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: AppColors.textOnPrimary(context).withOpacity(0.2),
+              color: AppColors.textOnPrimary(context).withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: AppColors.textOnPrimary(context).withOpacity(0.3),
+                color: AppColors.textOnPrimary(context).withValues(alpha: 0.3),
               ),
             ),
             child: Row(
@@ -373,7 +378,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         color: AppColors.surface(context),
         borderRadius: BorderRadius.circular(AppleTheme.radiusXLarge),
         border: Border.all(
-          color: AppColors.divider(context).withOpacity(0.3),
+          color: AppColors.divider(context).withValues(alpha: 0.3),
           width: 0.5,
         ),
       ),
@@ -383,7 +388,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
+              color: color.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: color, size: 22),
@@ -460,7 +465,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               color: AppColors.surface(context),
               borderRadius: BorderRadius.circular(AppleTheme.radiusXLarge),
               border: Border.all(
-                color: AppColors.divider(context).withOpacity(0.3),
+                color: AppColors.divider(context).withValues(alpha: 0.3),
                 width: 0.5,
               ),
             ),
@@ -512,7 +517,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
+              color: color.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, color: color, size: 20),
@@ -575,7 +580,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               color: AppColors.surface(context),
               borderRadius: BorderRadius.circular(AppleTheme.radiusXLarge),
               border: Border.all(
-                color: AppColors.divider(context).withOpacity(0.3),
+                color: AppColors.divider(context).withValues(alpha: 0.3),
                 width: 0.5,
               ),
             ),
@@ -662,7 +667,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
+              color: color.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, color: color, size: 20),
@@ -700,7 +705,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: (isDark ? Colors.amber : AppColors.primary(context)).withOpacity(0.15),
+              color: (isDark ? Colors.amber : AppColors.primary(context)).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(
@@ -745,7 +750,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: AppleTheme.spacing16),
           decoration: BoxDecoration(
-            color: AppColors.error.withOpacity(0.08),
+            color: AppColors.error.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(AppleTheme.radiusCard),
           ),
           child: Row(

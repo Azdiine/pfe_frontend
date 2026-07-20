@@ -185,8 +185,8 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
                 height: 80,
                 decoration: BoxDecoration(
                   color: isDark
-                      ? const Color(0xFF138B57).withOpacity(0.2)
-                      : const Color(0xFF22C55E).withOpacity(0.1),
+                      ? const Color(0xFF138B57).withValues(alpha: 0.2)
+                      : const Color(0xFF22C55E).withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(

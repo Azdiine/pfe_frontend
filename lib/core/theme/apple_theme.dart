@@ -162,12 +162,12 @@ class AppleTheme {
   /// Ultra-subtle shadow pour les cards iOS 18
   static List<BoxShadow> get cardShadow => [
     BoxShadow(
-      color: Colors.black.withOpacity(0.02),
+      color: Colors.black.withValues(alpha: 0.02),
       blurRadius: 10,
       offset: const Offset(0, 2),
     ),
     BoxShadow(
-      color: Colors.black.withOpacity(0.01),
+      color: Colors.black.withValues(alpha: 0.01),
       blurRadius: 20,
       offset: const Offset(0, 4),
     ),
@@ -176,12 +176,12 @@ class AppleTheme {
   /// Shadow douce pour les éléments flottants iOS 18
   static List<BoxShadow> get floatingShadow => [
     BoxShadow(
-      color: Colors.black.withOpacity(0.03),
+      color: Colors.black.withValues(alpha: 0.03),
       blurRadius: 20,
       offset: const Offset(0, 4),
     ),
     BoxShadow(
-      color: Colors.black.withOpacity(0.02),
+      color: Colors.black.withValues(alpha: 0.02),
       blurRadius: 40,
       offset: const Offset(0, 8),
     ),
@@ -190,7 +190,7 @@ class AppleTheme {
   /// Shadow prononcée pour modals iOS 18
   static List<BoxShadow> get modalShadow => [
     BoxShadow(
-      color: Colors.black.withOpacity(0.08),
+      color: Colors.black.withValues(alpha: 0.08),
       blurRadius: 40,
       offset: const Offset(0, 16),
     ),
@@ -226,8 +226,8 @@ class AppleTheme {
     return Container(
       height: 0.33, // iOS 18: 0.33pt
       color: isDark
-          ? Colors.white.withOpacity(0.12)
-          : Colors.black.withOpacity(0.08),
+          ? Colors.white.withValues(alpha: 0.12)
+          : Colors.black.withValues(alpha: 0.08),
     );
   }
 
@@ -236,8 +236,8 @@ class AppleTheme {
     return Container(
       width: 0.33, // iOS 18: 0.33pt
       color: isDark
-          ? Colors.white.withOpacity(0.12)
-          : Colors.black.withOpacity(0.08),
+          ? Colors.white.withValues(alpha: 0.12)
+          : Colors.black.withValues(alpha: 0.08),
     );
   }
 

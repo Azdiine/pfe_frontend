@@ -33,14 +33,14 @@ class AppleCard extends StatelessWidget {
         color: backgroundColor ?? AppColors.surface(context),
         borderRadius: BorderRadius.circular(AppleTheme.radiusXLarge),
         border: Border.all(
-          color: AppColors.divider(context).withOpacity(0.3),
+          color: AppColors.divider(context).withValues(alpha: 0.3),
           width: 0.5,
         ),
         boxShadow: isDark
             ? []
             : [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.03),
+                  color: Colors.black.withValues(alpha: 0.03),
                   blurRadius: 10,
                   offset: const Offset(0, 2),
                 ),
@@ -99,7 +99,7 @@ class AppleButton extends StatelessWidget {
         curve: AppleTheme.iosSpringCurve, // iOS 18 spring
         height: isLarge ? 54 : 50, // iOS 18: Plus de hauteur
         decoration: BoxDecoration(
-          color: onPressed == null ? bgColor.withOpacity(0.5) : bgColor,
+          color: onPressed == null ? bgColor.withValues(alpha: 0.5) : bgColor,
           borderRadius: BorderRadius.circular(
             AppleTheme.radiusButton,
           ), // iOS 18: 12pt
@@ -283,7 +283,7 @@ class AppleBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color:
             backgroundColor ??
-            AppColors.primary(context).withOpacity(0.12), // iOS 18: Plus subtil
+            AppColors.primary(context).withValues(alpha: 0.12), // iOS 18: Plus subtil
         borderRadius: BorderRadius.circular(8), // iOS 18: 8pt
       ),
       child: Text(
@@ -316,10 +316,10 @@ class AppleNavigationBar extends StatelessWidget
   @override
   Widget build(BuildContext context) {
     return CupertinoNavigationBar(
-      backgroundColor: AppleTheme.adaptiveBackground(context).withOpacity(0.9),
+      backgroundColor: AppleTheme.adaptiveBackground(context).withValues(alpha: 0.9),
       border: Border(
         bottom: BorderSide(
-          color: AppleTheme.adaptiveSeparator(context).withOpacity(0.3),
+          color: AppleTheme.adaptiveSeparator(context).withValues(alpha: 0.3),
           width: 0.5,
         ),
       ),
@@ -427,8 +427,8 @@ class _AppleQuickActionCardState extends State<AppleQuickActionCard>
             gradient: isLarge
                 ? LinearGradient(
                     colors: [
-                      accentColor.withOpacity(isDark ? 0.15 : 0.08),
-                      accentColor.withOpacity(isDark ? 0.08 : 0.04),
+                      accentColor.withValues(alpha: isDark ? 0.15 : 0.08),
+                      accentColor.withValues(alpha: isDark ? 0.08 : 0.04),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -437,13 +437,13 @@ class _AppleQuickActionCardState extends State<AppleQuickActionCard>
             color: isLarge ? null : AppColors.surface(context),
             borderRadius: BorderRadius.circular(widget.isHero ? 22 : 20),
             border: Border.all(
-              color: accentColor.withOpacity(isLarge ? 0.25 : 0.12),
+              color: accentColor.withValues(alpha: isLarge ? 0.25 : 0.12),
               width: widget.isHero ? 2.0 : (widget.isPrimary ? 1.5 : 0.5),
             ),
             boxShadow: isLarge
                 ? [
                     BoxShadow(
-                      color: accentColor.withOpacity(widget.isHero ? 0.2 : 0.15),
+                      color: accentColor.withValues(alpha: widget.isHero ? 0.2 : 0.15),
                       blurRadius: widget.isHero ? 16 : 12,
                       offset: Offset(0, widget.isHero ? 6 : 4),
                     ),
@@ -460,8 +460,8 @@ class _AppleQuickActionCardState extends State<AppleQuickActionCard>
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            accentColor.withOpacity(0.25),
-                            accentColor.withOpacity(0.15),
+                            accentColor.withValues(alpha: 0.25),
+                            accentColor.withValues(alpha: 0.15),
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
@@ -516,8 +516,8 @@ class _AppleQuickActionCardState extends State<AppleQuickActionCard>
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            accentColor.withOpacity(0.2),
-                            accentColor.withOpacity(0.12),
+                            accentColor.withValues(alpha: 0.2),
+                            accentColor.withValues(alpha: 0.12),
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,

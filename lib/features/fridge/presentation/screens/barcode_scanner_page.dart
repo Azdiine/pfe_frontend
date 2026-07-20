@@ -28,10 +28,8 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage>
 
   bool _isProcessing = false;
   bool _isAnalyzing = false;
-  String? _scannedCode;
   late AnimationController _animationController;
   late Animation<double> _scanAnimation;
-  late Animation<double> _pulseAnimation;
 
   @override
   void initState() {
@@ -42,10 +40,6 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage>
     )..repeat(reverse: true);
 
     _scanAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-    );
-
-    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.15).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
   }
@@ -68,7 +62,6 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage>
 
     setState(() {
       _isProcessing = true;
-      _scannedCode = barcode.rawValue;
     });
 
     // Simulate API call to analyze product
@@ -180,8 +173,7 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage>
     final tealColor = AppColors.primary(context);
     
     // 🛑 WRAPPER COMPLET qui masque tout
-    return WillPopScope(
-      onWillPop: () async => true,
+    return PopScope(
       child: Material(
         type: MaterialType.canvas,
         color: Colors.black,
@@ -222,8 +214,8 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage>
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withOpacity(0.7),
-                    Colors.black.withOpacity(0.4),
+                    Colors.black.withValues(alpha: 0.7),
+                    Colors.black.withValues(alpha: 0.4),
                     Colors.transparent,
                   ],
                 ),
@@ -251,10 +243,10 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage>
                                 width: 36,
                                 height: 36,
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.15),
+                                  color: Colors.white.withValues(alpha: 0.15),
                                   borderRadius: BorderRadius.circular(10),
                                   border: Border.all(
-                                    color: Colors.white.withOpacity(0.1),
+                                    color: Colors.white.withValues(alpha: 0.1),
                                     width: 0.5,
                                   ),
                                 ),
@@ -292,11 +284,11 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage>
                                 height: 36,
                                 decoration: BoxDecoration(
                                   color: cameraController.torchEnabled
-                                      ? Colors.white.withOpacity(0.25)
-                                      : Colors.white.withOpacity(0.15),
+                                      ? Colors.white.withValues(alpha: 0.25)
+                                      : Colors.white.withValues(alpha: 0.15),
                                   borderRadius: BorderRadius.circular(10),
                                   border: Border.all(
-                                    color: Colors.white.withOpacity(0.1),
+                                    color: Colors.white.withValues(alpha: 0.1),
                                     width: 0.5,
                                   ),
                                 ),
@@ -343,7 +335,7 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage>
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w400,
-                            color: Colors.white.withOpacity(0.6),
+                            color: Colors.white.withValues(alpha: 0.6),
                             letterSpacing: -0.1,
                           ),
                         ),
@@ -364,13 +356,13 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage>
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: [
-                                Colors.white.withOpacity(0.2),
-                                Colors.white.withOpacity(0.15),
+                                Colors.white.withValues(alpha: 0.2),
+                                Colors.white.withValues(alpha: 0.15),
                               ],
                             ),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: Colors.white.withOpacity(0.2),
+                              color: Colors.white.withValues(alpha: 0.2),
                               width: 1,
                             ),
                           ),
@@ -417,7 +409,7 @@ class _BarcodeScannerPageState extends State<BarcodeScannerPage>
           // � Analyzing Overlay - iOS 2026 Pure
           if (_isAnalyzing)
             Container(
-              color: Colors.black.withOpacity(0.95),
+              color: Colors.black.withValues(alpha: 0.95),
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -487,7 +479,7 @@ class ScannerOverlayPainter extends CustomPainter {
 
     // 🍎 Dark overlay - Simple
     final backgroundPaint = Paint()
-      ..color = Colors.black.withOpacity(0.65)
+      ..color = Colors.black.withValues(alpha: 0.65)
       ..style = PaintingStyle.fill;
 
     final scanAreaPath = Path()
@@ -509,7 +501,7 @@ class ScannerOverlayPainter extends CustomPainter {
 
     // 🍎 Border élégante avec subtle glow
     final borderGlowPaint = Paint()
-      ..color = Colors.white.withOpacity(0.2)
+      ..color = Colors.white.withValues(alpha: 0.2)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
@@ -523,7 +515,7 @@ class ScannerOverlayPainter extends CustomPainter {
     );
 
     final borderPaint = Paint()
-      ..color = Colors.white.withOpacity(0.6)
+      ..color = Colors.white.withValues(alpha: 0.6)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.5;
 
@@ -537,7 +529,7 @@ class ScannerOverlayPainter extends CustomPainter {
 
     // 🍎 Corner indicators premium - Style iOS avec glow
     final cornerGlowPaint = Paint()
-      ..color = Colors.white.withOpacity(0.4)
+      ..color = Colors.white.withValues(alpha: 0.4)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 5
       ..strokeCap = StrokeCap.round
@@ -596,9 +588,9 @@ class ScannerOverlayPainter extends CustomPainter {
       ..shader = LinearGradient(
         colors: [
           Colors.transparent,
-          Colors.white.withOpacity(0.3),
-          Colors.white.withOpacity(0.5),
-          Colors.white.withOpacity(0.3),
+          Colors.white.withValues(alpha: 0.3),
+          Colors.white.withValues(alpha: 0.5),
+          Colors.white.withValues(alpha: 0.3),
           Colors.transparent,
         ],
         stops: const [0.0, 0.35, 0.5, 0.65, 1.0],
@@ -619,9 +611,9 @@ class ScannerOverlayPainter extends CustomPainter {
       ..shader = LinearGradient(
         colors: [
           Colors.transparent,
-          Colors.white.withOpacity(0.9),
+          Colors.white.withValues(alpha: 0.9),
           Colors.white,
-          Colors.white.withOpacity(0.9),
+          Colors.white.withValues(alpha: 0.9),
           Colors.transparent,
         ],
         stops: const [0.0, 0.4, 0.5, 0.6, 1.0],

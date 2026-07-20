@@ -23,6 +23,7 @@ class ProfileState {
   String? get goal => profileData?['profile']?['goal'] as String?;
   String? get activityLevel => profileData?['profile']?['activityLevel'] as String?;
   String? get dietType => profileData?['profile']?['dietType'] as String?;
+  String? get avatarUrl => profileData?['profile']?['avatarUrl'] as String?;
   bool get onboardingDone => profileData?['profile']?['onboardingDone'] == true;
   List<String> get allergies =>
       (profileData?['profile']?['allergies'] as List<dynamic>?)?.cast<String>() ?? [];

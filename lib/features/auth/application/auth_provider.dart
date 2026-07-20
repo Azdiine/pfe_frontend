@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../data/auth_repository.dart';
@@ -134,32 +135,34 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final user = await _repository.googleAuth(idToken);
       state = AuthState(user: user, isAuthenticated: true, isLoading: false);
     } on GoogleSignInException catch (e) {
+      debugPrint('❌ GoogleSignInException — code: ${e.code}, '
+          'description: ${e.description}, details: ${e.details}');
       if (e.code == GoogleSignInExceptionCode.canceled) {
         state = state.copyWith(isLoading: false);
       } else {
         state = state.copyWith(
           isLoading: false,
-          error: e.description ?? 'Erreur Google Sign-In: ${e.code}',
+          error: 'Google Sign-In [${e.code.name}] : '
+              '${e.description ?? 'erreur inconnue'}',
         );
       }
     } catch (e) {
+      debugPrint('❌ Google Sign-In erreur inattendue: $e');
       state = state.copyWith(isLoading: false, error: e.toString());
     }
   }
 
-  // Logout method
+  // Logout method — l'état local est TOUJOURS réinitialisé, même si la
+  // révocation serveur échoue (sinon l'utilisateur reste "connecté" hors ligne)
   Future<void> logout() async {
     state = state.copyWith(isLoading: true);
-    
+
     try {
       await _repository.logout();
-      state = AuthState();
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        error: e.toString(),
-      );
+      debugPrint('Logout serveur échoué (session locale effacée): $e');
     }
+    state = AuthState();
   }
 
   // Check if user is logged in

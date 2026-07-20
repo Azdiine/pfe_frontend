@@ -4,6 +4,7 @@ import '../features/splash/presentation/screens/splash_screen.dart';
 import '../features/auth/presentation/screens/login_screen.dart';
 import '../features/auth/presentation/screens/register_screen.dart';
 import '../features/auth/presentation/screens/otp_verification_screen.dart';
+import '../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../features/subscriptions/presentation/screens/subscriptions_screen.dart';
 import '../features/profile/presentation/screens/profile_screen.dart';
 import '../features/onboarding/presentation/screens/onboarding_screen.dart';
@@ -44,6 +45,11 @@ final goRouter = GoRouter(
         final email = state.uri.queryParameters['email'] ?? '';
         return OtpVerificationScreen(email: email);
       },
+    ),
+    GoRoute(
+      path: '/forgot-password',
+      name: 'forgot-password',
+      builder: (context, state) => const ForgotPasswordScreen(),
     ),
     GoRoute(
       path: '/onboarding',

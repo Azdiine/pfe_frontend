@@ -7,9 +7,13 @@ import 'app/routes.dart';
 import 'app/theme.dart';
 import 'core/providers/locale_provider.dart';
 import 'core/providers/theme_provider.dart';
+import 'core/services/api_client.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Session morte (tokens invalides et refresh impossible) → retour au login
+  ApiClient.onSessionExpired = () => goRouter.go('/login');
 
   runApp(const ProviderScope(child: MyApp()));
 }

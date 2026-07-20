@@ -5,6 +5,7 @@ import '../../../../core/theme/apple_theme.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/models/ingredient_model.dart';
 import '../../data/services/recommendation_service.dart';
+import '../../../recipes/data/recipes_service.dart';
 import '../widgets/recipe_details_popup.dart';
 import 'barcode_scanner_page.dart';
 import '../../../../core/localization/locale_provider.dart';
@@ -191,6 +192,79 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
     });
   }
 
+  void _updateIngredient(Ingredient updated) {
+    Ingredient replace(Ingredient i) => i.id == updated.id ? updated : i;
+    setState(() {
+      _topShelfItems = _topShelfItems.map(replace).toList();
+      _middleShelfItems = _middleShelfItems.map(replace).toList();
+      _bottomShelfItems = _bottomShelfItems.map(replace).toList();
+      _doorItems = _doorItems.map(replace).toList();
+    });
+  }
+
+  String _shelfLabel(String shelfLocation) {
+    switch (shelfLocation) {
+      case 'top':
+        return 'Étagère du haut';
+      case 'middle':
+        return 'Étagère du milieu';
+      case 'bottom':
+        return 'Étagère du bas';
+      case 'door':
+        return 'Porte';
+      default:
+        return shelfLocation;
+    }
+  }
+
+  Future<void> _editIngredient(Ingredient ingredient) async {
+    final quantityController = TextEditingController(text: ingredient.quantity);
+    final expiryController =
+        TextEditingController(text: '${ingredient.daysUntilExpiry}');
+
+    final saved = await showCupertinoDialog<bool>(
+      context: context,
+      builder: (context) => CupertinoAlertDialog(
+        title: Text('Modifier ${ingredient.name}'),
+        content: Column(
+          children: [
+            const SizedBox(height: 12),
+            CupertinoTextField(
+              controller: quantityController,
+              placeholder: 'Quantité (ex: 500g)',
+            ),
+            const SizedBox(height: 8),
+            CupertinoTextField(
+              controller: expiryController,
+              keyboardType: TextInputType.number,
+              placeholder: 'Jours avant péremption',
+            ),
+          ],
+        ),
+        actions: [
+          CupertinoDialogAction(
+            child: const Text('Annuler'),
+            onPressed: () => Navigator.pop(context, false),
+          ),
+          CupertinoDialogAction(
+            isDefaultAction: true,
+            child: const Text('Enregistrer'),
+            onPressed: () => Navigator.pop(context, true),
+          ),
+        ],
+      ),
+    );
+
+    if (saved != true) return;
+    final days = int.tryParse(expiryController.text.trim());
+    _updateIngredient(ingredient.copyWith(
+      quantity: quantityController.text.trim().isNotEmpty
+          ? quantityController.text.trim()
+          : ingredient.quantity,
+      daysUntilExpiry: (days != null && days >= 0) ? days : null,
+    ));
+  }
+
   void _showIngredientDetails(Ingredient ingredient) {
     showModalBottomSheet(
       context: context,
@@ -214,7 +288,12 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => _buildRecipeSuggestionsSheet(),
+      builder: (context) => _AiSuggestionsSheet(
+        onOpenRecipe: (recipe) {
+          Navigator.pop(context);
+          _showRecipeDetails(recipe);
+        },
+      ),
     );
   }
 
@@ -254,6 +333,7 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
         result['recommendations'] as List<dynamic>? ?? [],
       );
 
+      if (!mounted) return;
       if (_recommendations.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -265,6 +345,7 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
         _showRecommendationsBottomSheet();
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Erreur de recommandation: ${e.toString()}'),
@@ -315,7 +396,7 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
               Expanded(
                 child: ListView.separated(
                   itemCount: _recommendations.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  separatorBuilder: (_, _) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     final recipe = _recommendations[index];
                     final cal = (recipe['calories'] as num? ?? 0).toInt();
@@ -336,20 +417,36 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
                         ),
                         child: Row(
                           children: [
-                            // Emoji badge
-                            Container(
-                              width: 54,
-                              height: 54,
-                              decoration: BoxDecoration(
-                                color: AppColors.secondary(context).withValues(alpha: 0.12),
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  _emojiForRecipe(recipe),
-                                  style: const TextStyle(fontSize: 26),
-                                ),
-                              ),
+                            // Photo du plat (fallback emoji)
+                            SizedBox(
+                              width: 60,
+                              height: 60,
+                              child: (recipe['image_url'] ?? '')
+                                      .toString()
+                                      .isNotEmpty
+                                  ? RecipeImage(
+                                      imageUrl:
+                                          recipe['image_url'].toString(),
+                                      height: 60,
+                                      name: recipe['name']?.toString() ?? '',
+                                      borderRadius:
+                                          BorderRadius.circular(16),
+                                    )
+                                  : Container(
+                                      decoration: BoxDecoration(
+                                        color: AppColors.secondary(context)
+                                            .withValues(alpha: 0.12),
+                                        borderRadius:
+                                            BorderRadius.circular(16),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          _emojiForRecipe(recipe),
+                                          style:
+                                              const TextStyle(fontSize: 26),
+                                        ),
+                                      ),
+                                    ),
                             ),
                             const SizedBox(width: 14),
                             // Info
@@ -549,7 +646,7 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
               margin: const EdgeInsets.only(right: 16),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: AppColors.warning.withOpacity(0.2),
+                color: AppColors.warning.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: AppColors.warning, width: 1),
               ),
@@ -606,7 +703,7 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
                               vertical: 8,
                             ),
                             decoration: BoxDecoration(
-                              color: AppColors.success.withOpacity(0.12),
+                              color: AppColors.success.withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(14),
                             ),
                             child: Text(
@@ -621,15 +718,23 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    SizedBox(
-                      width: double.infinity,
-                      child: CupertinoButton(
-                        color: AppColors.secondary(context),
-                        borderRadius: BorderRadius.circular(20),
+                    GestureDetector(
+                      onTap: _isGenerating ? null : _generateRecommendations,
+                      child: Container(
+                        width: double.infinity,
                         padding: const EdgeInsets.symmetric(vertical: 16),
-                        onPressed: _isGenerating
-                            ? null
-                            : _generateRecommendations,
+                        decoration: BoxDecoration(
+                          gradient: AppColors.aiGradient(context),
+                          borderRadius: BorderRadius.circular(18),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.secondary(context)
+                                  .withValues(alpha: 0.30),
+                              blurRadius: 16,
+                              offset: const Offset(0, 6),
+                            ),
+                          ],
+                        ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -644,15 +749,17 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
                               )
                             else
                               const Icon(
-                                Icons.food_bank,
+                                CupertinoIcons.sparkles,
                                 color: Colors.white,
                                 size: 18,
                               ),
                             const SizedBox(width: 10),
                             Text(
-                              _selectedIngredientIds.isEmpty
-                                  ? 'Sélectionnez des ingrédients'
-                                  : 'Générer des recettes',
+                              _isGenerating
+                                  ? 'Génération en cours...'
+                                  : _selectedIngredientIds.isEmpty
+                                      ? 'Sélectionnez des ingrédients'
+                                      : 'Générer des recettes',
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,
@@ -693,12 +800,12 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
                     color: AppColors.surface(context),
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: AppColors.divider(context).withOpacity(0.3),
+                      color: AppColors.divider(context).withValues(alpha: 0.3),
                       width: 0.5,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
+                        color: Colors.black.withValues(alpha: 0.08),
                         blurRadius: 20,
                         offset: const Offset(0, 4),
                       ),
@@ -727,7 +834,7 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
                     gradient: LinearGradient(
                       colors: [
                         AppColors.primary(context),
-                        AppColors.primary(context).withOpacity(0.85),
+                        AppColors.primary(context).withValues(alpha: 0.85),
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -735,7 +842,7 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primary(context).withOpacity(0.35),
+                        color: AppColors.primary(context).withValues(alpha: 0.35),
                         blurRadius: 20,
                         offset: const Offset(0, 6),
                       ),
@@ -759,86 +866,49 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
     final locale = ref.watch(localeProvider);
     final l10n = AppLocalizations.of(locale);
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: AppColors.surface(context),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: AppColors.divider(context).withValues(alpha: 0.4),
+          width: 0.5,
+        ),
+        boxShadow: isDark
+            ? []
+            : [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.06),
+                  blurRadius: 24,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+      ),
       child: Column(
         children: [
-          // Fridge Frame with 3D perspective
-          Transform(
-            transform: Matrix4.identity()
-              ..setEntry(3, 2, 0.001)
-              ..rotateX(-0.1),
-            alignment: Alignment.center,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(30),
-                gradient: LinearGradient(
-                  colors: [
-                    AppColors.surfaceElevated(context),
-                    AppColors.surface(context),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.5),
-                    blurRadius: 40,
-                    offset: const Offset(0, 20),
-                  ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  // Fridge Header Light
-                  Container(
-                    height: 10,
-                    decoration: BoxDecoration(
-                      gradient: AppColors.primaryGradient(context),
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(30),
-                      ),
-                    ),
-                  ),
-                  // Fridge Interior
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          AppColors.primary(context).withOpacity(0.1),
-                          AppColors.primary(context).withOpacity(0.05),
-                        ],
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        // Top Shelf
-                        _buildShelf(l10n.topShelf, _topShelfItems, 'top'),
-                        const SizedBox(height: 20),
-                        // Middle Shelf
-                        _buildShelf(
-                          l10n.middleShelf,
-                          _middleShelfItems,
-                          'middle',
-                        ),
-                        const SizedBox(height: 20),
-                        // Bottom Shelf
-                        _buildShelf(
-                          l10n.bottomShelf,
-                          _bottomShelfItems,
-                          'bottom',
-                        ),
-                        const SizedBox(height: 20),
-                        // Door Compartment
-                        _buildShelf(l10n.door, _doorItems, 'door'),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+          // Bandeau supérieur du frigo
+          Container(
+            height: 6,
+            decoration: BoxDecoration(
+              gradient: AppColors.primaryGradient(context),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                _buildShelf(l10n.topShelf, _topShelfItems, 'top'),
+                const SizedBox(height: 14),
+                _buildShelf(l10n.middleShelf, _middleShelfItems, 'middle'),
+                const SizedBox(height: 14),
+                _buildShelf(l10n.bottomShelf, _bottomShelfItems, 'bottom'),
+                const SizedBox(height: 14),
+                _buildShelf(l10n.door, _doorItems, 'door'),
+              ],
             ),
           ),
         ],
@@ -858,22 +928,15 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: isHovering
-                ? AppColors.secondary(context).withOpacity(0.2)
-                : AppColors.surface(context).withOpacity(0.3),
+                ? AppColors.secondary(context).withValues(alpha: 0.10)
+                : AppColors.backgroundSecondary(context),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: isHovering
                   ? AppColors.secondary(context)
-                  : AppColors.divider(context),
-              width: 2,
+                  : AppColors.divider(context).withValues(alpha: 0.4),
+              width: isHovering ? 1.5 : 0.5,
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -883,49 +946,45 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
                   Text(
                     label,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 13,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary(context),
-                      shadows: const [
-                        Shadow(
-                          color: Colors.black26,
-                          offset: Offset(0, 1),
-                          blurRadius: 2,
-                        ),
-                      ],
+                      color: AppColors.textSecondary(context),
+                      letterSpacing: 0.2,
                     ),
                   ),
                   const SizedBox(width: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
+                      horizontal: 7,
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.secondary(context),
-                      borderRadius: BorderRadius.circular(12),
+                      color: AppColors.secondary(context)
+                          .withValues(alpha: 0.14),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
                       '${items.length}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
-                        color: Colors.white,
+                        color: AppColors.secondary(context),
                       ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
               items.isEmpty
                   ? Center(
                       child: Padding(
-                        padding: const EdgeInsets.all(20),
+                        padding: const EdgeInsets.all(16),
                         child: Text(
-                          'Drop items here',
+                          'Glissez un aliment ici',
                           style: TextStyle(
                             fontSize: 12,
-                            color: Colors.white.withOpacity(0.5),
+                            color: AppColors.textSecondary(context)
+                                .withValues(alpha: 0.6),
                           ),
                         ),
                       ),
@@ -959,7 +1018,7 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
         child: _buildIngredientCard(ingredient),
       ),
       child: GestureDetector(
-        onTap: () => _showIngredientDetails(ingredient),
+        onTap: () => _toggleIngredientSelection(ingredient.id),
         child: _buildIngredientCard(ingredient),
       ),
     );
@@ -974,111 +1033,112 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 250),
-      width: 82,
+      width: 88,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: expiring
-              ? [AppColors.warning, AppColors.warning.withValues(alpha: 0.85)]
-              : [AppColors.surface(context), AppColors.surfaceElevated(context)],
-        ),
+        color: AppColors.surface(context),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isSelected
               ? AppColors.secondary(context)
               : expiring
-                  ? AppColors.warning.withValues(alpha: 0.4)
-                  : AppColors.divider(context),
+                  ? AppColors.warning.withValues(alpha: 0.6)
+                  : AppColors.divider(context).withValues(alpha: 0.5),
           width: isSelected ? 2 : 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: isDragging ? 0.3 : 0.08),
+            color: isSelected
+                ? AppColors.secondary(context).withValues(alpha: 0.25)
+                : Colors.black.withValues(alpha: isDragging ? 0.3 : 0.05),
             blurRadius: isDragging ? 20 : 8,
             offset: isDragging ? const Offset(0, 10) : const Offset(0, 3),
           ),
         ],
       ),
-      child: Stack(
-        children: [
-          // Content
-          Padding(
-            padding: const EdgeInsets.fromLTRB(6, 10, 6, 8),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(6, 6, 6, 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Photo réelle de l'aliment + badges superposés
+            Stack(
               children: [
-                // Checkbox row
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    GestureDetector(
-                      onTap: () => _toggleIngredientSelection(ingredient.id),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        width: 20,
-                        height: 20,
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? AppColors.secondary(context)
-                              : Colors.transparent,
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(
-                            color: isSelected
-                                ? AppColors.secondary(context)
-                                : expiring
-                                    ? Colors.white.withValues(alpha: 0.7)
-                                    : AppColors.divider(context),
-                            width: 1.5,
-                          ),
-                        ),
-                        child: isSelected
-                            ? const Icon(Icons.check, size: 13, color: Colors.white)
-                            : null,
+                RecipeImage(
+                  imageUrl: ingredient.imageUrl,
+                  height: 62,
+                  name: ingredient.name,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                // Coche de sélection
+                if (isSelected)
+                  Positioned(
+                    top: 3,
+                    right: 3,
+                    child: Container(
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        color: AppColors.secondary(context),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 1.5),
                       ),
+                      child: const Icon(Icons.check,
+                          size: 12, color: Colors.white),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                // Emoji
-                Text(ingredient.emoji, style: const TextStyle(fontSize: 28)),
-                const SizedBox(height: 5),
-                // Name
-                Text(
-                  ingredient.name,
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    color: expiring ? Colors.white : AppColors.textPrimary(context),
-                    height: 1.2,
                   ),
-                ),
-                // Expiry badge
-                if (expiring) ...[
-                  const SizedBox(height: 4),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.25),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      '${ingredient.daysUntilExpiry}j',
-                      style: const TextStyle(
-                        fontSize: 9,
-                        fontWeight: FontWeight.w700,
+                // Bouton info -> fiche de l'aliment
+                Positioned(
+                  top: 3,
+                  left: 3,
+                  child: GestureDetector(
+                    onTap: () => _showIngredientDetails(ingredient),
+                    child: Container(
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.45),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        CupertinoIcons.info,
+                        size: 12,
                         color: Colors.white,
                       ),
                     ),
                   ),
-                ],
+                ),
               ],
             ),
-          ),
-        ],
+            const SizedBox(height: 6),
+            Text(
+              ingredient.name,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary(context),
+                height: 1.2,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              expiring
+                  ? '⚠️ ${ingredient.daysUntilExpiry}j'
+                  : ingredient.quantity,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 9.5,
+                fontWeight: FontWeight.w600,
+                color: expiring
+                    ? AppColors.warning
+                    : AppColors.textSecondary(context),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1099,7 +1159,7 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: AppColors.secondary(context).withOpacity(0.4),
+            color: AppColors.secondary(context).withValues(alpha: 0.4),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -1114,7 +1174,7 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
                 width: 50,
                 height: 50,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: const Icon(
@@ -1163,6 +1223,7 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
                         _emojiForRecipe(previewRecipes[i]),
                         previewRecipes[i]['name']?.toString() ?? 'Recette',
                         '${previewRecipes[i]['prep_time_min'] ?? 0} ${l10n.minutes}',
+                        imageUrl: previewRecipes[i]['image_url']?.toString(),
                       ),
                     ),
                   ),
@@ -1194,17 +1255,30 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
     );
   }
 
-  Widget _buildRecipePreviewCard(String emoji, String name, String time) {
+  Widget _buildRecipePreviewCard(
+    String emoji,
+    String name,
+    String time, {
+    String? imageUrl,
+  }) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
+        color: Colors.white.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.3), width: 1.5),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 1.5),
       ),
       child: Column(
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 32)),
+          if (imageUrl != null && imageUrl.isNotEmpty)
+            RecipeImage(
+              imageUrl: imageUrl,
+              height: 64,
+              name: name,
+              borderRadius: BorderRadius.circular(12),
+            )
+          else
+            Text(emoji, style: const TextStyle(fontSize: 32)),
           const SizedBox(height: 8),
           Text(
             name,
@@ -1253,7 +1327,17 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
             ),
           ),
           const SizedBox(height: AppleTheme.spacing20),
-          Text(ingredient.emoji, style: const TextStyle(fontSize: 64)),
+          // Photo réelle de l'aliment
+          SizedBox(
+            width: 96,
+            height: 96,
+            child: RecipeImage(
+              imageUrl: ingredient.imageUrl,
+              height: 96,
+              name: ingredient.name,
+              borderRadius: BorderRadius.circular(24),
+            ),
+          ),
           const SizedBox(height: AppleTheme.spacing16),
           Text(
             ingredient.name,
@@ -1281,7 +1365,7 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
           _buildDetailRow(
             CupertinoIcons.square_grid_2x2,
             l10n.location,
-            ingredient.shelfLocation,
+            _shelfLabel(ingredient.shelfLocation),
           ),
           const SizedBox(height: 24),
           Row(
@@ -1324,7 +1408,10 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
               Expanded(
                 child: CupertinoButton(
                   padding: EdgeInsets.zero,
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _editIngredient(ingredient);
+                  },
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     decoration: BoxDecoration(
@@ -1369,7 +1456,7 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: AppColors.secondary(context).withOpacity(0.1),
+              color: AppColors.secondary(context).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, size: 20, color: AppColors.secondary(context)),
@@ -2056,7 +2143,7 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.secondary(context).withOpacity(0.1)
+              ? AppColors.secondary(context).withValues(alpha: 0.1)
               : AppColors.surface(context),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
@@ -2109,27 +2196,60 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
     );
   }
 
-  Widget _buildRecipeSuggestionsSheet() {
-    final recipes = [
-      {
-        'emoji': '🍝',
-        'name': 'Pâtes Carbonara',
-        'time': '15 min',
-        'kcal': '480',
-      },
-      {'emoji': '🥗', 'name': 'Salade César', 'time': '10 min', 'kcal': '320'},
-      {
-        'emoji': '🍲',
-        'name': 'Soupe au Poulet',
-        'time': '25 min',
-        'kcal': '250',
-      },
-      {'emoji': '🥪', 'name': 'Sandwich Club', 'time': '8 min', 'kcal': '420'},
-    ];
+}
 
+/// Sheet "Suggestions IA" : vraies recettes du moteur avec photos et détails,
+/// nouveau tirage à chaque ouverture et bouton "Nouvelles idées".
+class _AiSuggestionsSheet extends StatefulWidget {
+  final void Function(Map<String, dynamic> recipe) onOpenRecipe;
+
+  const _AiSuggestionsSheet({required this.onOpenRecipe});
+
+  @override
+  State<_AiSuggestionsSheet> createState() => _AiSuggestionsSheetState();
+}
+
+class _AiSuggestionsSheetState extends State<_AiSuggestionsSheet> {
+  final RecipesService _recipesService = RecipesService();
+  List<Map<String, dynamic>> _recipes = [];
+  bool _loading = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final recipes = await _recipesService.getDailyRecipes(
+        count: 6,
+        seed: DateTime.now().millisecondsSinceEpoch.toString(),
+      );
+      if (!mounted) return;
+      setState(() {
+        _recipes = recipes;
+        _loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = 'Service indisponible, réessayez.';
+        _loading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.75,
+        maxHeight: MediaQuery.of(context).size.height * 0.80,
       ),
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -2158,9 +2278,9 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: const Icon(
-                  Icons.auto_awesome,
+                  CupertinoIcons.sparkles,
                   color: Colors.white,
-                  size: 28,
+                  size: 26,
                 ),
               ),
               const SizedBox(width: 16),
@@ -2171,13 +2291,13 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
                     Text(
                       'Suggestions de Recettes IA',
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: 19,
                         fontWeight: FontWeight.w800,
                         color: AppColors.textPrimary(context),
                       ),
                     ),
                     Text(
-                      'Recettes que vous pouvez faire maintenant',
+                      'Des idées fraîches à chaque visite',
                       style: TextStyle(
                         fontSize: 13,
                         color: AppColors.textSecondary(context),
@@ -2186,116 +2306,144 @@ class _FrigoPageState extends ConsumerState<FrigoPage> {
                   ],
                 ),
               ),
+              CupertinoButton(
+                padding: EdgeInsets.zero,
+                onPressed: _loading ? null : _load,
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: AppColors.secondary(context).withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    CupertinoIcons.arrow_2_circlepath,
+                    color: AppColors.secondary(context),
+                    size: 20,
+                  ),
+                ),
+              ),
             ],
           ),
-          const SizedBox(height: 24),
-          Flexible(
-            child: ListView(
-              shrinkWrap: true,
-              children: [
-                ...recipes.map((recipe) => _buildRecipeCard(recipe)),
-                SizedBox(height: MediaQuery.of(context).padding.bottom + 20),
-              ],
+          const SizedBox(height: 20),
+          if (_loading)
+            const Padding(
+              padding: EdgeInsets.all(40),
+              child: CupertinoActivityIndicator(radius: 14),
+            )
+          else if (_error != null)
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                children: [
+                  Text(
+                    _error!,
+                    style: TextStyle(color: AppColors.textSecondary(context)),
+                  ),
+                  const SizedBox(height: 12),
+                  CupertinoButton(
+                    color: AppColors.primary(context),
+                    borderRadius: BorderRadius.circular(12),
+                    onPressed: _load,
+                    child: const Text('Réessayer'),
+                  ),
+                ],
+              ),
+            )
+          else
+            Flexible(
+              child: ListView.separated(
+                shrinkWrap: true,
+                itemCount: _recipes.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 12),
+                itemBuilder: (context, index) {
+                  final recipe = _recipes[index];
+                  final name = recipe['name']?.toString() ?? 'Recette';
+                  final cal =
+                      (recipe['calories'] as num?)?.toDouble() ?? 0;
+                  final minutes = (recipe['minutes'] as num?)?.toInt() ?? 0;
+                  final nIngredients =
+                      (recipe['ingredients'] as List?)?.length ?? 0;
+
+                  return GestureDetector(
+                    onTap: () => widget.onOpenRecipe(recipe),
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppColors.surface(context),
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(
+                          color: AppColors.divider(context)
+                              .withValues(alpha: 0.5),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 64,
+                            height: 64,
+                            child: RecipeImage(
+                              imageUrl:
+                                  recipe['image_url']?.toString() ?? '',
+                              height: 64,
+                              name: name,
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  name,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.textPrimary(context),
+                                    height: 1.25,
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  [
+                                    if (cal > 0)
+                                      '🔥 ${cal.toStringAsFixed(0)} kcal',
+                                    if (minutes > 0) '⏱️ $minutes min',
+                                    if (nIngredients > 0)
+                                      '🧺 $nIngredients ingrédients',
+                                  ].join('   '),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: AppColors.textSecondary(context),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Icon(
+                            Icons.arrow_forward_ios,
+                            size: 14,
+                            color: AppColors.textSecondary(context),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
+          SizedBox(height: MediaQuery.of(context).padding.bottom + 8),
         ],
       ),
     );
   }
 
-  Widget _buildRecipeCard(Map<String, String> recipe) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface(context),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.divider(context), width: 2),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [AppColors.warning, AppColors.warning],
-              ),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Center(
-              child: Text(
-                recipe['emoji']!,
-                style: const TextStyle(fontSize: 32),
-              ),
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  recipe['name']!,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary(context),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.access_time,
-                      size: 14,
-                      color: AppColors.textSecondary(context),
-                    ),
-                    const SizedBox(width: 4),
-                    Flexible(
-                      child: Text(
-                        recipe['time']!,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary(context),
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Icon(
-                      Icons.local_fire_department,
-                      size: 14,
-                      color: AppColors.warning,
-                    ),
-                    const SizedBox(width: 4),
-                    Flexible(
-                      child: Text(
-                        '${recipe['kcal']} kcal',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.warning,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          Icon(
-            Icons.arrow_forward_ios,
-            size: 18,
-            color: AppColors.textSecondary(context),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 class _RecipeChip extends StatelessWidget {

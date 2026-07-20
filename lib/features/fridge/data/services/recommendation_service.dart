@@ -1,15 +1,10 @@
-import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 import '../../../../core/constants.dart';
+import '../../../../core/services/api_client.dart';
 
 class RecommendationService {
   static String get baseUrl => '${ApiConstants.baseUrl}/api/recommend';
-
-  Future<String?> _readToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('auth_token');
-  }
 
   /// Get recommendations by barcode
   /// Returns: { scannedProduct, recommendations }
@@ -17,49 +12,23 @@ class RecommendationService {
     String barcode, {
     int topK = 5,
   }) async {
-    try {
-      final token = await _readToken();
-      if (token == null) throw Exception('No authentication token found');
+    final response = await ApiClient.post(
+      Uri.parse('$baseUrl/barcode'),
+      body: {'barcode': barcode, 'top_k': topK},
+    );
 
-      final response = await http
-          .post(
-            Uri.parse('$baseUrl/barcode'),
-            headers: {
-              'Authorization': 'Bearer $token',
-              'Content-Type': 'application/json',
-            },
-            body: jsonEncode({'barcode': barcode, 'top_k': topK}),
-          )
-          .timeout(
-            const Duration(seconds: 30),
-            onTimeout: () => throw Exception('Request timeout'),
-          );
-
-      if (response.statusCode == 401) {
-        throw Exception('Unauthorized: Please log in again');
-      }
-
-      if (response.statusCode != 200) {
-        throw Exception(
-          'Failed to get recommendations: ${response.statusCode}',
-        );
-      }
-
-      final body = jsonDecode(response.body);
-      if (body['success'] != true) {
-        throw Exception(body['message'] ?? 'Unknown error');
-      }
-
-      final data = body['data'] as Map<String, dynamic>;
-      return {
-        'scannedProduct': data['scannedProduct'],
-        'recommendations': List<Map<String, dynamic>>.from(
-          data['recommendations'] ?? [],
-        ),
-      };
-    } catch (e) {
-      rethrow;
+    final body = jsonDecode(response.body);
+    if (response.statusCode != 200 || body['success'] != true) {
+      throw Exception(body['message'] ?? 'Failed to get recommendations');
     }
+
+    final data = body['data'] as Map<String, dynamic>;
+    return {
+      'scannedProduct': data['scannedProduct'],
+      'recommendations': List<Map<String, dynamic>>.from(
+        data['recommendations'] ?? [],
+      ),
+    };
   }
 
   /// Get recommendations by ingredients
@@ -68,52 +37,26 @@ class RecommendationService {
     List<String> ingredients, {
     int topK = 5,
   }) async {
-    try {
-      final token = await _readToken();
-      if (token == null) throw Exception('No authentication token found');
+    final response = await ApiClient.post(
+      Uri.parse(baseUrl),
+      body: {'ingredients': ingredients, 'top_k': topK},
+    );
 
-      final response = await http
-          .post(
-            Uri.parse(baseUrl),
-            headers: {
-              'Authorization': 'Bearer $token',
-              'Content-Type': 'application/json',
-            },
-            body: jsonEncode({'ingredients': ingredients, 'top_k': topK}),
-          )
-          .timeout(
-            const Duration(seconds: 30),
-            onTimeout: () => throw Exception('Request timeout'),
-          );
-
-      if (response.statusCode == 401) {
-        throw Exception('Unauthorized: Please log in again');
-      }
-
-      if (response.statusCode != 200) {
-        throw Exception(
-          'Failed to get recommendations: ${response.statusCode}',
-        );
-      }
-
-      final body = jsonDecode(response.body);
-      if (body['success'] != true) {
-        throw Exception(body['message'] ?? 'Unknown error');
-      }
-
-      final data = body['data'] as Map<String, dynamic>;
-      return {
-        'ingredients': List<String>.from(data['ingredients'] ?? []),
-        'recommendations': List<Map<String, dynamic>>.from(
-          data['recommendations'] ?? [],
-        ),
-      };
-    } catch (e) {
-      rethrow;
+    final body = jsonDecode(response.body);
+    if (response.statusCode != 200 || body['success'] != true) {
+      throw Exception(body['message'] ?? 'Failed to get recommendations');
     }
+
+    final data = body['data'] as Map<String, dynamic>;
+    return {
+      'ingredients': List<String>.from(data['ingredients'] ?? []),
+      'recommendations': List<Map<String, dynamic>>.from(
+        data['recommendations'] ?? [],
+      ),
+    };
   }
 
-  /// Health check for recommendation service
+  /// Health check for recommendation service (endpoint public, sans auth)
   Future<bool> healthCheck() async {
     try {
       final response = await http

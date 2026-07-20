@@ -30,8 +30,8 @@ class ScaffoldWithNavBar extends ConsumerWidget {
             filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
             child: AppBar(
               backgroundColor: isDark
-                  ? AppColors.darkBackground.withOpacity(0.80)
-                  : AppColors.lightBackground.withOpacity(0.80),
+                  ? AppColors.darkBackground.withValues(alpha: 0.80)
+                  : AppColors.lightBackground.withValues(alpha: 0.80),
               elevation: 0,
               scrolledUnderElevation: 0,
               centerTitle: true,
@@ -64,7 +64,7 @@ class ScaffoldWithNavBar extends ConsumerWidget {
                 preferredSize: const Size.fromHeight(0.5),
                 child: Container(
                   height: 0.5,
-                  color: AppColors.divider(context).withOpacity(0.3),
+                  color: AppColors.divider(context).withValues(alpha: 0.3),
                 ),
               ),
             ),
@@ -133,11 +133,11 @@ class _ModernBottomBar extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             color: isDark
-                ? AppColors.darkBackground.withOpacity(0.85)
-                : AppColors.lightBackground.withOpacity(0.85),
+                ? AppColors.darkBackground.withValues(alpha: 0.85)
+                : AppColors.lightBackground.withValues(alpha: 0.85),
             border: Border(
               top: BorderSide(
-                color: AppColors.divider(context).withOpacity(0.2),
+                color: AppColors.divider(context).withValues(alpha: 0.2),
                 width: 0.5,
               ),
             ),
@@ -178,7 +178,7 @@ class _ModernBottomBar extends StatelessWidget {
                                   color: isSelected
                                       ? AppColors.primary(
                                           context,
-                                        ).withOpacity(0.12)
+                                        ).withValues(alpha: 0.12)
                                       : Colors.transparent,
                                   borderRadius: BorderRadius.circular(20),
                                 ),

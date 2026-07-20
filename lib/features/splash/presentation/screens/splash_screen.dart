@@ -106,7 +106,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                           Shadow(
                             offset: const Offset(0, 4),
                             blurRadius: 8,
-                            color: Colors.black.withOpacity(0.3),
+                            color: Colors.black.withValues(alpha: 0.3),
                           ),
                         ],
                       ),
@@ -119,8 +119,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                         fontSize: 28,
                         fontWeight: FontWeight.w300,
                         color: isDark
-                            ? const Color(0xFFE5E5E5).withOpacity(0.8)
-                            : const Color(0xFFF5EFE0).withOpacity(0.8),
+                            ? const Color(0xFFE5E5E5).withValues(alpha: 0.8)
+                            : const Color(0xFFF5EFE0).withValues(alpha: 0.8),
                         letterSpacing: 4,
                       ),
                     ),

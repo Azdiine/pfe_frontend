@@ -355,8 +355,8 @@ class AppColors {
   static List<BoxShadow> elevation1(bool isDark) => [
     BoxShadow(
       color: isDark
-          ? const Color(0xFF000000).withOpacity(0.3)
-          : const Color(0xFF000000).withOpacity(0.08),
+          ? const Color(0xFF000000).withValues(alpha: 0.3)
+          : const Color(0xFF000000).withValues(alpha: 0.08),
       blurRadius: 3,
       offset: const Offset(0, 1),
     ),
@@ -365,8 +365,8 @@ class AppColors {
   static List<BoxShadow> elevation2(bool isDark) => [
     BoxShadow(
       color: isDark
-          ? const Color(0xFF000000).withOpacity(0.4)
-          : const Color(0xFF000000).withOpacity(0.1),
+          ? const Color(0xFF000000).withValues(alpha: 0.4)
+          : const Color(0xFF000000).withValues(alpha: 0.1),
       blurRadius: 6,
       offset: const Offset(0, 4),
     ),
@@ -375,8 +375,8 @@ class AppColors {
   static List<BoxShadow> elevation3(bool isDark) => [
     BoxShadow(
       color: isDark
-          ? const Color(0xFF000000).withOpacity(0.5)
-          : const Color(0xFF000000).withOpacity(0.12),
+          ? const Color(0xFF000000).withValues(alpha: 0.5)
+          : const Color(0xFF000000).withValues(alpha: 0.12),
       blurRadius: 15,
       offset: const Offset(0, 10),
     ),
@@ -385,13 +385,13 @@ class AppColors {
   /// Glassmorphism helper
   static BoxDecoration glassmorphism(bool isDark) => BoxDecoration(
     color: isDark
-        ? const Color(0xFF1A1F2E).withOpacity(0.8)
-        : const Color(0xFFFFFFFF).withOpacity(0.8),
+        ? const Color(0xFF1A1F2E).withValues(alpha: 0.8)
+        : const Color(0xFFFFFFFF).withValues(alpha: 0.8),
     borderRadius: BorderRadius.circular(20),
     border: Border.all(
       color: isDark
-          ? Colors.white.withOpacity(0.1)
-          : Colors.black.withOpacity(0.05),
+          ? Colors.white.withValues(alpha: 0.1)
+          : Colors.black.withValues(alpha: 0.05),
       width: 1,
     ),
     boxShadow: elevation2(isDark),

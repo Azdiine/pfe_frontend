@@ -67,7 +67,7 @@ class NotificationsPopup extends StatelessWidget {
               color: AppleTheme.adaptiveBackground(context),
               border: Border(
                 bottom: BorderSide(
-                  color: AppleTheme.adaptiveSeparator(context).withOpacity(0.3),
+                  color: AppleTheme.adaptiveSeparator(context).withValues(alpha: 0.3),
                   width: 0.5,
                 ),
               ),
@@ -148,11 +148,11 @@ class NotificationsPopup extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       decoration: BoxDecoration(
         color: isNew
-            ? AppColors.primary(context).withOpacity(0.05)
+            ? AppColors.primary(context).withValues(alpha: 0.05)
             : AppleTheme.adaptiveBackground(context),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppleTheme.adaptiveSeparator(context).withOpacity(0.3),
+          color: AppleTheme.adaptiveSeparator(context).withValues(alpha: 0.3),
           width: 0.5,
         ),
       ),
@@ -168,7 +168,7 @@ class NotificationsPopup extends StatelessWidget {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.15),
+                color: color.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: color, size: 24),

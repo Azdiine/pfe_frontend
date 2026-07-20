@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/apple_theme.dart';
 import '../../../../core/localization/locale_provider.dart';
 import '../../../../core/localization/app_localizations.dart';
+import '../../../fridge/presentation/widgets/recipe_details_popup.dart';
+import '../../data/recipes_service.dart';
 
 class RecettesPage extends ConsumerStatefulWidget {
   const RecettesPage({super.key});
@@ -14,156 +17,246 @@ class RecettesPage extends ConsumerStatefulWidget {
 }
 
 class _RecettesPageState extends ConsumerState<RecettesPage> {
-  int _selectedCategory = 0;
+  final RecipesService _recipesService = RecipesService();
 
-  Map<int, Widget> _buildCategories(AppLocalizations l10n) {
-    return {
-      0: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Text(
-          l10n.all,
-          style: AppleTheme.subhead.copyWith(fontWeight: FontWeight.w500),
-          maxLines: 1,
-        ),
-      ),
-      1: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6),
-        child: Text(
-          l10n.breakfast,
-          style: AppleTheme.subhead.copyWith(fontWeight: FontWeight.w500),
-          maxLines: 1,
-        ),
-      ),
-      2: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6),
-        child: Text(
-          l10n.lunch,
-          style: AppleTheme.subhead.copyWith(fontWeight: FontWeight.w500),
-          maxLines: 1,
-        ),
-      ),
-      3: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Text(
-          l10n.dinner,
-          style: AppleTheme.subhead.copyWith(fontWeight: FontWeight.w500),
-          maxLines: 1,
-        ),
-      ),
-    };
+  List<Map<String, dynamic>> _recipes = [];
+  bool _loading = true;
+  String? _error;
+
+  static const _monthNames = [
+    'janvier', 'février', 'mars', 'avril', 'mai', 'juin',
+    'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRecipes();
+  }
+
+  /// [fresh] : true = nouveau tirage aléatoire (bouton actualiser /
+  /// pull-to-refresh), false = sélection stable du jour.
+  Future<void> _loadRecipes({bool fresh = false}) async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final recipes = await _recipesService.getDailyRecipes(
+        count: 12,
+        seed: fresh ? DateTime.now().millisecondsSinceEpoch.toString() : null,
+      );
+      if (!mounted) return;
+      setState(() {
+        _recipes = recipes;
+        _loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = 'Impossible de charger les recettes du jour.';
+        _loading = false;
+      });
+    }
+  }
+
+  Future<void> _refreshRecipes() => _loadRecipes(fresh: true);
+
+  void _openRecipe(Map<String, dynamic> recipe) {
+    HapticFeedback.lightImpact();
+    showDialog(
+      context: context,
+      builder: (context) => RecipeDetailsPopup(recipe: recipe),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final locale = ref.watch(localeProvider);
     final l10n = AppLocalizations.of(locale);
-    final categories = _buildCategories(l10n);
+    final now = DateTime.now();
 
     return Scaffold(
       backgroundColor: AppColors.backgroundSecondary(context),
       body: CustomScrollView(
         slivers: [
-          // iOS 18 Navigation Bar - Plus opaque
           CupertinoSliverNavigationBar(
-            backgroundColor: AppColors.background(
-              context,
-            ).withOpacity(0.92), // iOS 18
+            backgroundColor:
+                AppColors.background(context).withValues(alpha: 0.92),
             border: Border(
               bottom: BorderSide(
-                color: AppleTheme.adaptiveSeparator(
-                  context,
-                ).withOpacity(0.2), // iOS 18: Plus subtil
-                width: 0.33, // iOS 18: Ultra-fin
+                color: AppleTheme.adaptiveSeparator(context)
+                    .withValues(alpha: 0.2),
+                width: 0.33,
               ),
             ),
             largeTitle: Text(
               l10n.recipesTab,
               style: AppleTheme.largeTitleEmphasized.copyWith(
-                // iOS 18
                 color: AppleTheme.adaptiveLabel(context),
               ),
             ),
             trailing: CupertinoButton(
               padding: EdgeInsets.zero,
-              onPressed: () {},
+              onPressed: _refreshRecipes,
               child: Icon(
-                CupertinoIcons.search,
+                CupertinoIcons.arrow_2_circlepath,
                 color: AppColors.primary(context),
                 size: 22,
               ),
             ),
           ),
 
-          // Categories avec CupertinoSegmentedControl iOS 18
+          CupertinoSliverRefreshControl(onRefresh: _refreshRecipes),
+
+          // En-tête "Recettes du jour"
           SliverToBoxAdapter(
-            child: Container(
-              color: AppColors.background(context),
-              padding: const EdgeInsets.fromLTRB(
-                AppleTheme.spacing20, // iOS 18: 20pt
-                AppleTheme.spacing12,
-                AppleTheme.spacing20,
-                AppleTheme.spacing20, // iOS 18: 20pt
-              ),
-              child: CupertinoSlidingSegmentedControl<int>(
-                groupValue: _selectedCategory,
-                children: categories,
-                onValueChanged: (value) {
-                  setState(() {
-                    _selectedCategory = value ?? 0;
-                  });
-                },
-                backgroundColor: AppColors.backgroundSecondary(context),
-                thumbColor: AppColors.surface(context),
-                padding: const EdgeInsets.all(4),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
+              child: Row(
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      gradient: AppColors.primaryGradient(context),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: const Center(
+                      child: Text('🍽️', style: TextStyle(fontSize: 22)),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Recettes du jour',
+                        style: AppleTheme.title3.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: AppleTheme.adaptiveLabel(context),
+                        ),
+                      ),
+                      Text(
+                        '${now.day} ${_monthNames[now.month - 1]} ${now.year}',
+                        style: AppleTheme.footnote.copyWith(
+                          color: AppleTheme.adaptiveSecondaryLabel(context),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ),
 
-          // Recipes Grid iOS 18 Style - Spacing généreux
-          SliverPadding(
-            padding: const EdgeInsets.all(AppleTheme.spacing20), // iOS 18: 20pt
-            sliver: SliverGrid(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: AppleTheme.spacing16, // iOS 18: 16pt
-                mainAxisSpacing: AppleTheme.spacing16,
-                childAspectRatio:
-                    0.72, // iOS 18: Plus de hauteur pour éviter overflow
+          if (_loading)
+            SliverPadding(
+              padding: const EdgeInsets.all(20),
+              sliver: SliverGrid(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                  childAspectRatio: 0.72,
+                ),
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) => _buildSkeletonCard(),
+                  childCount: 6,
+                ),
               ),
-              delegate: SliverChildBuilderDelegate((context, index) {
-                return _buildRecipeCard(
-                  '${l10n.recipe} ${index + 1}',
-                  '${20 + index * 5} ${l10n.minutes}',
-                  '${400 + index * 50} ${l10n.kcalUnit}',
-                );
-              }, childCount: 12),
+            )
+          else if (_error != null)
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('😔', style: TextStyle(fontSize: 40)),
+                    const SizedBox(height: 12),
+                    Text(
+                      _error!,
+                      textAlign: TextAlign.center,
+                      style: AppleTheme.body.copyWith(
+                        color: AppleTheme.adaptiveSecondaryLabel(context),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    CupertinoButton(
+                      color: AppColors.primary(context),
+                      borderRadius: BorderRadius.circular(12),
+                      onPressed: _loadRecipes,
+                      child: const Text('Réessayer'),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else
+            SliverPadding(
+              padding: const EdgeInsets.all(20),
+              sliver: SliverGrid(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                  childAspectRatio: 0.72,
+                ),
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) => _buildRecipeCard(_recipes[index]),
+                  childCount: _recipes.length,
+                ),
+              ),
             ),
-          ),
-          // Ajouter un padding en bas pour éviter que le contenu ne soit caché par le bottom bar
+
           const SliverPadding(padding: EdgeInsets.only(bottom: 120)),
         ],
       ),
     );
   }
 
-  Widget _buildRecipeCard(String title, String time, String calories) {
+  Widget _buildSkeletonCard() {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface(context),
+        borderRadius: BorderRadius.circular(AppleTheme.radiusXLarge),
+      ),
+      child: const Center(child: CupertinoActivityIndicator()),
+    );
+  }
+
+  String _titleCase(String name) {
+    return name
+        .split(' ')
+        .map((w) => w.isEmpty ? w : w[0].toUpperCase() + w.substring(1))
+        .join(' ');
+  }
+
+  Widget _buildRecipeCard(Map<String, dynamic> recipe) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return CupertinoButton(
-      padding: EdgeInsets.zero,
-      onPressed: () {},
+    final name = _titleCase(recipe['name']?.toString() ?? 'Recette');
+    final minutes = (recipe['minutes'] as num?)?.toInt() ?? 0;
+    final calories = (recipe['calories'] as num?)?.toDouble() ?? 0;
+    final imageUrl = recipe['image_url']?.toString() ?? '';
+
+    return GestureDetector(
+      onTap: () => _openRecipe(recipe),
       child: Container(
+        clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
           color: AppColors.surface(context),
           borderRadius: BorderRadius.circular(AppleTheme.radiusXLarge),
           border: Border.all(
-            color: AppColors.divider(context).withOpacity(0.3),
+            color: AppColors.divider(context).withValues(alpha: 0.3),
             width: 0.5,
           ),
           boxShadow: isDark
               ? []
               : [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -172,100 +265,53 @@ class _RecettesPageState extends ConsumerState<RecettesPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Photo du plat
             Expanded(
               flex: 3,
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      AppColors.primary(context).withOpacity(0.15),
-                      AppColors.primary(context).withOpacity(0.12),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(AppleTheme.radiusXLarge),
-                  ),
-                ),
-                child: Stack(
-                  children: [
-                    Center(
-                      child: Container(
-                        width: 52,
-                        height: 52,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        child: Icon(
-                          CupertinoIcons.heart_fill,
-                          size: 26,
-                          color: AppColors.primary(context).withOpacity(0.6),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: AppleTheme.spacing8,
-                      right: AppleTheme.spacing8,
-                      child: CupertinoButton(
-                        padding: EdgeInsets.zero,
-                        onPressed: () {},
-                        child: Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            color: AppColors.surface(context).withOpacity(0.9),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            CupertinoIcons.bookmark,
-                            size: 16,
-                            color: AppleTheme.adaptiveLabel(context),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+              child: SizedBox(
+                width: double.infinity,
+                child: RecipeImage(
+                  imageUrl: imageUrl,
+                  height: double.infinity,
+                  name: name,
                 ),
               ),
             ),
+            // Infos
             Expanded(
               flex: 2,
               child: Padding(
-                padding: const EdgeInsets.all(AppleTheme.spacing8),
+                padding: const EdgeInsets.all(10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      title,
+                      name,
                       style: AppleTheme.subheadEmphasized.copyWith(
                         color: AppleTheme.adaptiveLabel(context),
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 4),
+                    const Spacer(),
                     Row(
                       children: [
-                        Icon(
-                          CupertinoIcons.clock,
-                          size: 13,
-                          color: AppleTheme.adaptiveSecondaryLabel(context),
-                        ),
-                        const SizedBox(width: 3),
-                        Flexible(
-                          child: Text(
-                            time,
-                            style: AppleTheme.caption1.copyWith(
-                              color: AppleTheme.adaptiveSecondaryLabel(context),
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                        if (minutes > 0) ...[
+                          Icon(
+                            CupertinoIcons.clock,
+                            size: 13,
+                            color: AppleTheme.adaptiveSecondaryLabel(context),
                           ),
-                        ),
-                        const SizedBox(width: 8),
+                          const SizedBox(width: 3),
+                          Text(
+                            '$minutes min',
+                            style: AppleTheme.caption1.copyWith(
+                              color:
+                                  AppleTheme.adaptiveSecondaryLabel(context),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                        ],
                         Icon(
                           CupertinoIcons.flame_fill,
                           size: 13,
@@ -274,7 +320,7 @@ class _RecettesPageState extends ConsumerState<RecettesPage> {
                         const SizedBox(width: 3),
                         Flexible(
                           child: Text(
-                            calories,
+                            '${calories.toStringAsFixed(0)} kcal',
                             style: AppleTheme.caption1.copyWith(
                               fontWeight: FontWeight.w600,
                               color: AppColors.primary(context),

@@ -2,7 +2,12 @@
 class ApiConstants {
   // Appareil physique : utilise l'IP locale de ta machine
   // Émulateur Android : utilise 'http://10.0.2.2:5000'
-  static const String baseUrl = 'http://192.168.1.26:5000';
+  // Surchargeable sans toucher au code :
+  //   flutter run --dart-define=API_BASE_URL=https://api.meatay.com
+  static const String baseUrl = String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: 'http://192.168.1.96:5000',
+  );
   static const String apiVersion = 'v1';
   
   // Endpoints
@@ -24,6 +29,7 @@ class AppConstants {
   
   // Storage Keys
   static const String tokenKey = 'auth_token';
+  static const String refreshTokenKey = 'refresh_token';
   static const String userIdKey = 'user_id';
   static const String themeKey = 'theme_mode';
 }

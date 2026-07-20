@@ -54,7 +54,7 @@ class _AppLogoPainter extends CustomPainter {
 
     // Leaf vein
     final veinPaint = Paint()
-      ..color = Colors.white.withOpacity(0.5)
+      ..color = Colors.white.withValues(alpha: 0.5)
       ..style = PaintingStyle.stroke
       ..strokeWidth = size * 0.08;
 

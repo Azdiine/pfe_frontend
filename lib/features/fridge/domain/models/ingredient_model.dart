@@ -24,6 +24,18 @@ class Ingredient {
 
   bool get isExpiringSoon => daysUntilExpiry <= 3;
 
+  /// Photo réaliste de l'aliment (pollinations.ai, gratuit, sans clé).
+  /// Seed déterministe : le même aliment garde toujours la même photo.
+  String get imageUrl {
+    final seed = searchName.codeUnits.fold<int>(0, (s, c) => s + c) % 100000;
+    final prompt = Uri.encodeComponent(
+      'fresh $searchName, food ingredient, on clean white background, '
+      'studio photography, high quality',
+    );
+    return 'https://image.pollinations.ai/prompt/$prompt'
+        '?width=200&height=200&nologo=true&seed=$seed';
+  }
+
   Ingredient copyWith({
     String? id,
     String? emoji,

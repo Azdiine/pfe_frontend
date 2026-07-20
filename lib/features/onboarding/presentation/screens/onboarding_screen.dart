@@ -331,7 +331,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
         if (_currentIndex == 0) {
           context.go('/');
@@ -354,7 +354,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(isDark ? 0.2 : 0.08),
+                        color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.08),
                         blurRadius: isDark ? 12 : 16,
                         offset: const Offset(0, 4),
                       ),
@@ -586,7 +586,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                           borderRadius: BorderRadius.circular(16),
                         ),
                         elevation: 0,
-                        shadowColor: AppColors.primary(context).withOpacity(0.3),
+                        shadowColor: AppColors.primary(context).withValues(alpha: 0.3),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,

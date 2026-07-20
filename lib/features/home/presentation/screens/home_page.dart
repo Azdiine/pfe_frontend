@@ -11,6 +11,8 @@ import '../../../../shared/widgets/chatbot_popup.dart';
 import '../../../../shared/widgets/notifications_popup.dart';
 import '../../../../core/localization/locale_provider.dart';
 import '../../../../core/localization/app_localizations.dart';
+import '../../../auth/application/auth_provider.dart';
+import '../../../profile/application/profile_provider.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -97,7 +99,13 @@ class _HomePageState extends ConsumerState<HomePage> {
                                           ),
                                         ),
                                         Text(
-                                          'Ezedine',
+                                          // Nom réel de l'utilisateur connecté
+                                          ref.watch(profileProvider).name ??
+                                              ref
+                                                  .watch(authProvider)
+                                                  .user
+                                                  ?.name ??
+                                              '',
                                           style: AppleTheme.title2.copyWith(
                                             color: AppColors.secondary(context),
                                             fontWeight: FontWeight.w800,
@@ -146,7 +154,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                             color:
                                                 AppleTheme.adaptiveSeparator(
                                                   context,
-                                                ).withOpacity(
+                                                ).withValues(alpha: 
                                                   0.2,
                                                 ), // iOS 18: Plus subtil
                                             width: 0.5,
@@ -229,8 +237,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              AppColors.primary(context).withOpacity(0.08),
-                              AppColors.secondary(context).withOpacity(0.06),
+                              AppColors.primary(context).withValues(alpha: 0.08),
+                              AppColors.secondary(context).withValues(alpha: 0.06),
                             ],
                             begin: Alignment.centerLeft,
                             end: Alignment.centerRight,
@@ -239,7 +247,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                             AppleTheme.radiusCard,
                           ),
                           border: Border.all(
-                            color: AppColors.primary(context).withOpacity(0.12),
+                            color: AppColors.primary(context).withValues(alpha: 0.12),
                             width: 0.5,
                           ),
                         ),
@@ -348,7 +356,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                     child: Text(
                                       ' / 2000 ${l10n.kcalUnit}',
                                       style: AppleTheme.bodyEmphasized.copyWith(
-                                        color: Colors.white.withOpacity(0.8),
+                                        color: Colors.white.withValues(alpha: 0.8),
                                       ),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
@@ -365,7 +373,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                 ),
                                 child: LinearProgressIndicator(
                                   value: 0.725,
-                                  backgroundColor: Colors.white.withOpacity(
+                                  backgroundColor: Colors.white.withValues(alpha: 
                                     0.2,
                                   ), // iOS 18: Plus subtil
                                   valueColor: const AlwaysStoppedAnimation(
@@ -389,7 +397,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                   Container(
                                     width: 0.5,
                                     height: 40,
-                                    color: Colors.white.withOpacity(0.3),
+                                    color: Colors.white.withValues(alpha: 0.3),
                                   ),
                                   Expanded(
                                     child: _buildMacroItem(
@@ -401,7 +409,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                   Container(
                                     width: 0.5,
                                     height: 40,
-                                    color: Colors.white.withOpacity(0.3),
+                                    color: Colors.white.withValues(alpha: 0.3),
                                   ),
                                   Expanded(
                                     child: _buildMacroItem(
@@ -453,7 +461,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                     },
                                   ),
                                 );
-                            if (result != null) {
+                            if (result != null && context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
@@ -522,7 +530,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                             border: Border.all(
                               color: AppleTheme.adaptiveSeparator(
                                 context,
-                              ).withOpacity(0.3),
+                              ).withValues(alpha: 0.3),
                               width: 0.5,
                             ),
                           ),
@@ -536,10 +544,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                                     colors: [
                                       AppColors.secondary(
                                         context,
-                                      ).withOpacity(0.3),
+                                      ).withValues(alpha: 0.3),
                                       AppColors.secondary(
                                         context,
-                                      ).withOpacity(0.1),
+                                      ).withValues(alpha: 0.1),
                                     ],
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
@@ -555,7 +563,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                         CupertinoIcons
                                             .square_fill_on_square_fill,
                                         size: 80,
-                                        color: Colors.white.withOpacity(0.5),
+                                        color: Colors.white.withValues(alpha: 0.5),
                                       ),
                                     ),
                                     Positioned(
@@ -770,10 +778,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                                     colors: [
                                       AppColors.secondary(
                                         context,
-                                      ).withOpacity(0.15),
+                                      ).withValues(alpha: 0.15),
                                       AppColors.secondary(
                                         context,
-                                      ).withOpacity(0.05),
+                                      ).withValues(alpha: 0.05),
                                     ],
                                   ),
                                   borderRadius: BorderRadius.circular(
@@ -814,7 +822,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                             gradient: LinearGradient(
                               colors: [
                                 AppleTheme.systemPurple,
-                                AppleTheme.systemPurple.withOpacity(0.8),
+                                AppleTheme.systemPurple.withValues(alpha: 0.8),
                               ],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
@@ -845,7 +853,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                     Text(
                                       l10n.askMeRecipe,
                                       style: AppleTheme.subhead.copyWith(
-                                        color: Colors.white.withOpacity(0.8),
+                                        color: Colors.white.withValues(alpha: 0.8),
                                       ),
                                     ),
                                   ],
@@ -895,7 +903,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         Text(
           label,
           style: AppleTheme.caption1.copyWith(
-            color: Colors.white.withOpacity(0.75),
+            color: Colors.white.withValues(alpha: 0.75),
           ),
           textAlign: TextAlign.center,
           maxLines: 1,
@@ -915,7 +923,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         Text(
           '${l10n.outOf} $total',
           style: AppleTheme.caption2.copyWith(
-            color: Colors.white.withOpacity(0.6),
+            color: Colors.white.withValues(alpha: 0.6),
           ),
           textAlign: TextAlign.center,
           maxLines: 1,
@@ -933,14 +941,14 @@ class _HomePageState extends ConsumerState<HomePage> {
         color: AppColors.surface(context),
         borderRadius: BorderRadius.circular(AppleTheme.radiusXLarge),
         border: Border.all(
-          color: AppColors.divider(context).withOpacity(0.3),
+          color: AppColors.divider(context).withValues(alpha: 0.3),
           width: 0.5,
         ),
         boxShadow: isDark
             ? []
             : [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
+                  color: Colors.black.withValues(alpha: 0.04),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -954,8 +962,8 @@ class _HomePageState extends ConsumerState<HomePage> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  AppColors.primary(context).withOpacity(0.15),
-                  AppColors.primary(context).withOpacity(0.08),
+                  AppColors.primary(context).withValues(alpha: 0.15),
+                  AppColors.primary(context).withValues(alpha: 0.08),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -969,13 +977,13 @@ class _HomePageState extends ConsumerState<HomePage> {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.5),
+                  color: Colors.white.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
                   CupertinoIcons.heart_fill,
                   size: 24,
-                  color: AppColors.primary(context).withOpacity(0.7),
+                  color: AppColors.primary(context).withValues(alpha: 0.7),
                 ),
               ),
             ),

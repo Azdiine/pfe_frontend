@@ -158,7 +158,7 @@ class AppTheme {
       fillColor: const Color(0xFFF5F5F5),
       labelStyle: GoogleFonts.inter(color: textSecondary, fontSize: 14),
       hintStyle: GoogleFonts.inter(
-        color: textSecondary.withOpacity(0.6),
+        color: textSecondary.withValues(alpha: 0.6),
         fontSize: 14,
       ),
       border: OutlineInputBorder(
@@ -189,13 +189,13 @@ class AppTheme {
       shadowColor: Colors.transparent,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: borderColor.withOpacity(0.5)),
+        side: BorderSide(color: borderColor.withValues(alpha: 0.5)),
       ),
       margin: EdgeInsets.zero,
     ),
     chipTheme: ChipThemeData(
       backgroundColor: const Color(0xFFF5F5F5),
-      selectedColor: primaryColor.withOpacity(0.12),
+      selectedColor: primaryColor.withValues(alpha: 0.12),
       labelStyle: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       side: BorderSide.none,
@@ -217,7 +217,7 @@ class AppTheme {
       elevation: 8,
     ),
     dividerTheme: DividerThemeData(
-      color: borderColor.withOpacity(0.5),
+      color: borderColor.withValues(alpha: 0.5),
       thickness: 0.5,
       space: 0,
     ),
@@ -398,7 +398,7 @@ class AppTheme {
       fillColor: const Color(0xFF1E1E1E),
       labelStyle: GoogleFonts.inter(color: darkTextSecondary, fontSize: 14),
       hintStyle: GoogleFonts.inter(
-        color: darkTextSecondary.withOpacity(0.5),
+        color: darkTextSecondary.withValues(alpha: 0.5),
         fontSize: 14,
       ),
       border: OutlineInputBorder(
@@ -429,13 +429,13 @@ class AppTheme {
       shadowColor: Colors.transparent,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: darkBorderColor.withOpacity(0.5)),
+        side: BorderSide(color: darkBorderColor.withValues(alpha: 0.5)),
       ),
       margin: EdgeInsets.zero,
     ),
     chipTheme: ChipThemeData(
       backgroundColor: const Color(0xFF1E1E1E),
-      selectedColor: darkPrimaryColor.withOpacity(0.15),
+      selectedColor: darkPrimaryColor.withValues(alpha: 0.15),
       labelStyle: GoogleFonts.inter(
         fontSize: 13,
         fontWeight: FontWeight.w500,

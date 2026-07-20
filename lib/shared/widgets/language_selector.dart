@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/localization/locale_provider.dart';
+import '../../core/providers/locale_provider.dart';
 import '../../core/theme/app_colors.dart';
 
 /// 🌍 Sélecteur de Langue - Bouton Toggle French/English
@@ -20,15 +20,15 @@ class LanguageSelector extends ConsumerWidget {
     return Container(
       margin: const EdgeInsets.only(right: 8),
       decoration: BoxDecoration(
-        color: AppColors.lightSurface.withOpacity(0.8),
+        color: AppColors.lightSurface.withValues(alpha: 0.8),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: AppColors.primary(context).withOpacity(0.2),
+          color: AppColors.primary(context).withValues(alpha: 0.2),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary(context).withOpacity(0.1),
+            color: AppColors.primary(context).withValues(alpha: 0.1),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -56,7 +56,7 @@ class LanguageSelector extends ConsumerWidget {
                 const SizedBox(width: 6),
                 // Code langue
                 Text(
-                  locale.toUpperCase(),
+                  locale.languageCode.toUpperCase(),
                   style: TextStyle(
                     color: AppColors.primary(context),
                     fontSize: 14,
@@ -101,10 +101,10 @@ class CompactLanguageSelector extends ConsumerWidget {
           height: 34,
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
-            color: AppColors.surfaceElevated(context).withOpacity(0.8),
+            color: AppColors.surfaceElevated(context).withValues(alpha: 0.8),
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-              color: AppColors.divider(context).withOpacity(0.3),
+              color: AppColors.divider(context).withValues(alpha: 0.3),
               width: 0.5,
             ),
           ),
@@ -118,7 +118,7 @@ class CompactLanguageSelector extends ConsumerWidget {
               ),
               const SizedBox(width: 5),
               Text(
-                locale.toUpperCase(),
+                locale.languageCode.toUpperCase(),
                 style: TextStyle(
                   color: AppColors.primary(context),
                   fontSize: 13,

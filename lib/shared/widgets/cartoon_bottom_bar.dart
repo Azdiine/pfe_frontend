@@ -80,7 +80,7 @@ class _CartoonBottomBarState extends State<CartoonBottomBar>
         borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, -5),
           ),
@@ -149,8 +149,8 @@ class _CartoonBottomBarState extends State<CartoonBottomBar>
                   gradient: isSelected
                       ? LinearGradient(
                           colors: [
-                            color.withOpacity(0.2),
-                            color.withOpacity(0.1),
+                            color.withValues(alpha: 0.2),
+                            color.withValues(alpha: 0.1),
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
@@ -167,7 +167,7 @@ class _CartoonBottomBarState extends State<CartoonBottomBar>
                       decoration: BoxDecoration(
                         gradient: isSelected
                             ? LinearGradient(
-                                colors: [color, color.withOpacity(0.7)],
+                                colors: [color, color.withValues(alpha: 0.7)],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               )
@@ -179,7 +179,7 @@ class _CartoonBottomBarState extends State<CartoonBottomBar>
                         boxShadow: isSelected
                             ? [
                                 BoxShadow(
-                                  color: color.withOpacity(0.4),
+                                  color: color.withValues(alpha: 0.4),
                                   blurRadius: 12,
                                   offset: const Offset(0, 4),
                                 ),

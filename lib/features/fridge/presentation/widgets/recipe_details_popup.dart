@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../tracking/data/tracking_service.dart';
+import '../../../tracking/presentation/widgets/meal_type_picker.dart';
 
-class RecipeDetailsPopup extends StatelessWidget {
+class RecipeDetailsPopup extends StatefulWidget {
   final Map<String, dynamic> recipe;
   final String emoji;
 
@@ -11,6 +14,17 @@ class RecipeDetailsPopup extends StatelessWidget {
     this.emoji = '🍽️',
     super.key,
   });
+
+  @override
+  State<RecipeDetailsPopup> createState() => _RecipeDetailsPopupState();
+}
+
+class _RecipeDetailsPopupState extends State<RecipeDetailsPopup> {
+  final TrackingService _trackingService = TrackingService();
+  bool _addingMeal = false;
+  bool _mealAdded = false;
+
+  Map<String, dynamic> get recipe => widget.recipe;
 
   double _toDouble(dynamic v) => (v as num? ?? 0).toDouble();
 
@@ -22,11 +36,58 @@ class RecipeDetailsPopup extends StatelessWidget {
     return [];
   }
 
+  Future<void> _addToTracking() async {
+    if (_addingMeal || _mealAdded) return;
+    HapticFeedback.mediumImpact();
+
+    // Choix du repas : petit-déjeuner / déjeuner / dîner / collation
+    final mealType = await showMealTypePicker(context);
+    if (mealType == null || !mounted) return;
+
+    setState(() => _addingMeal = true);
+
+    try {
+      await _trackingService.addMeal(
+        calories: _toDouble(recipe['calories']),
+        proteinsG: _toDouble(recipe['proteins_g']),
+        carbsG: _toDouble(recipe['carbs_g']),
+        fatsG: _toDouble(recipe['fats_g']),
+        mealType: mealType,
+        name: recipe['name']?.toString(),
+        source: 'recipe',
+      );
+      if (!mounted) return;
+      setState(() {
+        _addingMeal = false;
+        _mealAdded = true;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '✅ Ajouté au ${MealTypes.label(mealType).toLowerCase()} '
+            '(${_toDouble(recipe['calories']).toStringAsFixed(0)} kcal)',
+          ),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _addingMeal = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Impossible d\'ajouter au suivi, réessayez.'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final ingredients = _parseList(recipe['ingredients']);
     final steps = _parseList(recipe['steps']);
     final name = recipe['name']?.toString() ?? 'Recette';
+    final imageUrl = recipe['image_url']?.toString();
 
     return Dialog(
       backgroundColor: Colors.transparent,
@@ -37,6 +98,7 @@ class RecipeDetailsPopup extends StatelessWidget {
           maxHeight: MediaQuery.of(context).size.height * 0.88,
           maxWidth: MediaQuery.of(context).size.width,
         ),
+        clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
           color: AppColors.background(context),
           borderRadius: BorderRadius.circular(24),
@@ -51,8 +113,12 @@ class RecipeDetailsPopup extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            // ── Photo du plat ────────────────────────────────────────────────
+            if (imageUrl != null && imageUrl.isNotEmpty)
+              RecipeImage(imageUrl: imageUrl, height: 170, name: name),
+
             // ── Header ──────────────────────────────────────────────────────
-            _Header(name: name, emoji: emoji, context: context),
+            _Header(name: name, emoji: widget.emoji, context: context),
             Divider(height: 1, color: AppColors.divider(context)),
 
             // ── Scrollable body ──────────────────────────────────────────────
@@ -83,31 +149,157 @@ class RecipeDetailsPopup extends StatelessWidget {
               ),
             ),
 
-            // ── Footer button ────────────────────────────────────────────────
+            // ── Footer buttons ───────────────────────────────────────────────
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-              child: SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: CupertinoButton(
-                  color: AppColors.primary(context),
-                  borderRadius: BorderRadius.circular(14),
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text(
-                    'Fermer',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: 50,
+                      child: CupertinoButton(
+                        padding: EdgeInsets.zero,
+                        color: _mealAdded
+                            ? AppColors.success
+                            : AppColors.primary(context),
+                        borderRadius: BorderRadius.circular(14),
+                        onPressed: _addToTracking,
+                        child: _addingMeal
+                            ? const CupertinoActivityIndicator(
+                                color: Colors.white)
+                            : Text(
+                                _mealAdded
+                                    ? '✓ Ajouté au suivi'
+                                    : '🍽️ Ajouter à mon suivi',
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                      ),
                     ),
                   ),
-                ),
+                  const SizedBox(width: 10),
+                  SizedBox(
+                    height: 50,
+                    child: CupertinoButton(
+                      padding: const EdgeInsets.symmetric(horizontal: 18),
+                      color: AppColors.surface(context),
+                      borderRadius: BorderRadius.circular(14),
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        'Fermer',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary(context),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
         ),
       ),
     );
+  }
+}
+
+// ── Photo de recette (placeholder, retry automatique, fallback) ─────────────
+
+class RecipeImage extends StatefulWidget {
+  final String imageUrl;
+  final double height;
+  final String name;
+  final BorderRadius? borderRadius;
+
+  const RecipeImage({
+    required this.imageUrl,
+    required this.height,
+    required this.name,
+    this.borderRadius,
+    super.key,
+  });
+
+  @override
+  State<RecipeImage> createState() => _RecipeImageState();
+}
+
+class _RecipeImageState extends State<RecipeImage> {
+  // La 1re requête pollinations peut expirer pendant la génération de
+  // l'image ; on retente automatiquement (l'image est alors en cache serveur).
+  static const int _maxRetries = 2;
+  int _attempt = 0;
+  bool _waitingRetry = false;
+
+  String get _url {
+    if (_attempt == 0) return widget.imageUrl;
+    final sep = widget.imageUrl.contains('?') ? '&' : '?';
+    return '${widget.imageUrl}${sep}r=$_attempt';
+  }
+
+  void _scheduleRetry() {
+    if (_attempt >= _maxRetries || _waitingRetry) return;
+    _waitingRetry = true;
+    Future.delayed(const Duration(milliseconds: 2500), () {
+      if (!mounted) return;
+      setState(() {
+        _attempt++;
+        _waitingRetry = false;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Widget placeholder = Container(
+      height: widget.height,
+      width: double.infinity,
+      color: AppColors.surface(context),
+      child: const Center(child: CupertinoActivityIndicator()),
+    );
+
+    Widget fallback = Container(
+      height: widget.height,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.primary(context).withValues(alpha: 0.25),
+            AppColors.primary(context).withValues(alpha: 0.10),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: const Center(child: Text('🍽️', style: TextStyle(fontSize: 42))),
+    );
+
+    final image = Image.network(
+      _url,
+      height: widget.height,
+      width: double.infinity,
+      fit: BoxFit.cover,
+      loadingBuilder: (context, child, progress) {
+        if (progress == null) return child;
+        return placeholder;
+      },
+      errorBuilder: (context, error, stack) {
+        if (_attempt < _maxRetries) {
+          _scheduleRetry();
+          return placeholder;
+        }
+        return fallback;
+      },
+    );
+
+    if (widget.borderRadius != null) {
+      return ClipRRect(borderRadius: widget.borderRadius!, child: image);
+    }
+    return image;
   }
 }
 

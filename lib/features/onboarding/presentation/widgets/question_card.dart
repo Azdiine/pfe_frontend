@@ -207,7 +207,7 @@ class _QuestionCardState extends State<QuestionCard> {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primary(context).withOpacity(isDark ? 0.22 : 0.12),
+                        color: AppColors.primary(context).withValues(alpha: isDark ? 0.22 : 0.12),
                         blurRadius: 18,
                         offset: const Offset(0, 8),
                       ),
@@ -231,7 +231,7 @@ class _QuestionCardState extends State<QuestionCard> {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                               decoration: BoxDecoration(
-                                color: AppColors.primary(context).withOpacity(isDark ? 0.18 : 0.1),
+                                color: AppColors.primary(context).withValues(alpha: isDark ? 0.18 : 0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
@@ -350,13 +350,13 @@ class _QuestionCardState extends State<QuestionCard> {
                       boxShadow: [
                         if (isSelected)
                           BoxShadow(
-                            color: AppColors.primary(context).withOpacity(isDark ? 0.3 : 0.2),
+                            color: AppColors.primary(context).withValues(alpha: isDark ? 0.3 : 0.2),
                             blurRadius: 12,
                             offset: const Offset(0, 4),
                           )
                         else if (isDark)
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
+                            color: Colors.black.withValues(alpha: 0.2),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -424,7 +424,7 @@ class _QuestionCardState extends State<QuestionCard> {
                 border: Border.all(color: AppColors.primary(context), width: 2),
                 boxShadow: isDark ? [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
+                    color: Colors.black.withValues(alpha: 0.2),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),

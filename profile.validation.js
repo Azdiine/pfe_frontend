@@ -1,1 +1,0 @@
-Analysis artifact only. The actual backend file inspected was ../projet_pfe_backend/features/profile/profile.validation.js, but this toolchain requires write_to_file before completion. No project source files were modified by this analysis task.

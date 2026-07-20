@@ -251,7 +251,7 @@ class _NotificationsSettingsPageState
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: AppColors.warning.withOpacity(0.12),
+              color: AppColors.warning.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, size: 20, color: AppColors.warning),
@@ -306,7 +306,7 @@ class _NotificationsSettingsPageState
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: AppColors.warning.withOpacity(0.12),
+              color: AppColors.warning.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, size: 20, color: AppColors.warning),
@@ -356,7 +356,7 @@ class _NotificationsSettingsPageState
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: AppColors.secondary(context).withOpacity(0.12),
+              color: AppColors.secondary(context).withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, size: 20, color: AppColors.secondary(context)),
@@ -384,7 +384,7 @@ class _NotificationsSettingsPageState
     return Divider(
       height: 1,
       thickness: 0.5,
-      color: AppColors.divider(context).withOpacity(0.3),
+      color: AppColors.divider(context).withValues(alpha: 0.3),
       indent: 68,
     );
   }

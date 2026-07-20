@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -188,9 +189,7 @@ class _AuthFormState extends State<AuthForm> {
             Align(
               alignment: Alignment.centerRight,
               child: TextButton(
-                onPressed: () {
-                  // TODO: Forgot password
-                },
+                onPressed: () => context.push('/forgot-password'),
                 style: TextButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                 ),
@@ -218,7 +217,7 @@ class _AuthFormState extends State<AuthForm> {
                 foregroundColor: isDark
                     ? AppColors.darkTextOnPrimary
                     : AppColors.lightTextOnPrimary,
-                disabledBackgroundColor: primaryColor.withOpacity(0.5),
+                disabledBackgroundColor: primaryColor.withValues(alpha: 0.5),
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
